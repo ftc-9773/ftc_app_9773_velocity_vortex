@@ -16,7 +16,7 @@ public class TeleOpBlue extends LinearOpMode{
 
         waitForStart();
         while (opModeIsActive()){
-
+            // rb's addition 3
             idle();
         }
     }
