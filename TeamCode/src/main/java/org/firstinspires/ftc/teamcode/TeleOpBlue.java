@@ -13,10 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOpBlue extends LinearOpMode{
 
     public void runOpMode() throws InterruptedException{
-
         waitForStart();
         while (opModeIsActive()){
-
             idle();
         }
     }
