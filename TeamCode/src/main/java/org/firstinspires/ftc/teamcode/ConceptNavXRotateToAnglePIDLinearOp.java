@@ -145,10 +145,10 @@ public class ConceptNavXRotateToAnglePIDLinearOp extends LinearOpMode {
                         telemetry.addData("PIDOutput", df.format(0.00));
                     } else {
                         double output = yawPIDResult.getOutput();
-                        leftMotor.setPower(output);
-                        rightMotor.setPower(-output);
-                        telemetry.addData("PIDOutput", df.format(output) + ", " +
-                                df.format(-output));
+                        leftMotor.setPower(-output);
+                        rightMotor.setPower(output);
+                        telemetry.addData("PIDOutput", df.format(-output) + ", " +
+                                df.format(output));
                     }
                 } else {
 			    /* A timeout occurred */
