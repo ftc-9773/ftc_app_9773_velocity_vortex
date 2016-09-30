@@ -21,10 +21,11 @@ public class GoStraightOpMode extends LinearOpMode{
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         while(opModeIsActive()) {
+            if(leftMotor.getCurrentPosition()==counts||rightMotor.getCurrentPosition()==counts){
             leftMotor.setPower(driveSpeed);
             rightMotor.setPower(driveSpeed);
+            }
         }
         idle();
     }
-
 }
