@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class GoStraightOpMode extends LinearOpMode{
     DcMotor leftMotor, rightMotor;
     double driveSpeed = 0.5;
-    double counts = 12*5 / 4*Math.PI;
+    double totalRotations = (12*5 / 4*Math.PI)*1120;
     public void runOpMode() throws InterruptedException{
         leftMotor = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
@@ -20,8 +20,8 @@ public class GoStraightOpMode extends LinearOpMode{
 
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        leftMotor.setTargetPosition((int)counts);
-        rightMotor.setTargetPosition((int)counts);
+        leftMotor.setTargetPosition((int)totalRotations);
+        rightMotor.setTargetPosition((int)totalRotations);
         leftMotor.setPower(driveSpeed);
         rightMotor.setPower(driveSpeed);
 
