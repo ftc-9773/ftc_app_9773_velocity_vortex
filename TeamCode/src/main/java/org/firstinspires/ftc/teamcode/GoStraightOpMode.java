@@ -16,12 +16,15 @@ public class GoStraightOpMode extends LinearOpMode{
         leftMotor = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
 
+        waitForStart();
+
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-
-        leftMotor.setPower(driveSpeed);
-        rightMotor.setPower(driveSpeed);
-
+        while(opModeIsActive()) {
+            leftMotor.setPower(driveSpeed);
+            rightMotor.setPower(driveSpeed);
+        }
+        idle();
     }
 
 }
