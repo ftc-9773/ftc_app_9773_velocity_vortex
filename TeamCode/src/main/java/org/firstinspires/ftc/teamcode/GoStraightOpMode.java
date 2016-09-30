@@ -13,8 +13,8 @@ public class GoStraightOpMode extends LinearOpMode{
     double driveSpeed = 0.5;
     double totalRotations = (12*5 / 4*Math.PI)*1120;
     public void runOpMode() throws InterruptedException{
-        leftMotor = hardwareMap.dcMotor.get("left motor");
-        rightMotor = hardwareMap.dcMotor.get("right motor");
+        leftMotor = hardwareMap.dcMotor.get("MotorL");
+        rightMotor = hardwareMap.dcMotor.get("MotorR");
 
         waitForStart();
 
