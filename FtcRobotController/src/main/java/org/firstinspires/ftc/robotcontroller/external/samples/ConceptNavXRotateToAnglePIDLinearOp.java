@@ -37,6 +37,7 @@ import com.kauailabs.navx.ftc.navXPIDController;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -55,7 +56,7 @@ import java.text.DecimalFormat;
  * for the navX-Model sensor should be used.
  */
 @TeleOp(name = "Concept: navX Rotate to Angle PID - Linear", group = "Concept")
-// @Disabled Comment this in to remove this from the Driver Station OpMode List
+@Disabled //Comment this in to remove this from the Driver Station OpMode List
 public class ConceptNavXRotateToAnglePIDLinearOp extends LinearOpMode {
     DcMotor leftMotor;
     DcMotor rightMotor;
