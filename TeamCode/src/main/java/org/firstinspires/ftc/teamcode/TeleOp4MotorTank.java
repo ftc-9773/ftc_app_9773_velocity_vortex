@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.drivesys.Wheel;
 
 import org.firstinspires.ftc.teamcode.drivesys.TwoMotorDrive;
 
-@TeleOp(name = "TeleOpTest", group = "TeleOp")
-public class TeleOpTest extends LinearOpMode{
+@TeleOp(name = "TeleOp4MotorTank", group = "TeleOp")
+public class TeleOp4MotorTank extends LinearOpMode{
     DcMotor motorL1;
     DcMotor motorL2;
     DcMotor motorR1;
