@@ -13,20 +13,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class CollisionDetectionOp extends LinearOpMode {
 
     private final int NAVX_DIM_I2C_PORT = 0;
-    private final double collisionThreshold = 0.5;
+//    private final double collisionThreshold = 0.5;
     double lastAccelX,lastAccelY;
     private AHRS navx_device;
     private boolean collisionState;
     private ElapsedTime runtime = new ElapsedTime();
 
-    private long last_system_timestamp = 0;
-    private long last_sensor_timestamp = 0;
-
     private long sensor_timestamp_delta = 0;
     private long system_timestamp_delta = 0;
 
     public void runOpMode() throws InterruptedException{
-        //init
+        //init()
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"), NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData);
         lastAccelX = 0.0; lastAccelY = 0.0; setCollision(false);
