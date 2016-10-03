@@ -43,6 +43,7 @@ public class CollisionDetectionOp extends LinearOpMode {
             else{
                 gyroCal = motion = "------";
             }
+            //setCollision(collision); ???
             telemetry.addData("2. GyroAccel", gyroCal);
             telemetry.addData("3. Motion", motion);
             telemetry.addData("4. Collision", getCollision());
@@ -59,7 +60,7 @@ public class CollisionDetectionOp extends LinearOpMode {
         return collisionState ? "COLLISION" : "NO COLLISION";
     }
 
-    //collision state setter
+    //collision state setter - needed? or callback?
     private void setCollision(boolean newValue){
         this.collisionState = newValue;
     }
