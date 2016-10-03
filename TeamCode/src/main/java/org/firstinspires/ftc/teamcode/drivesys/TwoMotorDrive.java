@@ -24,8 +24,8 @@ public class TwoMotorDrive {
     }
 
     public void drive(float speed, float direction){
-        double left = (maxSpeed - minSpeed) * (speed + direction) * frictionCoefficientL;
-        double right = (maxSpeed - minSpeed) * (speed - direction) * frictionCoefficientR;
+        double left = (-speed + direction) * frictionCoefficientL;
+        double right = (speed + direction) * frictionCoefficientR;
 
         motorL.setPower(left);
         motorR.setPower(right);
