@@ -25,13 +25,20 @@ public class AutonomousRecord extends LinearOpMode {
         fileRW = new FileRW("/sdcard/FIRST/autonomous/autonomousPath.txt", true);
 
         waitForStart();
-        while (opModeIsActive()){
-            double speed = gamepad1.left_stick_y;
-            double direction = gamepad1.right_stick_x;
+        //long startingTime = System.nanoTime();
+        //long elapsedTime = 0;
+        if(gamepad1.a) {
+            while (opModeIsActive()) {
+                //long timestamp = System.nanoTime() - (startingTime + elapsedTime);
+                double speed = gamepad1.left_stick_y;
+                double direction = gamepad1.right_stick_x;
 
-            fileRW.fileWrite(Double.toString(speed) + "," + Double.toString(direction));
+                fileRW.fileWrite(Double.toString(speed) + "," + Double.toString(direction));
+                drivesys.drive((float) speed, (float) direction);
 
-            idle();
+                //elapsedTime = System.nanoTime() - startingTime;
+                idle();
+            }
         }
     }
 }
