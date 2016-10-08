@@ -4,10 +4,12 @@ package org.firstinspires.ftc.teamcode;
  Created by Kids on 9/30/2016.
  */
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 //Luke edited Pranav's sample TeleOp on 9/23/2016
@@ -24,18 +26,23 @@ public class TestLineFollow extends LinearOpMode{
     double white = -1;
     double black = -1;
     double mid = -1;
+    double lowSpeed = 0.05;
+    double highSpeed = 0.15;
 
     public void runOpMode() throws InterruptedException{
         motor1 = hardwareMap.dcMotor.get("motor1");
         motor2 = hardwareMap.dcMotor.get("motor2");
+        motor1.setDirection(DcMotorSimple.Direction.REVERSE);
         lightSensor = hardwareMap.opticalDistanceSensor.get("ods");
 
         waitForStart();
+        long startTime = System.nanoTime();
+        long elapsedTime = 0;
         while (opModeIsActive()){
             light = lightSensor.getLightDetected();
             if(white==-1){
-                motor1.setPower(0.9);
-                motor2.setPower(1);
+                motor1.setPower(lowSpeed);
+                motor2.setPower(highSpeed);
                 if(light>prevLight)
                     prevLight = light;
                 else{
@@ -43,8 +50,8 @@ public class TestLineFollow extends LinearOpMode{
                 }
             }
             else if(black==-1){
-                motor1.setPower(1);
-                motor2.setPower(0.9);
+                motor1.setPower(highSpeed);
+                motor2.setPower(lowSpeed);
                 if (light<prevLight)
                     prevLight=light;
                 else if(light<white){
@@ -54,18 +61,28 @@ public class TestLineFollow extends LinearOpMode{
             else{
                 mid = (black+white)/2;
                 if(light>mid){
-                    motor1.setPower(1);
-                    motor2.setPower(0.9);
+                    motor1.setPower(highSpeed);
+                    motor2.setPower(lowSpeed);
                 }
                 else if(light<mid){
-                    motor1.setPower(0.9);
-                    motor2.setPower(1);
+                    motor1.setPower(lowSpeed);
+                    motor2.setPower(highSpeed);
                 }
                 else{
-                    motor1.setPower(1);
-                    motor2.setPower(1);
+                    motor1.setPower(highSpeed);
+                    motor2.setPower(highSpeed);
                 }
             }
+
+            DbgLog.msg(String.format("Light Detected= %f", light));
+            DbgLog.msg(String.format("Threshold: %f", mid));
+            //DbgLog.msg(String.format("MotorL power: %f", motor1.getPower()));
+            //DbgLog.msg(String.format("MotorR power: %f", motor2.getPower()));
+
+            elapsedTime = System.nanoTime()-startTime;
+
+            if(elapsedTime/2500>= (long)1000000)
+                break;
 
             idle();
         }
