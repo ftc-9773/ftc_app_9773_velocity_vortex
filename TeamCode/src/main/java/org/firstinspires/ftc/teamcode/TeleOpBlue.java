@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name = "TeleOpBlue", group = "TeleOp")
 @Disabled
 public class TeleOpBlue extends LinearOpMode{
-
+    //Create null objects
     public void runOpMode() throws InterruptedException{
-
+        //Initialize objects
         waitForStart();
         while (opModeIsActive()){
 
