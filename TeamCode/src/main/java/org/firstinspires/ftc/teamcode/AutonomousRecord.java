@@ -27,7 +27,6 @@ public class AutonomousRecord extends LinearOpMode {
         waitForStart();
         //long startingTime = System.nanoTime();
         //long elapsedTime = 0;
-        if(gamepad1.a) {
             while (opModeIsActive()) {
                 //long timestamp = System.nanoTime() - (startingTime + elapsedTime);
                 double speed = gamepad1.left_stick_y;
@@ -40,6 +39,5 @@ public class AutonomousRecord extends LinearOpMode {
                 sleep(5);
                 idle();
             }
-        }
     }
 }
