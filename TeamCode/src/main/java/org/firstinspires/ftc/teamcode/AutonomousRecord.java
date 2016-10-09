@@ -37,6 +37,7 @@ public class AutonomousRecord extends LinearOpMode {
                 drivesys.drive((float) speed, (float) direction);
 
                 //elapsedTime = System.nanoTime() - startingTime;
+                sleep(5);
                 idle();
             }
         }

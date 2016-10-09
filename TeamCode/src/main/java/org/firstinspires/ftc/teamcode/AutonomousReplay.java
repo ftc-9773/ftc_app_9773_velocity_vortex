@@ -40,6 +40,7 @@ public class AutonomousReplay extends LinearOpMode {
             else{
                 stop();
             }
+            sleep(5);
             idle();
         }
     }
