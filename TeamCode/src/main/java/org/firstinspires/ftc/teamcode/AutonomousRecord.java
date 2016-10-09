@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,17 +28,25 @@ public class AutonomousRecord extends LinearOpMode {
         waitForStart();
         //long startingTime = System.nanoTime();
         //long elapsedTime = 0;
-            while (opModeIsActive()) {
-                //long timestamp = System.nanoTime() - (startingTime + elapsedTime);
-                double speed = gamepad1.left_stick_y;
-                double direction = gamepad1.right_stick_x;
+        while (opModeIsActive()) {
+            //long timestamp = System.nanoTime() - (startingTime + elapsedTime);
+            double speed = gamepad1.left_stick_y * 0.5;
+            double direction = gamepad1.right_stick_x * 0.5;
 
-                fileRW.fileWrite(Double.toString(speed) + "," + Double.toString(direction));
-                drivesys.drive((float) speed, (float) direction);
+            fileRW.fileWrite(Double.toString(speed) + "," + Double.toString(direction));
+            drivesys.drive((float) speed, (float) direction);
 
-                //elapsedTime = System.nanoTime() - startingTime;
-                sleep(5);
-                idle();
+            DbgLog.msg(String.format("Speed: %f", speed, " , Direction: %f", direction));
+
+            //elapsedTime = System.nanoTime() - startingTime;
+            if(gamepad1.a){
+                break;
             }
+            sleep(5);
+            idle();
+        }
+        DbgLog.msg("Is close executing?");
+        fileRW.close();
+
     }
 }

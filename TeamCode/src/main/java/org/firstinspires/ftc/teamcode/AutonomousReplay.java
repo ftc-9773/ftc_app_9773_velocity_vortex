@@ -29,19 +29,23 @@ public class AutonomousReplay extends LinearOpMode {
             String line = fileRW.getNextLine();
             if(line != null) {
                 String[] lineElements = line.split(",");
+                if(lineElements.length < 2){
+                    continue;
+                }
+                else {
+                    //long timestamp = Long.parseLong(lineElements[0]);
+                    double speed = Double.parseDouble(lineElements[0]);
+                    double direction = Double.parseDouble(lineElements[1]);
 
-                //long timestamp = Long.parseLong(lineElements[0]);
-                double speed = Double.parseDouble(lineElements[0]);
-                double direction = Double.parseDouble(lineElements[1]);
-
-                //sleep(timestamp);
-                drivesys.drive((float) speed, (float) direction);
+                    //sleep(timestamp);
+                    drivesys.drive((float) speed, (float) direction);
+                }
             }
             else{
                 stop();
             }
             sleep(5);
-            idle();
         }
+        fileRW.close();
     }
 }

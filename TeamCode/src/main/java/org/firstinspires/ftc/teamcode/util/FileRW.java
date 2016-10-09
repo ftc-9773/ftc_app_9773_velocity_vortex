@@ -68,4 +68,17 @@ public class FileRW {
 
         return data;
     }
+
+    public void close(){
+        try {
+            if(bufferedWriter!=null) {
+                bufferedWriter.flush();
+                bufferedWriter.close();
+            }
+            if(bufferedReader!=null)
+                bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
