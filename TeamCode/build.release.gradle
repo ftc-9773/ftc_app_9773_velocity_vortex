@@ -6,4 +6,5 @@ dependencies {
     compile (name:'ModernRobotics-release', ext:'aar')
     compile (name:'Analytics-release', ext:'aar')
     compile (name:'WirelessP2p-release', ext:'aar')
+    compile ('com.android.support:palette-v7:21.0.0')
 }
