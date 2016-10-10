@@ -6,6 +6,9 @@
 buildscript {
     repositories {
         jcenter()
+        flatDir {
+            dirs '/Users/michaelzhou/Documents/navx-micro/libs'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.3'
