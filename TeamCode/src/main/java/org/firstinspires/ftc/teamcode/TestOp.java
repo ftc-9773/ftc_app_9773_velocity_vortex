@@ -4,7 +4,8 @@ package org.firstinspires.ftc.teamcode;
  * Created by Kids on 9/23/2016.
  */
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import org.firstinspires.ftc.teamcode.util.JsonReadingClass;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,13 +19,15 @@ public class TestOp extends LinearOpMode{
     DcMotor motor2 = null;
 
     public void runOpMode() throws InterruptedException{
-        motor1 = hardwareMap.dcMotor.get("motor1");
-        motor2 = hardwareMap.dcMotor.get("motor2");
+        /*motor1 = hardwareMap.dcMotor.get("fMotorL");
+        motor2 = hardwareMap.dcMotor.get("fMotorR");*/
+        JsonReadingClass reader = new JsonReadingClass("/sdcard/FIRST/lineFollow.json");
 
         waitForStart();
         while (opModeIsActive()){
+            reader.vevoId();
 
-            if(gamepad1.a){
+            /*if(gamepad1.a){
                 if(gamepad1.y){
                     motor1.setPower(0);
                 }
@@ -42,7 +45,7 @@ public class TestOp extends LinearOpMode{
                 }
             } else if(gamepad1.b && !gamepad1.x){
                 motor2.setPower(1);
-            }
+            }*/
 
             idle();
         }
