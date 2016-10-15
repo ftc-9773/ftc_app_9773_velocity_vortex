@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drivesys.FourMotorTankDrive;
 import org.firstinspires.ftc.teamcode.drivesys.Wheel;
+import org.firstinspires.ftc.teamcode.util.DriveSysReader;
 
 import org.firstinspires.ftc.teamcode.drivesys.TwoMotorDrive;
 
@@ -25,6 +26,9 @@ public class TeleOp4MotorTank extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException{
+        DriveSysReader driveSysReader = new DriveSysReader("/sdcard/FIRST/json/robot_4motor__4wd.json");
+
+
         motorL1 = hardwareMap.dcMotor.get("motorL1");
         motorL2 = hardwareMap.dcMotor.get("motorL2");
         motorR1 = hardwareMap.dcMotor.get("motorR1");
