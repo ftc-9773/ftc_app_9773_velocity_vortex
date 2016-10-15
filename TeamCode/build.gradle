@@ -10,12 +10,7 @@
 
 
 // Custom definitions may go here
-repositories {
-    flatDir {
-        dirs '../libs'
-        dirs '/Users/rsburugula/Documents/navx-micro/libs'
-    }
-}
+
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
