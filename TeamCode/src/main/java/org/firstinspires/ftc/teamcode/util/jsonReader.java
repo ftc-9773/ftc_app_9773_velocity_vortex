@@ -13,12 +13,12 @@ import java.io.IOException;
  * Created by ftcrobocracy on 10/14/16.
  */
 
-public class jsonReader {
+public class JsonReader {
     private String jsonFilePath;
-    private String jsonStr;
-    private JSONObject jsonRoot;
+    public String jsonStr;
+    public JSONObject jsonRoot;
 
-    public jsonReader(String filePath) {
+    public JsonReader(String filePath) {
         FileReader fileReader = null;
         BufferedReader bufReader = null;
         StringBuilder strBuilder = null;
