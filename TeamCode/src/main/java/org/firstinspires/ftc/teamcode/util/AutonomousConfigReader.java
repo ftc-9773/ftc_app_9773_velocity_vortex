@@ -4,8 +4,8 @@ package org.firstinspires.ftc.teamcode.util;
  * Created by ftcrobocracy on 10/14/16.
  */
 
-public class AutonomousCfgReader extends JsonReader {
-    public AutonomousCfgReader(String filePath) {
+public class AutonomousConfigReader extends JsonReader {
+    public AutonomousConfigReader(String filePath) {
         super(filePath);
     }
 }
