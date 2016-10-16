@@ -15,14 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-@Autonomous(name = "Record", group = "Record")
+@Autonomous(name = "Record", group = "Autonomous")
 public class AutonomousRecord extends LinearOpMode {
-    DcMotor motorL;
-    DcMotor motorR;
     Wheel wheel;
     FileRW fileRW;
     FourMotorTankDrive fourMotorTankDrive;
-    TwoMotorDrive twoMotorDrive;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,8 +27,11 @@ public class AutonomousRecord extends LinearOpMode {
         AutonomousRecordReader autonomousRecordReader = new AutonomousRecordReader("/sdcard/FIRST/autonomous_record.json");
         DriveSysReader driveSysReader = autonomousRecordReader.getDriveSysReader();
         String recordFileName = autonomousRecordReader.getRecordFilePath();
+        DbgLog.msg("driveSysType=%s", driveSysReader.getDriveSysType());
         try{
-            if(driveSysReader.getDriveSysType() == "4WD"){
+            if(driveSysReader.getDriveSysType().equals("4WD")){
+                DbgLog.msg("Reached here 1!");
+
                 int numMotors = 4;
                 JSONObject motors = driveSysReader.getMotors();
                 JSONObject fMotorLObj = motors.getJSONObject("fMotorL");
@@ -39,18 +39,19 @@ public class AutonomousRecord extends LinearOpMode {
                 JSONObject rMotorLObj = motors.getJSONObject("rMotorL");
                 JSONObject rMotorRObj = motors.getJSONObject("rMotorR");
 
-                DcMotor fMotorL = hardwareMap.dcMotor.get(fMotorLObj.getString("name"));
-                DcMotor fMotorR = hardwareMap.dcMotor.get(fMotorRObj.getString("name"));
-                DcMotor rMotorL = hardwareMap.dcMotor.get(rMotorLObj.getString("name"));
-                DcMotor rMotorR = hardwareMap.dcMotor.get(rMotorRObj.getString("name"));
-
-                if(driveSysReader.getWheelType() == "rubber-treaded"){
+                DcMotor fMotorL = hardwareMap.dcMotor.get(fMotorLObj.getString("motorName"));
+                DcMotor fMotorR = hardwareMap.dcMotor.get(fMotorRObj.getString("motorName"));
+                DcMotor rMotorL = hardwareMap.dcMotor.get(rMotorLObj.getString("motorName"));
+                DcMotor rMotorR = hardwareMap.dcMotor.get(rMotorRObj.getString("motorName"));
+                DbgLog.msg("Reached here 2!");
+                if(driveSysReader.getWheelType().equals("rubber-treaded")){
                     Wheel wheel = new Wheel(Wheel.Type.RUBBER_TREADED, driveSysReader.getWheelDiameter());
                 }
 
 
                 fourMotorTankDrive = new FourMotorTankDrive(fMotorL,rMotorL, fMotorR, rMotorR,
                         1, 0, 1.0, wheel, fMotorLObj.getInt("motorCPR"));
+                DbgLog.msg("Reached here 3!");
             }
         }catch (JSONException e){
             e.printStackTrace();
@@ -64,8 +65,8 @@ public class AutonomousRecord extends LinearOpMode {
         //long elapsedTime = 0;
         while (opModeIsActive()) {
             //long timestamp = System.nanoTime() - (startingTime + elapsedTime);
-            double speed = gamepad1.left_stick_y * 0.5;
-            double direction = gamepad1.right_stick_x * 0.5;
+            double speed = gamepad1.left_stick_x * 0.5;
+            double direction = gamepad1.right_stick_y * 0.5;
 
             fileRW.fileWrite(Double.toString(speed) + "," + Double.toString(direction));
             fourMotorTankDrive.drive((float) speed, (float) direction);
