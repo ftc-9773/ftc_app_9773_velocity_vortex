@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by ftcrobocracy on 10/14/16.
@@ -22,5 +26,17 @@ public class AutonomousConfigReader extends JsonReader {
             exc.printStackTrace();
         }
         return (driveSysReader);
+    }
+
+    public JSONObject getAction(int actionNum){
+        JSONObject jsonObject = null;
+        try {
+            JSONArray actions = this.jsonRoot.getJSONArray("autonomousActions");
+            jsonObject = (JSONObject)actions.get(actionNum);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 }
