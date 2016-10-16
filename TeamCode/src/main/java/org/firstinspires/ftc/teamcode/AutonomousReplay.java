@@ -26,7 +26,7 @@ public class AutonomousReplay extends LinearOpMode {
         AutonomousConfigReader autonomousConfigReader = new AutonomousConfigReader("/sdcard/FIRST/autonomous_config.json");
         DriveSysReader driveSysReader = autonomousConfigReader.getDriveSysReader();
         try{
-            if(driveSysReader.getDriveSysType() == "4WD"){
+            if(driveSysReader.getDriveSysType().equals("4WD")){
                 int numMotors = 4;
                 JSONObject motors = driveSysReader.getMotors();
                 JSONObject fMotorLObj = motors.getJSONObject("fMotorL");
@@ -34,12 +34,12 @@ public class AutonomousReplay extends LinearOpMode {
                 JSONObject rMotorLObj = motors.getJSONObject("rMotorL");
                 JSONObject rMotorRObj = motors.getJSONObject("rMotorR");
 
-                DcMotor fMotorL = hardwareMap.dcMotor.get(fMotorLObj.getString("name"));
-                DcMotor fMotorR = hardwareMap.dcMotor.get(fMotorRObj.getString("name"));
-                DcMotor rMotorL = hardwareMap.dcMotor.get(rMotorLObj.getString("name"));
-                DcMotor rMotorR = hardwareMap.dcMotor.get(rMotorRObj.getString("name"));
+                DcMotor fMotorL = hardwareMap.dcMotor.get(fMotorLObj.getString("motorName"));
+                DcMotor fMotorR = hardwareMap.dcMotor.get(fMotorRObj.getString("motorName"));
+                DcMotor rMotorL = hardwareMap.dcMotor.get(rMotorLObj.getString("motorName"));
+                DcMotor rMotorR = hardwareMap.dcMotor.get(rMotorRObj.getString("motorName"));
 
-                if(driveSysReader.getWheelType() == "rubber-treaded"){
+                if(driveSysReader.getWheelType().equals("rubber-treaded")){
                     wheel = new Wheel(Wheel.Type.RUBBER_TREADED, driveSysReader.getWheelDiameter());
                 }
 
