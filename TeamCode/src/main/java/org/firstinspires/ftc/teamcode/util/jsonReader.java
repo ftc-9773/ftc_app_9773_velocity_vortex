@@ -21,7 +21,7 @@ public class JsonReader {
     public JsonReader(String filePath) {
         FileReader fileReader = null;
         BufferedReader bufReader = null;
-        StringBuilder strBuilder = null;
+        StringBuilder strBuilder = new StringBuilder();
         String line = null;
         // If the given file path does not exist, give an error
         try {
