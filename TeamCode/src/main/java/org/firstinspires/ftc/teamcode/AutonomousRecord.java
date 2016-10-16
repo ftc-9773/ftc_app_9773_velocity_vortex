@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.drivesys.FourMotorTankDrive;
 import org.firstinspires.ftc.teamcode.drivesys.TwoMotorDrive;
 import org.firstinspires.ftc.teamcode.drivesys.Wheel;
+import org.firstinspires.ftc.teamcode.util.AutonomousRecordReader;
 import org.firstinspires.ftc.teamcode.util.DriveSysReader;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.json.JSONException;
@@ -25,7 +26,10 @@ public class AutonomousRecord extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DriveSysReader driveSysReader = new DriveSysReader("/sdcard/FIRST/json/robot_4motor_4wd.json");
+       // DriveSysReader driveSysReader = new DriveSysReader("/sdcard/FIRST/json/robot_4motor_4wd.json");
+        AutonomousRecordReader autonomousRecordReader = new AutonomousRecordReader("/sdcard/FIRST/autonomous_record.json");
+        DriveSysReader driveSysReader = autonomousRecordReader.getDriveSysReader();
+        String recordFileName = autonomousRecordReader.getRecordFilePath();
         try{
             if(driveSysReader.getDriveSysType() == "4WD"){
                 int numMotors = 4;
@@ -53,7 +57,7 @@ public class AutonomousRecord extends LinearOpMode {
         }
 
         // ToDo:  Get the record-replay file path from the json config file.
-        fileRW = new FileRW("/sdcard/FIRST/autonomous/autonomousPath.txt", true);
+        fileRW = new FileRW(recordFileName, true);
 
         waitForStart();
         //long startingTime = System.nanoTime();
