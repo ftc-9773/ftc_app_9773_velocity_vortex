@@ -13,8 +13,6 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
  */
 public class LineFollow{
 
-    DcMotor motorL;
-    DcMotor motorR;
     OpticalDistanceSensor lightSensor;
     double white;
     double black;
@@ -36,23 +34,21 @@ public class LineFollow{
 
     public void searchForWhiteLine(){
         // ToDo:  Move the robot for ~ 2 seconds or until a white line is found.
+        //  ToDo:  We may not actually need this if lineFollow can reliably find the white line
         return;
     }
 
     public void followLine() {
         light = lightSensor.getLightDetected();
         if (white == -1) {
-            driveSystem.lineFollow(lowSpeed, highSpeed);
-            motorL.setPower(lowSpeed);
-            motorR.setPower(highSpeed);
+            driveSystem.lineFollow(highSpeed, lowSpeed);
             if (light > prevLight)
                 prevLight = light;
             else {
                 white = prevLight;
             }
         } else if (black == -1) {
-            motorL.setPower(highSpeed);
-            motorR.setPower(lowSpeed);
+            driveSystem.lineFollow(highSpeed, lowSpeed);
             if (light < prevLight)
                 prevLight = light;
             else if (light < white) {
@@ -61,14 +57,11 @@ public class LineFollow{
         } else {
             mid = (black + white) / 2;
             if (light > mid) {
-                motorL.setPower(highSpeed);
-                motorR.setPower(lowSpeed);
+                driveSystem.lineFollow(highSpeed, lowSpeed);
             } else if (light < mid) {
-                motorL.setPower(lowSpeed);
-                motorR.setPower(highSpeed);
+                driveSystem.lineFollow(highSpeed, lowSpeed);
             } else {
-                motorL.setPower(highSpeed);
-                motorR.setPower(highSpeed);
+                driveSystem.lineFollow(highSpeed, highSpeed);
             }
         }
 
