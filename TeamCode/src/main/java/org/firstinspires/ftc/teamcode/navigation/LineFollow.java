@@ -1,9 +1,12 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.navigation;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+
+import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 
 /**
  * Created by Kids on 10/15/2016.
@@ -20,23 +23,26 @@ public class LineFollow{
     double light;
     double prevLight;
     double mid;
+    DriveSystem driveSystem;
 
-    public LineFollow(DcMotor motor1, DcMotor motor2, OpticalDistanceSensor ods){
-        motorL = motor1;
-        motorR = motor2;
-        lightSensor = ods;
+    public LineFollow(FTCRobot robot, String lightSensorName, double lowSpeed,
+                      double highSpeed) {
+        this.driveSystem = robot.driveSystem;
+        this.lightSensor = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(lightSensorName);
         white = -1;
         black = -1;
         prevLight = -1;
     }
 
     public void searchForWhiteLine(){
-
+        // ToDo:  Move the robot for ~ 2 seconds or until a white line is found.
+        return;
     }
 
     public void followLine() {
         light = lightSensor.getLightDetected();
         if (white == -1) {
+            driveSystem.lineFollow(lowSpeed, highSpeed);
             motorL.setPower(lowSpeed);
             motorR.setPower(highSpeed);
             if (light > prevLight)

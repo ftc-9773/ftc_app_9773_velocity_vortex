@@ -1,0 +1,49 @@
+{
+  "__comment1" : "all servos will be set to position 1 in the constructor.  This may require the ",
+  "__comment2" : "direction to be set to REVERSE, depending on how the servo is mounted",
+  "BeaconClaim" : {
+    "motors" : {
+      "buttonServo" : {
+        "motorType" : "servo",
+        "motor" : "Tetrix-HS755-HB",
+        "scaleRangeMin" : 0.115,
+        "scaleRangeMax" : 0.755,
+        "needReverse" : true,
+        "fixedPositions" : true,
+        "minButton" : "gamepad1.a",
+        "maxButton" : "gamepad1.y"
+      },
+      "colorDetectServo" : {
+        "motorType" : "servo",
+        "motor" : "Tetrix-HS755-HB",
+        "scaleRangeMin" : 0.0,
+        "scaleRangeMax" : 0.55,
+        "needReverse" : false,
+        "fixedPositions" : true,
+        "minButton" : "gamepad1.x",
+        "maxButton" : "gamepad1.b"
+      }
+    },
+    "sensors" : {
+      "colorSensor1" : {
+        "sensorType" : "ColorSensor",
+        "porttype" : "i2c",
+        "portnum" : 5
+      }
+    }
+  },
+  "CapBallLift" : {
+    "motors" : {
+      "liftMotor" : {
+        "motorType" : "dc",
+        "motor" : "Neverest60",
+        "needReverse" : false,
+        "fixedPositions" : false,
+        "minButton" : "gamepad2.right_stick_y",
+        "maxButton" : "gamepad2.right_stick_y"
+      }
+    }
+  },
+  "none" : {
+  }
+}

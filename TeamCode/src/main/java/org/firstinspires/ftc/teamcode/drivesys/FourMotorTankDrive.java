@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-public class FourMotorTankDrive {
+public class FourMotorTankDrive extends DriveSystem {
     DcMotor motorL1 = null;
     DcMotor motorL2 = null;
     DcMotor motorR1 = null;
@@ -31,6 +31,7 @@ public class FourMotorTankDrive {
         this.wheelValues = wheel.getValues();
     }
 
+    @Override
     public void drive(float speed, float direction){
         double left = (-speed + direction) * frictionCoefficientL;
         double right = (speed + direction) * frictionCoefficientR;
@@ -39,6 +40,15 @@ public class FourMotorTankDrive {
         motorL2.setPower(left);
         motorR1.setPower(right);
         motorR2.setPower(right);
+    }
+
+    @Override
+    public void lineFollow(double leftSpeed, double rightSpeed) {
+        motorL1.setPower(leftSpeed);
+        motorL2.setPower(leftSpeed);
+        motorR1.setPower(rightSpeed);
+        motorR2.setPower(rightSpeed);
+
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){

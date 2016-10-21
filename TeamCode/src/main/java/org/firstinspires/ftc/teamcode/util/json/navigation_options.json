@@ -1,0 +1,34 @@
+{
+  "LineFollowAndIMU" : {
+    "LineFollow": {
+      "LightSensor": {
+        "name": "ods",
+        "type": "OpticalDistanceSensor"
+      },
+      "lineFollowVariables": {
+        "lowSpeed": 0.05,
+        "highSpeed": 0.15,
+        "timeOut": 2.5
+      }
+    },
+    "IMU": {
+      "name" : "navx",
+      "type" : "navx-micro",
+      "porttype": "i2c",
+      "portnum": 0
+    }
+  },
+  "LineFollowOnly" : {
+    "LineFollow": {
+      "LightSensor": {
+        "name": "ods",
+        "type": "OpticalDistanceSensor"
+      },
+      "lineFollowVariables": {
+        "lowSpeed": 0.05,
+        "highSpeed": 0.15,
+        "timeOut": 2.5
+      }
+    }
+  }
+}
