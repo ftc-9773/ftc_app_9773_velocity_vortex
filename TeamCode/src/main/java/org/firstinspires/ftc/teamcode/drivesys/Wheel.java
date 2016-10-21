@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.drivesys;
 
 public class Wheel {
-    public enum Type{MECANUM, OMNI, RUBBER_TREADED}
 
-    Type type;
+    String type;
     double diameter;
     double circumference;
 
-    public Wheel(Type type, double diameter)
+    public Wheel(String type, double diameter)
     {
         this.type = type;
         this.diameter = diameter;

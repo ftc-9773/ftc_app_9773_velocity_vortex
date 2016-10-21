@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.drivesys;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class FourMotorTankDrive {
+public class FourMotorTankDrive extends DriveSystem {
     DcMotor motorL1 = null;
     DcMotor motorL2 = null;
     DcMotor motorR1 = null;
@@ -27,6 +27,7 @@ public class FourMotorTankDrive {
         this.motorCPR = motorCPR;
     }
 
+    @Override
     public void drive(float speed, float direction){
         double left = (speed - direction) * frictionCoefficient;
         double right = (speed + direction) * frictionCoefficient;
@@ -35,6 +36,15 @@ public class FourMotorTankDrive {
         motorL2.setPower(left);
         motorR1.setPower(right);
         motorR2.setPower(right);
+    }
+
+    @Override
+    public void lineFollow(double leftSpeed, double rightSpeed) {
+        motorL1.setPower(leftSpeed);
+        motorL2.setPower(leftSpeed);
+        motorR1.setPower(rightSpeed);
+        motorR2.setPower(rightSpeed);
+
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){

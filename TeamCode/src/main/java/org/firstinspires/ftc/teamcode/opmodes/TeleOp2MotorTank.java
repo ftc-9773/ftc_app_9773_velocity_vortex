@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Robocracy 9773.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,7 +22,7 @@ public class TeleOp2MotorTank extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         motorL = hardwareMap.dcMotor.get("motorL");
         motorR = hardwareMap.dcMotor.get("motorR");
-        wheel = new Wheel(Wheel.Type.RUBBER_TREADED, 4.0);
+        wheel = new Wheel("rubber-treaded", 4.0);
         drivesys = new TwoMotorDrive(motorL, motorR, 1, 0, 1, wheel, 1120);
 
         waitForStart();

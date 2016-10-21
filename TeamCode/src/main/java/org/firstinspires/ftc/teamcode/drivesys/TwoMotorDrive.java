@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.drivesys;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class TwoMotorDrive {
+public class TwoMotorDrive extends DriveSystem{
     DcMotor motorL = null;
     DcMotor motorR = null;
     double frictionCoefficient;
@@ -22,12 +22,19 @@ public class TwoMotorDrive {
         this.motorCPR = motorCPR;
     }
 
+    @Override
     public void drive(float speed, float direction){
         double left = (speed - direction) * frictionCoefficient;
         double right = (speed + direction) * frictionCoefficient;
 
         motorL.setPower(left);
         motorR.setPower(right);
+    }
+
+    @Override
+    public void lineFollow(double leftSpeed, double rightSpeed) {
+        motorL.setPower(leftSpeed);
+        motorR.setPower(rightSpeed);
     }
 
     public void driveToDistance(float speed, float direction, double distance){

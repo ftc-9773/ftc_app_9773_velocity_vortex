@@ -1,0 +1,39 @@
+{
+  "Neverest20" : {
+    "maxSpeed units": "rpm",
+    "maxSpeed": 275,
+    "CPR": 560,
+    "stallTorque units": "oz-in",
+    "stallTorque": 197,
+    "stallCurrent units": "amps",
+    "stallCurrent": 11.5
+  },
+  "Neverest40" : {
+    "maxSpeed units" : "rpm",
+    "maxSpeed": 129,
+    "CPR" : 1120,
+    "stallTorque units" : "oz-in",
+    "stallTorque" : 350,
+    "stallCurrent units" : "amps",
+    "stallCurrent" : 11.5
+  },
+  "Neverest60" : {
+    "maxSpeed units" : "rpm",
+    "maxSpeed": 105,
+    "CPR" : 1680,
+    "stallTorque units" : "oz-in",
+    "stallTorque" : 593,
+    "stallCurrent units" : "amps",
+    "stallCurrent" : 11.5
+  },
+  "Tetrixmax" : {
+    "maxSpeed units" : "rpm",
+    "maxSpeed": 137,
+    "__comment" : "All the values below need to be updated",
+    "CPR" : 1120,
+    "stallTorque units" : "oz-in",
+    "stallTorque" : 350,
+    "stallCurrent units" : "amps",
+    "stallCurrent" : 11.5
+  }
+}

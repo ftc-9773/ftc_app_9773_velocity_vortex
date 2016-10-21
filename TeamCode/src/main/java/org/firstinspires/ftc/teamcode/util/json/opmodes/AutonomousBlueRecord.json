@@ -1,0 +1,6 @@
+{
+  "recordFileName" : "startToBeacon1.csv",
+  "robot" : "programmersTestRobot",
+  "__comment1" : "clock-cycle is in milli seconds",
+  "clock-cycle" : 5
+}
