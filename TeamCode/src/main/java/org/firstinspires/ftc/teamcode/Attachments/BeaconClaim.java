@@ -14,9 +14,9 @@ import org.json.JSONObject;
 public class BeaconClaim implements Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
-    Servo buttonServo;
-    Servo colorServo;
-    ColorSensor colorSensor1;
+    Servo buttonServo=null;
+    Servo colorServo=null;
+    ColorSensor colorSensor1=null;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;

@@ -11,8 +11,7 @@ import org.json.JSONException;
 public class AutonomousRedRecord extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir +
-                "AutonomousRedRecord.json");
+        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "AutonomousRedRecord.json");
         String robotName = null;
         try {
             robotName = opmodeCfg.jsonRoot.getString("robot");

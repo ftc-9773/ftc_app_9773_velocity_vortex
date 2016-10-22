@@ -14,8 +14,7 @@ public class AutonomousRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
-        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir +
-                this.getClass().getName() + ".json");
+        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "AutonomousRed.json");
         String autonomousOpt = null;
         String robotName = null;
         long startingDelay = 0;

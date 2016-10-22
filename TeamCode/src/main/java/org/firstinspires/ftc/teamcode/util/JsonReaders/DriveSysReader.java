@@ -39,11 +39,10 @@ public class DriveSysReader extends JsonReader {
     }
 
     public String getWheelType(){
-        JSONObject obj = null;
-        String wheelType = new String();
+        String wheelType = null;
         try {
             String key = JsonReader.getRealKeyIgnoreCase(driveSysObj, "WheelType");
-            wheelType = jsonRoot.getString(key);
+            wheelType = driveSysObj.getString(key);
         } catch (JSONException e){
             e.printStackTrace();
         }
