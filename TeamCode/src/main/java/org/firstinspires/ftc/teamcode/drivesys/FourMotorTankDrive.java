@@ -1,40 +1,36 @@
 package org.firstinspires.ftc.teamcode.drivesys;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 public class FourMotorTankDrive extends DriveSystem {
     DcMotor motorL1 = null;
     DcMotor motorL2 = null;
     DcMotor motorR1 = null;
     DcMotor motorR2 = null;
-    double frictionCoefficientR;
-    double frictionCoefficientL;
+    double frictionCoefficient;
     double maxSpeed;
     double minSpeed;
     Wheel wheel;
-    double[] wheelValues;
+    int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
 
-    public FourMotorTankDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2, double maxSpeed, double minSpeed, double frictionCoefficientR, double frictionCoefficientL, Wheel wheel){
+    public FourMotorTankDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
+                              double maxSpeed, double minSpeed, double frictionCoefficient,
+                              Wheel wheel, int motorCPR){
         this.motorL1 = motorL1;
         this.motorL2 = motorL2;
         this.motorR1 = motorR1;
         this.motorR2 = motorR2;
-        this.frictionCoefficientR = frictionCoefficientR;
-        this.frictionCoefficientL = frictionCoefficientL;
+        this.frictionCoefficient = frictionCoefficient;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
         this.wheel = wheel;
-        this.wheelValues = wheel.getValues();
+        this.motorCPR = motorCPR;
     }
 
     @Override
     public void drive(float speed, float direction){
-        double left = (-speed + direction) * frictionCoefficientL;
-        double right = (speed + direction) * frictionCoefficientR;
+        double left = (speed + direction) * frictionCoefficient;
+        double right = (direction - speed) * frictionCoefficient;
 
         motorL1.setPower(left);
         motorL2.setPower(left);

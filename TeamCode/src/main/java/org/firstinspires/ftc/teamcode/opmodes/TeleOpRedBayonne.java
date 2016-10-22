@@ -14,7 +14,7 @@ public class TeleOpRedBayonne extends LinearOpMode {
     public void runOpMode(){
         FTCRobot robot;
         JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir +
-                this.getClass().getName() + ".json");
+                "TeleOpRedBayonne.json");
         String robotName = null;
 
         try {

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.attachments;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -91,5 +92,19 @@ public class BeaconClaim implements Attachment {
         if (curOpMode.gamepad1.b) {
             colorServo.setPosition(1.0);
         }
+    }
+
+    public void claimABeacon(){
+        buttonServo.setPosition(0.0);
+    }
+    public void resetButtonServo(){
+        buttonServo.setPosition(1.0);
+    }
+    public void verifyBeaconColor(){
+//       if (robot.autonomousActions.allianceColor.equals("red")) {
+//           colorSensor1.red();
+//       }
+        DbgLog.msg("red value = %d, blue value = %d",colorSensor1.red(),colorSensor1.blue());
+        DbgLog.msg("hue value = %d, alpha value = %d", colorSensor1.argb(), colorSensor1.alpha());
     }
 }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.attachments;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -14,6 +15,8 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
+    Servo liftServo;
+
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
@@ -44,5 +47,11 @@ public class CapBallLift implements  Attachment {
 
         power = curOpMode.gamepad2.right_stick_y;
         liftMotor.setPower(power);
+        if (curOpMode.gamepad2.x){
+            liftServo.setPosition(0.0);
+        }
+        else if (curOpMode.gamepad2.b){
+            liftServo.setPosition(1.0);
+        }
     }
 }

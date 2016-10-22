@@ -44,6 +44,16 @@
         "fixedPositions" : false,
         "minButton" : "gamepad2.right_stick_y",
         "maxButton" : "gamepad2.right_stick_y"
+      },
+      "liftServo":{
+        "motorType" : "servo",
+        "motor" : "Tetrix-HS755-HB",
+        "scaleRangeMin" : 0.0,
+        "scaleRangeMax" : 0.55,
+        "needReverse" : false,
+        "fixedPositions" : true,
+        "minButton" : "gamepad2.x",
+        "maxButton" : "gamepad2.b"
       }
     }
   },

@@ -24,6 +24,9 @@ public class FTCRobot {
     public DriveSystem driveSystem=null;
     public Navitgation navitgation=null;
     public Attachment[] attachmentsArr;
+    public AutonomousActions autonomousActions;
+    public BeaconClaim beaconClaimObj;
+    public CapBallLift capBallLiftObj;
 
     public FTCRobot(LinearOpMode curOpMode, String robotName) {
         this.curOpMode = curOpMode;
@@ -63,9 +66,11 @@ public class FTCRobot {
         for (int i=0; i<attachments.length; i++) {
             if (attachments[i].equals("BeaconClaim")) {
                 attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
+                beaconClaimObj = (BeaconClaim) attachmentsArr[i];
             }
             else if (attachments[i].equals("CapBallLift")) {
                 attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
+                capBallLiftObj = (CapBallLift) attachmentsArr[i];
             }
         }
         return;
@@ -93,7 +98,7 @@ public class FTCRobot {
     public void runAutonomous(String autonomousOpt, String allianceColor,
                                            long startingDelay, int startingPosition)
             throws InterruptedException {
-        AutonomousActions autoActions =
+        this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
 
         curOpMode.waitForStart();
@@ -102,7 +107,7 @@ public class FTCRobot {
             sleep(startingDelay);
         }
         while (curOpMode.opModeIsActive()){
-            autoActions.doActions();
+            autonomousActions.doActions();
         }
         curOpMode.stop();
         return;
