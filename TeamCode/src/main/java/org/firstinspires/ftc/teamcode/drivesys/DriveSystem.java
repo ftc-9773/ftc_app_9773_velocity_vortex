@@ -32,7 +32,7 @@ public class DriveSystem {
         DbgLog.msg("driveSysType=%s", driveSysReader.getDriveSysType());
         WheelSpecsReader wheelSpecs = new WheelSpecsReader(JsonReader.wheelSpecsFile,
                 driveSysReader.getWheelType());
-        if(driveSysType.equals("4Motor4WDSteering")) {
+        if(driveSysType.equals("4Motor4WDSteering")||driveSysType.equals("4Motor6WDSteering")) {
             int CPR = 0;
             double wheelDiameter = 0.0;
             double frictionCoeff = 1.0;

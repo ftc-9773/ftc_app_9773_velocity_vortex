@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.drivesys.FourMotorTankDrive;
 import org.firstinspires.ftc.teamcode.navigation.LineFollow;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class AutonomousActions {
     FTCRobot robot;
     LinearOpMode curOpMode;
-    String allianceColor;
+    public String allianceColor;
     AutonomousOptionsReader autoCfg;
     String replayFilesDir;
     DriveSystem driveSystem;
@@ -78,6 +79,12 @@ public class AutonomousActions {
         else if (methodName.equalsIgnoreCase("FollowLine")) {
             // ToDo: while the touch sensor is not pressed, keep invoking the line follow
             robot.navitgation.lf.followLine();
+        }
+        else if(methodName.equalsIgnoreCase("claimAbeacon")){
+            robot.beaconClaimObj.claimABeacon();
+        }
+        else if(methodName.equalsIgnoreCase("verifyBeaconColor")){
+            robot.beaconClaimObj.verifyBeaconColor();
         }
     }
 

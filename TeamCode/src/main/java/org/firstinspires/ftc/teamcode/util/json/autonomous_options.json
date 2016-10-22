@@ -33,5 +33,16 @@
   ],
   "skipBothBeacons" : [
     {"type" : "Replay", "value" : "StartToCapBall.csv"}
+  ],
+  "claimBeaconOnly" : [
+    {"type" : "Programmed", "value" : "lineFollow"},
+    {"type" : "Programmed", "value" : "claimAbeacon"},
+    {"type" : "Replay", "value" : "MoveBack6Inches.csv"},
+    {"type" : "Programmed", "value" : "resetButtonServo"},
+    {"type" : "Programmed", "value" : "lineFollow"},
+    {"type" : "Programmed", "value" : "verifyBeaconColor"}
+  ],
+  "verifyBeaconColorOnly" : [
+    {"type" : "Programmed", "value" : "verifyBeaconColor"}
   ]
 }

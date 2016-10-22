@@ -29,8 +29,8 @@ public class FourMotorTankDrive extends DriveSystem {
 
     @Override
     public void drive(float speed, float direction){
-        double left = (speed - direction) * frictionCoefficient;
-        double right = (speed + direction) * frictionCoefficient;
+        double left = (speed + direction) * frictionCoefficient;
+        double right = (direction - speed) * frictionCoefficient;
 
         motorL1.setPower(left);
         motorL2.setPower(left);
