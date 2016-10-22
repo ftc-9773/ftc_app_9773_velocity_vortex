@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 //Luke edited Pranav's sample TeleOp on 9/23/2016
 
-@TeleOp(name = "TestLineFollow", group = "TeleOp")
+@TeleOp(name = "TestLineFollowOp", group = "TeleOp")
 
 public class TestLineFollowOp extends LinearOpMode {
 
