@@ -9,13 +9,13 @@ import org.json.JSONObject;
 
 
 
-public class Navitgation {
+public class Navigation {
     FTCRobot robot;
     LinearOpMode curOpMode;
     JSONObject navOptObj;
     public LineFollow lf;
 
-    public Navitgation(FTCRobot robot, LinearOpMode curOpMode, String navOptionStr) {
+    public Navigation(FTCRobot robot, LinearOpMode curOpMode, String navOptionStr) {
         this.robot = robot;
         this.curOpMode = curOpMode;
 

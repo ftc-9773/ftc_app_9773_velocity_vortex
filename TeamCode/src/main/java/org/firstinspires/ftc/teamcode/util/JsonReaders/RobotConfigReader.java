@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.util.JsonReaders;
 
+import com.google.gson.JsonObject;
 import com.qualcomm.ftccommon.DbgLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by pranavb on 10/15/16.
@@ -53,16 +56,13 @@ public class RobotConfigReader extends JsonReader {
         int len = 0;
         String[] attachmentsArr = null;
         try {
-            if (robotObj.has("attachments")) {
-                JSONArray attachs = robotObj.getJSONArray("attachments");
-                len = attachs.length();
-                attachmentsArr = new String[len];
-                for (int i = 0; i < len; i++) {
-                    attachmentsArr[i] = attachs.getString(i);
-                }
-            }
-            else {
-                attachmentsArr = new String[len];
+            DbgLog.msg("Here!");
+            JSONArray attachs = robotObj.getJSONArray("attachments");
+            len = attachs.length();
+            DbgLog.msg("Length of attachs array = %d", attachs.length());
+            attachmentsArr = new String[len];
+            for (int i = 0; i < len; i++) {
+                attachmentsArr[i] = attachs.getString(i);
             }
         } catch (JSONException e) {
             e.printStackTrace();
