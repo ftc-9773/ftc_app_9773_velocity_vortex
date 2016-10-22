@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
 import org.json.JSONException;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(name = "TeleOpRedBayonne", group = "TeleOp")
 public class TeleOpRedBayonne extends LinearOpMode {
     @Override
     public void runOpMode(){

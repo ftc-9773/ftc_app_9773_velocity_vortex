@@ -13,7 +13,7 @@ public class AutonomousBlueRecord extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir +
-                this.getClass().getName() + ".json");
+                "AutonomousBlueRecord.json");
         String robotName = null;
         try {
             robotName = opmodeCfg.jsonRoot.getString("robot");

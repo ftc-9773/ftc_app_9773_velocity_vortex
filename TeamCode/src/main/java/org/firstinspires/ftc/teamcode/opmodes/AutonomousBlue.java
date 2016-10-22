@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.navigation.LineFollow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@Autonomous(name = "Replay", group = "Autonomous")
+@Autonomous(name = "AutonomousBlue", group = "Autonomous")
 public class AutonomousBlue extends LinearOpMode {
 
     FTCRobot robot;
