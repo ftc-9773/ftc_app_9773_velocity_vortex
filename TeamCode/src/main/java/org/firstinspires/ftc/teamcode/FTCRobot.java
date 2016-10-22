@@ -21,28 +21,39 @@ import static java.lang.Thread.sleep;
 
 public class FTCRobot {
     public LinearOpMode curOpMode;
-    public DriveSystem driveSystem;
-    public Navitgation navitgation;
+    public DriveSystem driveSystem=null;
+    public Navitgation navitgation=null;
     public Attachment[] attachmentsArr;
 
     public FTCRobot(LinearOpMode curOpMode, String robotName) {
         this.curOpMode = curOpMode;
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
+        String driveSysName = null;
 
         // Instantiate the Drive System
         try {
-            driveSystem = DriveSystem.createDriveSystem(curOpMode, this,
-                    robotConfig.getDriveSysType());
+            driveSysName = robotConfig.getDriveSysName();
+            if (driveSysName != null) {
+                DbgLog.msg("driveSysName = %s", driveSysName);
+                driveSystem = DriveSystem.createDriveSystem(curOpMode, this, driveSysName);
+            }
         }catch (Exception e){
             e.printStackTrace();
+        }
+        if (driveSystem == null) {
+            DbgLog.error("Drivesystem not properly initialized");
         }
 
         // Create the objects for attachments
         createAttachments(robotConfig.getAttachments());
 
         // Initialize navigation subsystem
-        navitgation = new Navitgation(this, curOpMode, JsonReader.navigationFile);
+        if (robotConfig.getNavigationOption() != null) {
+            navitgation = new Navitgation(this, curOpMode, robotConfig.getNavigationOption());
+        } else{
+            navitgation = null;
+        }
     }
 
     public void createAttachments (String[] attachments) {
@@ -86,6 +97,7 @@ public class FTCRobot {
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
 
         curOpMode.waitForStart();
+        DbgLog.msg("Starting delay = %d seconds", startingDelay);
         if (startingDelay > 0) {
             sleep(startingDelay);
         }
@@ -110,13 +122,14 @@ public class FTCRobot {
             String key = JsonReader.getRealKeyIgnoreCase(opmodeCfg.jsonRoot, "recordFileName");
             recordFileName = opmodeCfg.jsonRoot.getString(key);
             clockCycle = opmodeCfg.jsonRoot.getLong("clock-cycle");
+            clockCycle = clockCycle * 1000000; // convert milli seconds into nano seconds
         }
         catch (JSONException exc) {
             exc.printStackTrace();
         }
         recordFilePath = new String(recordFilesDir + recordFileName);
 
-        DbgLog.msg("clock Cycle = %ll nanoseconds", clockCycle);
+        DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
         DbgLog.msg("record filepath = %s", recordFilePath);
 
         fileRW = new FileRW(recordFilePath, true);
@@ -126,7 +139,7 @@ public class FTCRobot {
 
         curOpMode.waitForStart();
         long startingTime = System.nanoTime();
-        long elapsedTime = 0;
+        long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
         while (curOpMode.opModeIsActive()) {
             double speed = curOpMode.gamepad1.left_stick_x * 0.5;
@@ -137,15 +150,17 @@ public class FTCRobot {
             fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
                     Double.toString(direction));
 
-            DbgLog.msg(String.format("Speed: %f", speed, " , Direction: %f", direction));
+            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
 
             if(curOpMode.gamepad1.a){
                 break;
             }
 
-            sleepTime = clockCycle - (System.nanoTime() - startingTime - elapsedTime);
-            if (sleepTime < 0) { sleepTime = 0; }
-            TimeUnit.NANOSECONDS.sleep(sleepTime);
+            sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
+            if (sleepTime > 0) {
+                TimeUnit.NANOSECONDS.sleep(sleepTime);
+            }
+            prev_elapsedTime = elapsedTime;
             // sleep(5);
         }
         DbgLog.msg("Is close executing?");

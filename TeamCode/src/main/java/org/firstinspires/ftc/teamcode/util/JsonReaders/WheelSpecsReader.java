@@ -25,7 +25,7 @@ public class WheelSpecsReader extends JsonReader {
         double diameter = 0.0;
 
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(jsonRoot, "diameter");
+            String key = JsonReader.getRealKeyIgnoreCase(wheelSpecObj, "diameter");
             diameter = wheelSpecObj.getDouble(key);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class WheelSpecsReader extends JsonReader {
         double frictionCoeff = 1.0;
 
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(jsonRoot, "friction_coeff");
+            String key = JsonReader.getRealKeyIgnoreCase(wheelSpecObj, "friction_coeff");
             frictionCoeff = wheelSpecObj.getDouble(key);
         } catch (JSONException e) {
             e.printStackTrace();

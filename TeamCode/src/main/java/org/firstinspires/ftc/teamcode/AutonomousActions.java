@@ -46,6 +46,7 @@ public class AutonomousActions {
         long sleepTime = 0;
         while ((line = fileRW.getNextLine()) != null) {
             String[] lineElements = line.split(",");
+//            DbgLog.msg("lineElements length = %d", lineElements.length);
             if(lineElements.length < 3){
                 continue;
             }
@@ -67,7 +68,12 @@ public class AutonomousActions {
     public void invokeMethod(String methodName) {
         // ToDo: invoke the findWhiteLine method
         if (methodName.equals("searchForWhiteLine")) {
-            robot.navitgation.lf.searchForWhiteLine();
+            try {
+                robot.navitgation.lf.searchForWhiteLine();
+            } catch (NullPointerException exc) {
+                exc.printStackTrace();
+                DbgLog.error("Navigation or Line follow object is null");
+            }
         }
         else if (methodName.equalsIgnoreCase("FollowLine")) {
             robot.navitgation.lf.followLine();
@@ -80,18 +86,22 @@ public class AutonomousActions {
 
         String replayFile;
         String methodName;
+        DbgLog.msg("Number of autonomous actions = %d", len);
         for (int i =0; i<len; i++) {
+            DbgLog.msg("i=%d", i);
             try {
                 actionObj = autoCfg.getAction(i);
                 String key = JsonReader.getRealKeyIgnoreCase(actionObj, "type");
-                if (actionObj.getString(key) == "ReplayFile") {
+                if (actionObj.getString(key).equalsIgnoreCase("Replay")) {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     replayFile = this.replayFilesDir + actionObj.getString(key);
+                    DbgLog.msg("Replaying the file %s", replayFile);
                     replayFileAction(replayFile);
                 }
-                else if (actionObj.getString(key) == "Programmed") {
+                else if (actionObj.getString(key).equalsIgnoreCase("Programmed")) {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     methodName = actionObj.getString(key);
+                    DbgLog.msg("Invoking the method %s", methodName);
                     invokeMethod(methodName);
                 }
             } catch (JSONException e) {
