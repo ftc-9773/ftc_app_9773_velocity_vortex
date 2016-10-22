@@ -3,10 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
-import org.firstinspires.ftc.teamcode.drivesys.FourMotorTankDrive;
-import org.firstinspires.ftc.teamcode.navigation.LineFollow;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.AutonomousOptionsReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -70,7 +67,7 @@ public class AutonomousActions {
         // ToDo: invoke the findWhiteLine method
         if (methodName.equals("searchForWhiteLine")) {
             try {
-                robot.navitgation.lf.searchForWhiteLine();
+                robot.navigation.lf.searchForWhiteLine();
             } catch (NullPointerException exc) {
                 exc.printStackTrace();
                 DbgLog.error("Navigation or Line follow object is null");
@@ -78,7 +75,7 @@ public class AutonomousActions {
         }
         else if (methodName.equalsIgnoreCase("FollowLine")) {
             // ToDo: while the touch sensor is not pressed, keep invoking the line follow
-            robot.navitgation.lf.followLine();
+            robot.navigation.lf.followLine();
         }
         else if(methodName.equalsIgnoreCase("claimAbeacon")){
             robot.beaconClaimObj.claimABeacon();

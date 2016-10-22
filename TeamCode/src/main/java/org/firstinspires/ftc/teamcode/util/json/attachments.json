@@ -12,16 +12,6 @@
         "fixedPositions" : true,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
-      },
-      "colorDetectServo" : {
-        "motorType" : "servo",
-        "motor" : "Tetrix-HS755-HB",
-        "scaleRangeMin" : 0.0,
-        "scaleRangeMax" : 0.55,
-        "needReverse" : false,
-        "fixedPositions" : true,
-        "minButton" : "gamepad1.x",
-        "maxButton" : "gamepad1.b"
       }
     },
     "sensors" : {

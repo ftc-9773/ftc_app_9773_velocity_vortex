@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
-import org.firstinspires.ftc.teamcode.navigation.Navitgation;
+import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
@@ -22,7 +22,7 @@ import static java.lang.Thread.sleep;
 public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;
-    public Navitgation navitgation=null;
+    public Navigation navigation =null;
     public Attachment[] attachmentsArr;
     public AutonomousActions autonomousActions;
     public BeaconClaim beaconClaimObj;
@@ -53,9 +53,9 @@ public class FTCRobot {
 
         // Initialize navigation subsystem
         if (robotConfig.getNavigationOption() != null) {
-            navitgation = new Navitgation(this, curOpMode, robotConfig.getNavigationOption());
+            navigation = new Navigation(this, curOpMode, robotConfig.getNavigationOption());
         } else{
-            navitgation = null;
+            navigation = null;
         }
     }
 
@@ -67,10 +67,12 @@ public class FTCRobot {
             if (attachments[i].equals("BeaconClaim")) {
                 attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
                 beaconClaimObj = (BeaconClaim) attachmentsArr[i];
+                DbgLog.msg("beaconClaimObj created");
             }
             else if (attachments[i].equals("CapBallLift")) {
                 attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
                 capBallLiftObj = (CapBallLift) attachmentsArr[i];
+                DbgLog.msg("capBallLiftObj created");
             }
         }
         return;
