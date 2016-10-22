@@ -76,6 +76,7 @@ public class AutonomousActions {
             }
         }
         else if (methodName.equalsIgnoreCase("FollowLine")) {
+            // ToDo: while the touch sensor is not pressed, keep invoking the line follow
             robot.navitgation.lf.followLine();
         }
     }

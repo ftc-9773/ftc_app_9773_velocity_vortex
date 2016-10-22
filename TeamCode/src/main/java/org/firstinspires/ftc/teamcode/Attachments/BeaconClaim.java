@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -17,12 +18,13 @@ public class BeaconClaim implements Attachment {
     Servo buttonServo=null;
     Servo colorServo=null;
     ColorSensor colorSensor1=null;
+    TouchSensor touchSensor1=null;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject beaconJsonObj=null;
         JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
-        JSONObject sensorsObj = null,coloSensor1Obj=null;
+        JSONObject sensorsObj = null,coloSensor1Obj=null, touchSensor1Obj=null;
 
         try {
             key = JsonReader.getRealKeyIgnoreCase(rootObj, "BeaconClaim");
@@ -42,6 +44,8 @@ public class BeaconClaim implements Attachment {
             colorServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
             coloSensor1Obj = sensorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "touchSensor1");
+            touchSensor1Obj = sensorsObj.getJSONObject(key);
         } catch (JSONException e) {
             e.printStackTrace();
         }

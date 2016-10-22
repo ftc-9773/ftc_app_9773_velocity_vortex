@@ -29,6 +29,9 @@
         "sensorType" : "ColorSensor",
         "porttype" : "i2c",
         "portnum" : 5
+      },
+      "touchSensor1" : {
+        "sensorType": "TouchSensor"
       }
     }
   },
