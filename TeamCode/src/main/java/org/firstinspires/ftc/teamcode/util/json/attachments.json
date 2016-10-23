@@ -38,12 +38,25 @@
       "liftServo":{
         "motorType" : "servo",
         "motor" : "Tetrix-HS755-HB",
-        "scaleRangeMin" : 0.0,
-        "scaleRangeMax" : 0.55,
+        "__scaleRange" : "upright:120, expand: 230",
+        "scaleRangeMin" : 0.47,
+        "scaleRangeMax" : 0.902,
         "needReverse" : false,
         "fixedPositions" : true,
-        "minButton" : "gamepad2.x",
-        "maxButton" : "gamepad2.b"
+        "minButton" : "gamepad2.y",
+        "maxButton" : "gamepad2.a"
+      }
+    }
+  },
+  "Harvester" : {
+    "motors" : {
+      "harvesterMotor" : {
+        "motorType" : "dc",
+        "motor" : "Neverest40",
+        "needReverse" : false,
+        "fixedPositions" : false,
+        "minButton" : "gamepad2.left_stick_y",
+        "maxButton" : "gamepad2.left_stick_y"
       }
     }
   },
