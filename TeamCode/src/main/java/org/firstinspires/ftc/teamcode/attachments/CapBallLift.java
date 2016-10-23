@@ -21,7 +21,7 @@ public class CapBallLift implements  Attachment {
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject liftObj = null;
-        JSONObject motorsObj = null, liftMotorObj = null;
+        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -36,6 +36,12 @@ public class CapBallLift implements  Attachment {
             if (liftMotorObj.getBoolean("needReverse")) {
                 liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
+            liftServoObj = motorsObj.getJSONObject(key);
+            liftServo = curOpMode.hardwareMap.servo.get("liftServo");
+            liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
+                    liftServoObj.getDouble("scaleRangeMax"));
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
