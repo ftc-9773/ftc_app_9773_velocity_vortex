@@ -53,10 +53,10 @@ public class CapBallLift implements  Attachment {
 
         power = curOpMode.gamepad2.right_stick_y;
         liftMotor.setPower(power);
-        if (curOpMode.gamepad2.x){
+        if (curOpMode.gamepad2.y){
             liftServo.setPosition(0.0);
         }
-        else if (curOpMode.gamepad2.b){
+        else if (curOpMode.gamepad2.a){
             liftServo.setPosition(1.0);
         }
     }

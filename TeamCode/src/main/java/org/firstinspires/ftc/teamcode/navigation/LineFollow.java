@@ -22,11 +22,18 @@ public class LineFollow{
     double prevLight;
     double mid;
     DriveSystem driveSystem;
+    long stopTimeStamp=0;
+    long timoutNanoSec=0;
 
     public LineFollow(FTCRobot robot, String lightSensorName, double lowSpeed,
-                      double highSpeed) {
+                      double highSpeed, double lineFollowTimeOut) {
         this.driveSystem = robot.driveSystem;
         this.lightSensor = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(lightSensorName);
+        this.lowSpeed = lowSpeed;
+        this.highSpeed = highSpeed;
+        this.timoutNanoSec = (long) (lineFollowTimeOut * 1000000000L);
+        DbgLog.msg("sensorName=%s, lowSpeed=%f, highSpeed=%f, timeoutNanoSec=%d",
+                lightSensorName, lowSpeed, highSpeed, this.timoutNanoSec);
         white = -1;
         black = -1;
         prevLight = -1;
@@ -38,10 +45,18 @@ public class LineFollow{
         return;
     }
 
+    public void setStartTimeStamp() {
+        this.stopTimeStamp = System.nanoTime() + this.timoutNanoSec;
+    }
+
+    public boolean timeoutReached() {
+        return (System.nanoTime() >= this.stopTimeStamp);
+    }
+
     public void followLine() {
         light = lightSensor.getLightDetected();
         if (white == -1) {
-            driveSystem.lineFollow(highSpeed, lowSpeed);
+            driveSystem.lineFollow(lowSpeed, highSpeed);
             if (light > prevLight)
                 prevLight = light;
             else {
@@ -59,14 +74,13 @@ public class LineFollow{
             if (light > mid) {
                 driveSystem.lineFollow(highSpeed, lowSpeed);
             } else if (light < mid) {
-                driveSystem.lineFollow(highSpeed, lowSpeed);
+                driveSystem.lineFollow(lowSpeed, highSpeed);
             } else {
                 driveSystem.lineFollow(highSpeed, highSpeed);
             }
         }
 
-        DbgLog.msg(String.format("Light Detected= %f", light));
-        DbgLog.msg(String.format("Threshold: %f", mid));
+        DbgLog.msg(String.format("Light Detected= %f, mid=%f", light, mid));
         //DbgLog.msg(String.format("MotorL power: %f", motor1.getPower()));
         //DbgLog.msg(String.format("MotorR power: %f", motor2.getPower()));
     }

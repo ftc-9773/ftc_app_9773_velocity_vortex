@@ -37,6 +37,12 @@ public class TwoMotorDrive extends DriveSystem{
         motorR.setPower(rightSpeed);
     }
 
+    @Override
+    public void stop() {
+        motorL.setPower(0.0);
+        motorR.setPower(0.0);
+    }
+
     public void driveToDistance(float speed, float direction, double distance){
         double startingPositionL = motorL.getCurrentPosition();
         double startingPositionR = motorR.getCurrentPosition();

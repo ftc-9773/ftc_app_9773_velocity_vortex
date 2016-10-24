@@ -24,6 +24,7 @@ public class Navigation {
         this.navOptObj = navOption.jsonRoot;
 
         this.lf = new LineFollow(robot, navOption.getLightSensorName(),
-                navOption.getLineFollowLowSpeed(), navOption.getLineFollowHighSpeed());
+                navOption.getLineFollowLowSpeed(), navOption.getLineFollowHighSpeed(),
+                navOption.getLineFollowTimeOut());
     }
 }

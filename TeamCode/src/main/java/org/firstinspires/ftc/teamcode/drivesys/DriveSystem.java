@@ -68,4 +68,5 @@ public class DriveSystem {
 
     public void drive(float speed, float direction) {return;}
     public void lineFollow(double leftSpeed, double rightSpeed) {return;}
+    public void stop() {return;}
 }
