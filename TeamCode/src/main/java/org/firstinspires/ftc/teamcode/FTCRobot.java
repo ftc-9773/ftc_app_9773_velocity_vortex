@@ -117,6 +117,7 @@ public class FTCRobot {
         }
         while (curOpMode.opModeIsActive()){
             autonomousActions.doActions();
+            break;
         }
         curOpMode.stop();
         return;
@@ -156,8 +157,8 @@ public class FTCRobot {
         long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
         while (curOpMode.opModeIsActive()) {
-            double speed = curOpMode.gamepad1.left_stick_x * 0.5;
-            double direction = curOpMode.gamepad1.right_stick_y * 0.5;
+            double speed = curOpMode.gamepad1.left_stick_y * 0.5;
+            double direction = curOpMode.gamepad1.right_stick_x;
 
             elapsedTime = System.nanoTime() - startingTime;
             driveSystem.drive((float) speed, (float) direction);

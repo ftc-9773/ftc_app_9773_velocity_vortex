@@ -87,6 +87,21 @@ public class NavigationOptionsReader extends JsonReader {
         return (highSpeed);
     }
 
+    public double getLineFollowTimeOut() {
+        double timeoutSec = 0.0;
+        JSONObject lfVarObj;
+
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
+            lfVarObj = lfObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, "timeOut");
+            timeoutSec = lfVarObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (timeoutSec);
+    }
+
     public String getIMUname() {
         String imuName = null;
         try {

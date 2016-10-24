@@ -73,9 +73,19 @@ public class AutonomousActions {
                 DbgLog.error("Navigation or Line follow object is null");
             }
         }
-        else if (methodName.equalsIgnoreCase("FollowLine")) {
+        else if (methodName.equalsIgnoreCase("lineFollow")) {
+            boolean stopLineFollow = false;
+            long elapsedTime = 0;
+            robot.navigation.lf.setStartTimeStamp();
             // ToDo: while the touch sensor is not pressed, keep invoking the line follow
-            robot.navigation.lf.followLine();
+            while (!stopLineFollow) {
+                robot.navigation.lf.followLine();
+
+                stopLineFollow = robot.beaconClaimObj.touchSensorPressed() ||
+                        robot.navigation.lf.timeoutReached();
+            }
+            DbgLog.msg("Done with lineFollow");
+            robot.driveSystem.stop();
         }
         else if(methodName.equalsIgnoreCase("claimAbeacon")){
             robot.beaconClaimObj.claimABeacon();
@@ -91,7 +101,7 @@ public class AutonomousActions {
 
         String replayFile;
         String methodName;
-        DbgLog.msg("Number of autonomous actions = %d", len);
+//        DbgLog.msg("Number of autonomous actions = %d", len);
         for (int i =0; i<len; i++) {
             DbgLog.msg("i=%d", i);
             try {
@@ -106,7 +116,7 @@ public class AutonomousActions {
                 else if (actionObj.getString(key).equalsIgnoreCase("Programmed")) {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     methodName = actionObj.getString(key);
-                    DbgLog.msg("Invoking the method %s", methodName);
+                    curOpMode.telemetry.addData("Invoking method: %s", methodName);
                     invokeMethod(methodName);
                 }
             } catch (JSONException e) {
