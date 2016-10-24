@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.attachments;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -34,6 +35,7 @@ public class CapBallLift implements  Attachment {
             liftMotorObj = motorsObj.getJSONObject(key);
             liftMotor = curOpMode.hardwareMap.dcMotor.get("liftMotor");
             if (liftMotorObj.getBoolean("needReverse")) {
+                DbgLog.msg("Reversing the lift servo");
                 liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
