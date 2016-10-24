@@ -64,6 +64,7 @@ public class BeaconClaim implements Attachment {
             buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
                     buttonServoObj.getDouble("scaleRangeMax"));
             if (buttonServoObj.getBoolean("needReverse")) {
+                DbgLog.msg("Reversing the button servo");
                 buttonServo.setDirection(Servo.Direction.REVERSE);
             }
 
