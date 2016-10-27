@@ -4,14 +4,20 @@ import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
+
+import java.security.Timestamp;
 
 /**
  * Created by michaelzhou on 10/26/16.
  */
 
+@TeleOp(name = "AngleNavxTest", group = "TeleOp")
 public class AngleNavxTester extends LinearOpMode{
     DcMotor fMotorL;
     DcMotor fMotorR;
@@ -62,7 +68,7 @@ public class AngleNavxTester extends LinearOpMode{
         yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
-       // yawPIDController.setTolerance(TimestampedPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
         yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
         yawPIDController.enable(true);
 
@@ -79,10 +85,10 @@ public class AngleNavxTester extends LinearOpMode{
         while ( runtime.time() < TOTAL_RUN_TIME_SECONDS ) {
             if ( yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS ) ) {
                 if ( yawPIDResult.isOnTarget() ) {
-                    fMotorL.setPower(fMotorL.getPower());
-                    fMotorR.setPower(fMotorR.getPower());
-                    rMotorL.setPower(rMotorL.getPower());
-                    rMotorR.setPower(rMotorR.getPower());
+                    fMotorL.setPower(0.5);
+                    fMotorR.setPower(0.5);
+                    rMotorL.setPower(0.5);
+                    rMotorR.setPower(0.5);
                 } else {
                     double output = yawPIDResult.getOutput();
                     if ( output < 0 ) {
@@ -106,4 +112,4 @@ public class AngleNavxTester extends LinearOpMode{
         }
     }
 }
-}
+
