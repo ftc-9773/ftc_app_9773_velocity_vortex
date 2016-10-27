@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
@@ -44,8 +45,10 @@ public class AngleNavxTester extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
         fMotorL = hardwareMap.dcMotor.get("fMotorL");
         fMotorR = hardwareMap.dcMotor.get("fMotorR");
+        fMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
         rMotorL = hardwareMap.dcMotor.get("rMotorL");
         rMotorR = hardwareMap.dcMotor.get("rMotorR");
+        rMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
 
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
