@@ -2,5 +2,5 @@
   "recordFileName" : "StartToBeacon1.csv",
   "robot" : "2016_10_23_Meet_Robot",
   "__comment1" : "clock-cycle is in milli seconds",
-  "clock-cycle" : 5
+  "clock-cycle" : 10
 }

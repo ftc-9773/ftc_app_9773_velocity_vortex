@@ -1,7 +1,6 @@
 {
   "testing" : [
-    {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "searchForWhiteLine"}
+    {"type" : "Replay", "value" : "StartToBeacon1.csv"}
   ],
   "all_missions" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},

@@ -157,8 +157,8 @@ public class FTCRobot {
         long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
         while (curOpMode.opModeIsActive()) {
-            double speed = curOpMode.gamepad1.left_stick_y * 0.5;
-            double direction = curOpMode.gamepad1.right_stick_x;
+            double speed = curOpMode.gamepad1.left_stick_y * 0.35;
+            double direction = curOpMode.gamepad1.right_stick_x * 0.35;
 
             elapsedTime = System.nanoTime() - startingTime;
             driveSystem.drive((float) speed, (float) direction);
@@ -166,6 +166,7 @@ public class FTCRobot {
                     Double.toString(direction));
 
             DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
+            DbgLog.msg("Test");
 
             if(curOpMode.gamepad1.a){
                 break;
@@ -176,7 +177,7 @@ public class FTCRobot {
                 TimeUnit.NANOSECONDS.sleep(sleepTime);
             }
             prev_elapsedTime = elapsedTime;
-            // sleep(5);
+            // sleep(5)
         }
         DbgLog.msg("Is close executing?");
         fileRW.close();

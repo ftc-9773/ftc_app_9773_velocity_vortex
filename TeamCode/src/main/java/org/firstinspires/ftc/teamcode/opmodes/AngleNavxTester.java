@@ -8,8 +8,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drivesys.FourMotorTankDrive;
+import org.firstinspires.ftc.teamcode.drivesys.Wheel;
 import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
 
 import java.security.Timestamp;
@@ -24,6 +27,8 @@ public class AngleNavxTester extends LinearOpMode{
     DcMotor fMotorR;
     DcMotor rMotorL;
     DcMotor rMotorR;
+    FourMotorTankDrive drivesys;
+    Wheel wheel;
 
     /* This is the port on the Core Device Interace Module        */
     /* in which the navX-Model Device is connected.  Modify this  */
@@ -35,9 +40,9 @@ public class AngleNavxTester extends LinearOpMode{
 
     private final double TARGET_ANGLE_DEGREES = 90.0;
     private final double TOLERANCE_DEGREES = 2.0;
-    private final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
-    private final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
-    private final double YAW_PID_P = 0.005;
+    private final double MIN_MOTOR_OUTPUT_VALUE = -0.3;
+    private final double MAX_MOTOR_OUTPUT_VALUE = 0.3;
+    private final double YAW_PID_P = 0.05;
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
 
@@ -45,35 +50,32 @@ public class AngleNavxTester extends LinearOpMode{
     public void runOpMode() throws InterruptedException {
         fMotorL = hardwareMap.dcMotor.get("fMotorL");
         fMotorR = hardwareMap.dcMotor.get("fMotorR");
-        fMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
         rMotorL = hardwareMap.dcMotor.get("rMotorL");
         rMotorR = hardwareMap.dcMotor.get("rMotorR");
-        rMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
+        wheel = new Wheel("rubber_treaded", 4);
+        drivesys = new FourMotorTankDrive(fMotorL,rMotorL,fMotorR,rMotorR,1,0,1,wheel,2240);
+
 
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData);
 
-        fMotorR.setDirection(DcMotor.Direction.REVERSE);
+//        fMotorR.setDirection(DcMotor.Direction.REVERSE);
 
         /* If possible, use encoders when driving, as it results in more */
         /* predicatable drive system response.                           */
-        fMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         /* Create a PID Controller which uses the Yaw Angle as input. */
-        yawPIDController = new navXPIDController( navx_device,
-                navXPIDController.navXTimestampedDataSource.YAW);
+        //yawPIDController = new navXPIDController( navx_device,
+                //navXPIDController.navXTimestampedDataSource.YAW);
 
         /* Configure the PID controller */
-        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
+        /*yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
         yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
-        yawPIDController.enable(true);
+        yawPIDController.enable(true);*/
 
         waitForStart();
 
@@ -83,36 +85,22 @@ public class AngleNavxTester extends LinearOpMode{
 
         final double TOTAL_RUN_TIME_SECONDS = 30.0;
         int DEVICE_TIMEOUT_MS = 500;
-        navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
+        //navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
+        navx_device.zeroYaw();
 
-        while ( runtime.time() < TOTAL_RUN_TIME_SECONDS ) {
-            if ( yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS ) ) {
-                if ( yawPIDResult.isOnTarget() ) {
-                    fMotorL.setPower(0.5);
-                    fMotorR.setPower(0.5);
-                    rMotorL.setPower(0.5);
-                    rMotorR.setPower(0.5);
-                } else {
-                    double output = yawPIDResult.getOutput();
-                    if ( output < 0 ) {
-                        /* Rotate Left */
-                        fMotorL.setPower(-output);
-                        fMotorR.setPower(output);
-                        rMotorL.setPower(-output);
-                        rMotorR.setPower(output);
-                    } else {
-                        /* Rotate Right */
-                        fMotorL.setPower(output);
-                        fMotorR.setPower(-output);
-                        rMotorL.setPower(output);
-                        rMotorR.setPower(-output);
-                    }
-                }
-            } else {
-			          /* A timeout occurred */
-                DbgLog.msg("navXRotateToAnglePIDOp", "Yaw PID waitForNewUpdate() TIMEOUT.");
-            }
+        DbgLog.msg("Reached here 1!!");
+
+
+        while (opModeIsActive() && (TARGET_ANGLE_DEGREES > Math.abs(navx_device.getYaw()))) {
+            DbgLog.msg("Reached here 2!!");
+            DbgLog.msg("yaw: %f", navx_device.getYaw());
+
+            drivesys.lineFollow(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+
+            idle();
         }
+        drivesys.stop();
+        stop();
     }
 }
 
