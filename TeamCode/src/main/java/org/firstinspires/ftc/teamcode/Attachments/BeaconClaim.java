@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.attachments;
 
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
@@ -21,16 +20,15 @@ public class BeaconClaim implements Attachment {
     Servo buttonServo=null;
     ColorSensor colorSensor1=null;
     TouchSensor touchSensor1=null;
-    I2cAddr i2cAddr=null;
+    ModernRoboticsI2cRangeSensor rangeSensor1 = null;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
         this.robot = robot;
-        this.i2cAddr = new I2cAddr(0x04);
         String key;
         JSONObject beaconJsonObj=null;
         JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
-        JSONObject sensorsObj = null,coloSensor1Obj=null, touchSensor1Obj=null;
+        JSONObject sensorsObj = null,coloSensor1Obj=null, touchSensor1Obj=null, rangeSensor1Obj=null;
 
         try {
             key = JsonReader.getRealKeyIgnoreCase(rootObj, "BeaconClaim");
@@ -50,6 +48,8 @@ public class BeaconClaim implements Attachment {
             coloSensor1Obj = sensorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "touchSensor1");
             touchSensor1Obj = sensorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "rangeSensor1");
+            rangeSensor1Obj = sensorsObj.getJSONObject(key);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -57,6 +57,8 @@ public class BeaconClaim implements Attachment {
         colorSensor1 = curOpMode.hardwareMap.colorSensor.get("colorSensor1");
         colorSensor1.enableLed(false);
         touchSensor1 = curOpMode.hardwareMap.touchSensor.get("touchSensor1");
+        rangeSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor1");
+
         //colorSensor1.setI2cAddress(i2cAddr);
 
         // Set the MIN and MAX positions for servos
@@ -139,6 +141,21 @@ public class BeaconClaim implements Attachment {
 
     public boolean touchSensorPressed() {
         return (touchSensor1.isPressed());
+    }
+
+    public boolean rangeSensorLessThanMinimum(double minimum){
+        double curDistance;
+        curDistance = rangeSensor1.getDistance(DistanceUnit.CM);
+        boolean isLessThanMinimum = false;
+
+        if(curDistance <= minimum){
+            isLessThanMinimum = true;
+        }
+        else {
+            isLessThanMinimum = false;
+        }
+
+        return isLessThanMinimum;
     }
 
     public boolean isBeaconRed() {
