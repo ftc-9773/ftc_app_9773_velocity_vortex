@@ -22,6 +22,11 @@
       },
       "touchSensor1" : {
         "sensorType": "TouchSensor"
+      },
+      "rangeSensor1" : {
+        "sensorType" : "ModernRoboticsI2cRangeSensor",
+        "porttype" : "i2c",
+        "portnum" : 4
       }
     }
   },

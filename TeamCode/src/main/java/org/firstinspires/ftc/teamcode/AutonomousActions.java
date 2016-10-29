@@ -81,7 +81,7 @@ public class AutonomousActions {
             while (!stopLineFollow) {
                 robot.navigation.lf.followLine();
 
-                stopLineFollow = robot.beaconClaimObj.touchSensorPressed() ||
+                stopLineFollow = robot.beaconClaimObj.rangeSensorLessThanMinimum(5) ||
                         robot.navigation.lf.timeoutReached();
             }
             DbgLog.msg("Done with lineFollow");
