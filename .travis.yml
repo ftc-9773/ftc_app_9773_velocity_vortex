@@ -1,0 +1,18 @@
+language: android
+sudo: required
+jdk:
+    - oraclejdk8
+android:
+  components:
+    - platform-tools
+    - tools
+    - tools
+    - build-tools-23.0.3
+    - android-23
+    - extra-android-m2repository
+    - addon-google_apis-google-19
+
+    # Specify at least one system image,
+    # if you need to run emulator(s) during your tests
+    # - sys-img-armeabi-v7a-android-22
+    # - sys-img-x86-android-17
