@@ -1,0 +1,7 @@
+{
+  "startingDelay" : 0,
+  "__Comment" : "startingPosition can be 1 or 2",
+  "startingPosition" : 1,
+  "autonomousOption" : "skipBeacon2",
+  "robot" : "2016_10_23_Meet_Robot"
+}

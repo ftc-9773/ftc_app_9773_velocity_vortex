@@ -48,7 +48,7 @@ public class TestInfiniteLoopLinear extends LinearOpMode {
         waitForStart();
 
         // Do nothing, forever
-        for (int count = 0; ; count++) {
+        /*for (int count = 0; ; count++) {
             try {
                 telemetry.addData("count", count);
                 updateTelemetry(telemetry);
@@ -56,6 +56,6 @@ public class TestInfiniteLoopLinear extends LinearOpMode {
             } catch (InterruptedException e) {
                 // ignore: we're trying to do an infinite loop!
             }
-        }
+        }*/
     }
 }

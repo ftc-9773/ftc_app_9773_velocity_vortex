@@ -1,0 +1,23 @@
+{
+  "autonomous" :
+  {
+    "__comment" : "all distances are in inches and all times are in seconds",
+    "startingDelay" : 10,
+    "startingPosition" : 24,
+    "recordreplayFilesDir" : "/sdcard/FIRST/autonomous",
+    "autonomousActions" : [
+      {"action1" : {"type" : "Replay", "replayfile" : "StartToBeacon1.csv"}},
+      {"action2" : {"type" : "Programmed", "method" : "searchForWhiteLine"}},
+      {"action3" : {"type" : "Programmed", "method" : "lineFollow",
+                    "terminatingConditions" : [{"distanceTravelled" : 24}, {"beaconFound" : true}]}},
+      {"action4" : {"type" : "Programmed", "method" : "claimAbeacon",
+                    "terminatingConditions" : [{"beaconClaimed" : true, "timeAttempted" : 7}]}},
+      {"action5" : {"type" : "Replay", "replayfile" : "Beacon1ToBeacon2.csv"}},
+      {"action6" : {"type" : "Programmed", "method" : "searchForWhiteLine"}},
+      {"action7" : {"type" : "Programmed", "method" : "lineFollow",
+        "terminatingConditions" : [{"distanceTravelled" : 24}, {"beaconFound" : true}]}},
+      {"action8" : {"type" : "Programmed", "method" : "claimAbeacon"}},
+      {"action9" : {"type" : "Replay", "replayfile" : "Beacon2ToCapBall.csv"}}
+    ]
+  }
+}

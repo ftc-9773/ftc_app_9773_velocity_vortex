@@ -1,0 +1,9 @@
+{
+  "maxSpeed units" : "rpm",
+  "maxSpeed": 129,
+  "CPR" : 1120,
+  "stallTorque units" : "oz-in",
+  "stallTorque" : 350,
+  "stallCurrent units" : "amps",
+  "stallCurrent" : 11.5
+}

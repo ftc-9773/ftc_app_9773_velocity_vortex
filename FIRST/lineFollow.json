@@ -1,0 +1,8 @@
+{
+  "lineFollowVariables":
+  {
+    "lowSpeed": 0.05,
+    "highSpeed": 0.15,
+    "time": 2.5
+  }
+}
