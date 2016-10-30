@@ -48,6 +48,7 @@ public class FTCRobot {
         }
         if (driveSystem == null) {
             DbgLog.error("Drivesystem not properly initialized");
+            DbgLog.msg("");
         }
 
         // Create the objects for attachments
