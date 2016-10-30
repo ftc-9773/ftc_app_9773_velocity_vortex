@@ -131,7 +131,7 @@ public class BeaconClaim implements Attachment {
         buttonServo.setPosition(1.0);
     }
     public void verifyBeaconColor(){
-//       if (robot.autonomousActions.allianceColor.equals("red")) {
+//       if (robot.autonomousActions.allianceColor.equals("red")){
 //           colorSensor1.red();
 //       }
         colorSensor1.enableLed(false);
