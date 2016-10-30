@@ -1,0 +1,18 @@
+{
+  "FTC9773Robot": {
+    "Drive System": {
+      "Name": "2WD",
+      "Motors": [
+        { "motorID": "motorL", "motorLocation": "Front Left", "motorType": "Neverest40", "motorMaxRPM": 1230},
+        { "motorID": "motorR", "motorLocation": "Front Right", "motorType": "Tetrix", "motorMaxRPM": 1120}
+      ],
+      "__wheels_comment": "coordinates specify the x,y position assuming front-left corner as origin",
+      "Wheels": [
+        { "location": "FrontLeft", "coordinates" : [3.0, 0.0], "DriveWheel": true, "diameter": 4.0, "model": "tetrix" },
+        { "location": "FrontRight", "coordinates" : [15.0, 0.0], "DriveWheel": true, "diameter": 4.0, "model": "tetrix" },
+        { "location": "RearLeft", "coordinates" : [3.0, 15.0], "DriveWheel": false, "diameter": 4.0, "model": "tetrix" },
+        { "location": "RearRight", "coordinates" : [15.0, 15.0], "DriveWheel": false, "diameter": 4.0, "model": "tetrix" }
+      ]
+  }
+}
+}

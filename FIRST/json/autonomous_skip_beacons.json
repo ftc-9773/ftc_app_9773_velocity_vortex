@@ -1,0 +1,12 @@
+{
+  "autonomous" :
+  {
+    "__comment" : "all distances are in inches and all times are in seconds",
+    "startingDelay" : 0,
+    "startingPosition" : 24,
+    "recordreplayFilesDir" : "/sdcard/FIRST/autonomous",
+    "autonomousActions" : [
+      {"action1" : {"type" : "Replay", "replayfile" : "StartToCapBall.csv"}}
+    ]
+  }
+}
