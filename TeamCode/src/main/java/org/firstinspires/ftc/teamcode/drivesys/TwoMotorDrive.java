@@ -32,7 +32,7 @@ public class TwoMotorDrive extends DriveSystem{
     }
 
     @Override
-    public void lineFollow(double leftSpeed, double rightSpeed) {
+    public void turnOrSpin(double leftSpeed, double rightSpeed) {
         motorL.setPower(leftSpeed);
         motorR.setPower(rightSpeed);
     }

@@ -45,6 +45,10 @@
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "verifyBeaconColorOnly" : [
-    {"type" : "Programmed", "value" : "lineFollow"}
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
+    {"type" : "Programmed", "value" : "checkBeaconColor"}
+  ],
+  "lineFollowTest" : [
+    {"type" : "Programmed", "value" : "lineFollowProportional"}
   ]
 }

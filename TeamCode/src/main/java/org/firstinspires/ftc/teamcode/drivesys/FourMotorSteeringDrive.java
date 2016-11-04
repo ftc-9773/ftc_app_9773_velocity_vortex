@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.drivesys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-public class FourMotorTankDrive extends DriveSystem {
+public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorL1 = null;
     DcMotor motorL2 = null;
     DcMotor motorR1 = null;
@@ -14,9 +14,9 @@ public class FourMotorTankDrive extends DriveSystem {
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
 
-    public FourMotorTankDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
-                              double maxSpeed, double minSpeed, double frictionCoefficient,
-                              Wheel wheel, int motorCPR){
+    public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
+                                  double maxSpeed, double minSpeed, double frictionCoefficient,
+                                  Wheel wheel, int motorCPR){
         this.motorL1 = motorL1;
         this.motorL2 = motorL2;
         this.motorR1 = motorR1;
@@ -42,7 +42,7 @@ public class FourMotorTankDrive extends DriveSystem {
     }
 
     @Override
-    public void lineFollow(double leftSpeed, double rightSpeed) {
+    public void turnOrSpin(double leftSpeed, double rightSpeed) {
         motorL1.setPower(leftSpeed);
         motorL2.setPower(leftSpeed);
         motorR1.setPower(rightSpeed);

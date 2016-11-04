@@ -106,21 +106,26 @@ public class FTCRobot {
     }
 
     public void runAutonomous(String autonomousOpt, String allianceColor,
-                                           long startingDelay, int startingPosition)
-            throws InterruptedException {
+                                           long startingDelay, int startingPosition) {
         this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
 
-        curOpMode.waitForStart();
-        DbgLog.msg("Starting delay = %d seconds", startingDelay);
-        if (startingDelay > 0) {
-            sleep(startingDelay);
+        try {
+            curOpMode.waitForStart();
+            DbgLog.msg("Starting delay = %d seconds", startingDelay);
+            if (startingDelay > 0) {
+                sleep(startingDelay);
+            }
+            while (curOpMode.opModeIsActive()) {
+                autonomousActions.doActions();
+                break;
+            }
+            driveSystem.stop();
+            curOpMode.stop();
+        } catch (InterruptedException e) {
+            driveSystem.stop();
+            curOpMode.stop();
         }
-        while (curOpMode.opModeIsActive()){
-            autonomousActions.doActions();
-            break;
-        }
-        curOpMode.stop();
         return;
     }
 

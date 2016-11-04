@@ -6,16 +6,26 @@
         "type": "OpticalDistanceSensor"
       },
       "lineFollowVariables": {
-        "lowSpeed": 0.45,
-        "highSpeed": 0.55,
+        "basePower": 0.15,
+        "Kp": 0.5,
+        "white": 0.996,
+        "black" : 0.175,
+        "lowSpeed": 0.15,
+        "highSpeed": 0.35,
         "timeOut": 4.0
       }
     },
     "IMU": {
       "name" : "navx",
+      "DIMname" : "dim",
       "type" : "navx-micro",
       "porttype": "i2c",
-      "portnum": 0
+      "portnum": 0,
+      "driveSysPower": 0.3,
+      "angleTolerance": 3.0
+    },
+    "RangeSensor" : {
+      "name": "rangeSensor1"
     }
   },
   "LineFollowOnly" : {

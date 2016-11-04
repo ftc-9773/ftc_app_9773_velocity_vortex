@@ -36,7 +36,7 @@ public class DriveSystem {
             int CPR = 0;
             double wheelDiameter = 0.0;
             double frictionCoeff = 1.0;
-            FourMotorTankDrive fourMotorTankDrive;
+            FourMotorSteeringDrive fourMotorSteeringDrive;
 
             // Assume that all Drive System motors are of same type,
             // and get the CPR just for one motor
@@ -56,17 +56,17 @@ public class DriveSystem {
             Wheel wheel = new Wheel(wheel_type, wheelDiameter);
 
             DbgLog.msg("wheel diameter = %f", wheel.diameter);
-            fourMotorTankDrive = new FourMotorTankDrive(fMotorL, rMotorL, fMotorR, rMotorR,
+            fourMotorSteeringDrive = new FourMotorSteeringDrive(fMotorL, rMotorL, fMotorR, rMotorR,
                     1, 0, frictionCoeff, wheel, CPR);
-            fourMotorTankDrive.curOpMode = curOpMode;
-            fourMotorTankDrive.robot = robot;
-            fourMotorTankDrive.driveSysType = driveSysType;
-            driveSys = (DriveSystem) fourMotorTankDrive;
+            fourMotorSteeringDrive.curOpMode = curOpMode;
+            fourMotorSteeringDrive.robot = robot;
+            fourMotorSteeringDrive.driveSysType = driveSysType;
+            driveSys = (DriveSystem) fourMotorSteeringDrive;
         }
         return (driveSys);
     }
 
     public void drive(float speed, float direction) {return;}
-    public void lineFollow(double leftSpeed, double rightSpeed) {return;}
+    public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
 }
