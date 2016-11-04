@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
 import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
@@ -14,34 +12,38 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 public class LineFollow{
 
     OpticalDistanceSensor lightSensor;
-    double white;
-    double black;
-    double lowSpeed;
-    double highSpeed;
+    double white, black, mid;
+    double lowSpeed, highSpeed;
     double light;
     double prevLight;
-    double mid;
+    double basePower, Kp;
     DriveSystem driveSystem;
     long stopTimeStamp=0;
     long timoutNanoSec=0;
 
     public LineFollow(FTCRobot robot, String lightSensorName, double lowSpeed,
-                      double highSpeed, double lineFollowTimeOut) {
+                      double highSpeed, double lineFollowTimeOut, double basePower, double Kp,
+                      double white, double black) {
         this.driveSystem = robot.driveSystem;
         this.lightSensor = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(lightSensorName);
         this.lowSpeed = lowSpeed;
         this.highSpeed = highSpeed;
+        this.basePower = basePower;
+        this.Kp = Kp;
+        this.white = white;
+        this.black = black;
+        this.mid = (white + black) / 2;
         this.timoutNanoSec = (long) (lineFollowTimeOut * 1000000000L);
         DbgLog.msg("sensorName=%s, lowSpeed=%f, highSpeed=%f, timeoutNanoSec=%d",
                 lightSensorName, lowSpeed, highSpeed, this.timoutNanoSec);
-        white = -1;
-        black = -1;
+//        this.white = -1;
+//        this.black = -1;
         prevLight = -1;
     }
 
     public void searchForWhiteLine(){
         // ToDo:  Move the robot for ~ 2 seconds or until a white line is found.
-        //  ToDo:  We may not actually need this if lineFollow can reliably find the white line
+        //  ToDo:  We may not actually need this if turnOrSpin can reliably find the white line
         return;
     }
 
@@ -56,14 +58,14 @@ public class LineFollow{
     public void followLine() {
         light = lightSensor.getLightDetected();
         if (white == -1) {
-            driveSystem.lineFollow(lowSpeed, highSpeed);
+            driveSystem.turnOrSpin(lowSpeed, highSpeed);
             if (light > prevLight)
                 prevLight = light;
             else {
                 white = prevLight;
             }
         } else if (black == -1) {
-            driveSystem.lineFollow(highSpeed, lowSpeed);
+            driveSystem.turnOrSpin(highSpeed, lowSpeed);
             if (light < prevLight)
                 prevLight = light;
             else if (light < white) {
@@ -72,17 +74,32 @@ public class LineFollow{
         } else {
             mid = (black + white) / 2;
             if (light > mid) {
-                driveSystem.lineFollow(highSpeed, lowSpeed);
+                driveSystem.turnOrSpin(highSpeed, lowSpeed);
             } else if (light < mid) {
-                driveSystem.lineFollow(lowSpeed, highSpeed);
+                driveSystem.turnOrSpin(lowSpeed, highSpeed);
             } else {
-                driveSystem.lineFollow(highSpeed, highSpeed);
+                driveSystem.turnOrSpin(highSpeed, highSpeed);
             }
         }
 
         DbgLog.msg(String.format("Light Detected= %f, mid=%f", light, mid));
         //DbgLog.msg(String.format("MotorL power: %f", motor1.getPower()));
         //DbgLog.msg(String.format("MotorR power: %f", motor2.getPower()));
+    }
+
+    public void followLineProportional() {
+
+        double error, correction;
+        double leftPower, rightPower;
+
+        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
+        error = lightSensor.getLightDetected() - mid;
+        correction = Kp * error;
+        leftPower = basePower - (correction / 2);
+        rightPower = basePower + (correction / 2);
+        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
+                error, correction, leftPower, rightPower);
+        driveSystem.turnOrSpin(leftPower, rightPower);
     }
 
 }

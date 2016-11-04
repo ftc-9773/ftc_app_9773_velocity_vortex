@@ -11,6 +11,12 @@
 
 // Custom definitions may go here
 
+repositories {
+    flatDir {
+        dirs '../libs'
+    }
+}
+
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'

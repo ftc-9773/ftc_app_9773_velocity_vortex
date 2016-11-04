@@ -87,11 +87,27 @@ public class AutonomousActions {
             DbgLog.msg("Done with lineFollow");
             robot.driveSystem.stop();
         }
+        else if (methodName.equalsIgnoreCase("lineFollowProportional")) {
+            boolean stopLineFollow = false;
+            DbgLog.msg("minDistance=%f", robot.navigation.minDistance);
+
+            while (!stopLineFollow) {
+                robot.navigation.lf.followLineProportional();
+                stopLineFollow = (robot.navigation.rangeSensor.cmUltrasonic() <=
+                        robot.navigation.minDistance);
+                DbgLog.msg("Range sensor value = %f", robot.navigation.rangeSensor.cmUltrasonic());
+            }
+            DbgLog.msg("Done with lineFollowProportional");
+            robot.driveSystem.stop();
+        }
         else if(methodName.equalsIgnoreCase("claimAbeacon")){
             robot.beaconClaimObj.claimABeacon();
         }
         else if(methodName.equalsIgnoreCase("verifyBeaconColor")){
             robot.beaconClaimObj.verifyBeaconColor();
+        }
+        else if (methodName.equalsIgnoreCase("checkBeaconColor")) {
+            robot.beaconClaimObj.checkBeaconColor();
         }
     }
 

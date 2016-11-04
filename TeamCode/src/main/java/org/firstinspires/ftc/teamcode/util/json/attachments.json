@@ -6,6 +6,17 @@
       "buttonServo" : {
         "motorType" : "servo",
         "motor" : "Tetrix-HS755-HB",
+        "__comment" : "The following 2 values have to be changed",
+        "scaleRangeMin" : 0.115,
+        "scaleRangeMax" : 0.5,
+        "needReverse" : true,
+        "fixedPositions" : true,
+        "minButton" : "gamepad1.a",
+        "maxButton" : "gamepad1.y"
+      },
+      "colorServo" : {
+        "motorType" : "servo",
+        "motor" : "Tetrix-HS755-HB",
         "scaleRangeMin" : 0.115,
         "scaleRangeMax" : 0.5,
         "needReverse" : true,
@@ -20,7 +31,7 @@
         "porttype" : "i2c",
         "portnum" : 5
       },
-      "touchSensor1" : {
+      "__touchSensor1" : {
         "sensorType": "TouchSensor"
       }
     }

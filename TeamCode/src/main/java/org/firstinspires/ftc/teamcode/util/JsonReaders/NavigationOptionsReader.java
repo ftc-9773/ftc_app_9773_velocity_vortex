@@ -12,6 +12,7 @@ public class NavigationOptionsReader extends JsonReader {
     public JSONObject navOptObj;
     public JSONObject lfObj=null;
     public JSONObject imuObj=null;
+    public JSONObject rangeObj=null;
 
     public NavigationOptionsReader(String filePath, String navOptStr) {
         super(filePath);
@@ -26,10 +27,24 @@ public class NavigationOptionsReader extends JsonReader {
             if (key != null) {
                 imuObj = navOptObj.getJSONObject(key);
             }
+            key = JsonReader.getRealKeyIgnoreCase(navOptObj, "RangeSensor");
+            if (key != null) {
+                rangeObj = navOptObj.getJSONObject(key);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    public boolean lineFollowerExists() {
+        return (this.lfObj != null);
+    }
+
+    public boolean imuExists() {
+        return (this.imuObj != null);
+    }
+
+    public boolean rangeSensorExists() { return (this.rangeObj != null); }
 
     public String getLightSensorName() {
         String lightSensorName = null;
@@ -59,6 +74,22 @@ public class NavigationOptionsReader extends JsonReader {
         return (sensorType);
     }
 
+    public double getLFvariableDouble(String variableName) {
+        double value = 0.0;
+        JSONObject lfVarObj;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
+            lfVarObj = lfObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, variableName);
+            value = lfVarObj.getDouble(key);
+            DbgLog.msg("getLFvariableDouble(): key = %s, value=%f", key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
+    }
+
+/*
     public double  getLineFollowLowSpeed() {
         JSONObject lfVarObj;
         double lowSpeed = 0.0;
@@ -101,11 +132,12 @@ public class NavigationOptionsReader extends JsonReader {
         }
         return (timeoutSec);
     }
+*/
 
-    public String getIMUname() {
+    public String getIMUDIMname() {
         String imuName = null;
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "name");
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "DIMname");
             imuName = imuObj.getString(key);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -124,4 +156,26 @@ public class NavigationOptionsReader extends JsonReader {
         return (imuPortNum);
     }
 
+    public double getIMUdriveSysPower() {
+        double driveSysPower=0.0;
+
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysPower");
+            driveSysPower = imuObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (driveSysPower);
+    }
+
+    public double getIMUAngleTolerance() {
+        double angleTolerance=0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "angleTolerance");
+            angleTolerance = imuObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return angleTolerance;
+    }
 }

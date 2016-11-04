@@ -18,6 +18,7 @@ public class BeaconClaim implements Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     Servo buttonServo=null;
+    Servo colorServo=null;
     ColorSensor colorSensor1=null;
     TouchSensor touchSensor1=null;
     I2cAddr i2cAddr=null;
@@ -45,30 +46,62 @@ public class BeaconClaim implements Attachment {
         try {
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServo");
             buttonServoObj = motorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "colorServo");
+            colorServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
             coloSensor1Obj = sensorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "touchSensor1");
             touchSensor1Obj = sensorsObj.getJSONObject(key);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        buttonServo = curOpMode.hardwareMap.servo.get("buttonServo");
-        colorSensor1 = curOpMode.hardwareMap.colorSensor.get("colorSensor1");
-        colorSensor1.enableLed(false);
-        touchSensor1 = curOpMode.hardwareMap.touchSensor.get("touchSensor1");
-        //colorSensor1.setI2cAddress(i2cAddr);
+        if (buttonServoObj != null) {
+            try {
+                buttonServo = curOpMode.hardwareMap.servo.get("buttonServo");
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+        if (coloSensor1Obj != null) {
+            colorSensor1 = curOpMode.hardwareMap.colorSensor.get("colorSensor1");
+            colorSensor1.enableLed(false);
+        }
+        if (touchSensor1Obj != null) {
+            touchSensor1 = curOpMode.hardwareMap.touchSensor.get("touchSensor1");
+        }
+        if (colorServoObj != null) {
+            try {
+                colorServo = curOpMode.hardwareMap.servo.get("colorServo");
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         // Set the MIN and MAX positions for servos
         try {
-            buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
-                    buttonServoObj.getDouble("scaleRangeMax"));
-            if (buttonServoObj.getBoolean("needReverse")) {
-                DbgLog.msg("Reversing the button servo");
-                buttonServo.setDirection(Servo.Direction.REVERSE);
+            if (buttonServo != null) {
+                buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
+                        buttonServoObj.getDouble("scaleRangeMax"));
+                if (buttonServoObj.getBoolean("needReverse")) {
+                    DbgLog.msg("Reversing the button servo");
+                    buttonServo.setDirection(Servo.Direction.REVERSE);
+                }
+
+                // Set the initial positions for both the servos
+                buttonServo.setPosition(1.0);
             }
 
-            // Set the initial positions for both the servos
-            buttonServo.setPosition(1.0);
+            if (colorServo != null) {
+                colorServo.scaleRange(colorServoObj.getDouble("scaleRangeMin"),
+                        colorServoObj.getDouble("scaleRangeMax"));
+                if (colorServoObj.getBoolean("needReverse")) {
+                    DbgLog.msg("Reversing the color servo");
+                    colorServo.setDirection(Servo.Direction.REVERSE);
+                }
+                colorServo.setPosition(1.0);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -158,4 +191,9 @@ public class BeaconClaim implements Attachment {
         }
     }
 
+    public String checkBeaconColor() {
+        DbgLog.msg("red=%d, blue=%d, green=%d", colorSensor1.red(), colorSensor1.blue(),
+                colorSensor1.green());
+        return null;
+    }
 }
