@@ -119,7 +119,33 @@ public class BeaconClaim implements Attachment {
         }
     }
 
-    public void claimABeacon(){
+    public void claimABeacon() {
+
+        // Activate the colorServo to bring the color sensor close to the beacon
+        colorServo.setPosition(0);
+
+        // Read the color sensor value and determine if the button has to be pressed once or twice
+        // to claim the beacon.
+        if((robot.autonomousActions.allianceColor.equalsIgnoreCase("blue") && isBeaconBlue()) ||
+                (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") && isBeaconRed())){
+            buttonServo.setPosition(0);
+            curOpMode.sleep(1000);
+            buttonServo.setPosition(1);
+            curOpMode.sleep(5000);
+            buttonServo.setPosition(0);
+            curOpMode.sleep(1000);
+            buttonServo.setPosition(1);
+            colorServo.setPosition(1);
+        } else if((robot.autonomousActions.allianceColor.equalsIgnoreCase("blue") && isBeaconRed()) ||
+                    (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") && isBeaconBlue())) {
+            buttonServo.setPosition(0);
+            curOpMode.sleep(1000);
+            buttonServo.setPosition(1);
+            colorServo.setPosition(1);
+        }
+    }
+
+    public void claimABeaconOld(){
         // Move back for 1 sec, set the button servo, Check the color
         if (robot.beaconClaimObj.isBeaconBlue()){
             curOpMode.telemetry.addData("%s", "blue sensed");
