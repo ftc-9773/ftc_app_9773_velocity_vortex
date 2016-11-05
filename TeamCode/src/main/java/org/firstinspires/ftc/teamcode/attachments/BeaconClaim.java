@@ -123,26 +123,28 @@ public class BeaconClaim implements Attachment {
 
         // Activate the colorServo to bring the color sensor close to the beacon
         colorServo.setPosition(0);
-
+        curOpMode.sleep(100);
         // Read the color sensor value and determine if the button has to be pressed once or twice
         // to claim the beacon.
         if((robot.autonomousActions.allianceColor.equalsIgnoreCase("blue") && isBeaconBlue()) ||
                 (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") && isBeaconRed())){
-            buttonServo.setPosition(0);
+//            buttonServo.setPosition(0);
             curOpMode.sleep(1000);
-            buttonServo.setPosition(1);
+//            buttonServo.setPosition(1);
             curOpMode.sleep(5000);
-            buttonServo.setPosition(0);
+//            buttonServo.setPosition(0);
             curOpMode.sleep(1000);
-            buttonServo.setPosition(1);
-            colorServo.setPosition(1);
+//            buttonServo.setPosition(1);
         } else if((robot.autonomousActions.allianceColor.equalsIgnoreCase("blue") && isBeaconRed()) ||
                     (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") && isBeaconBlue())) {
-            buttonServo.setPosition(0);
+//            buttonServo.setPosition(0);
             curOpMode.sleep(1000);
-            buttonServo.setPosition(1);
-            colorServo.setPosition(1);
+//            buttonServo.setPosition(1);
         }
+
+        colorServo.setPosition(1);
+        curOpMode.sleep(100);
+
     }
 
     public void claimABeaconOld(){
@@ -201,18 +203,22 @@ public class BeaconClaim implements Attachment {
 
     public boolean isBeaconRed() {
         if (colorSensor1.red() > colorSensor1.blue()) {
+            DbgLog.msg("Red");
             return (true);
         }
         else {
+            DbgLog.msg("Not red");
             return (false);
         }
     }
 
     public boolean isBeaconBlue() {
         if (colorSensor1.blue() > colorSensor1.red()) {
+            DbgLog.msg("Blue");
             return (true);
         }
         else {
+            DbgLog.msg("Not blue");
             return (false);
         }
     }
