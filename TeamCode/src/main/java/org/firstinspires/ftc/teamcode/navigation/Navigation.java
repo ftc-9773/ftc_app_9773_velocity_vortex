@@ -17,7 +17,7 @@ public class Navigation {
     public LineFollow lf;
     public NavxMicro navxMicro;
     public ModernRoboticsI2cRangeSensor rangeSensor;
-    public double minDistance=17.0; // in cm
+    public double minDistance=15.0; // in cm
 
     public Navigation(FTCRobot robot, LinearOpMode curOpMode, String navOptionStr) {
         this.robot = robot;
