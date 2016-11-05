@@ -92,11 +92,24 @@ public class FTCRobot {
         float direction;
 
         curOpMode.waitForStart();
+        boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
-            speed = -curOpMode.gamepad1.left_stick_y;
-            direction = curOpMode.gamepad1.right_stick_x;
+            if(!isReverse) {
+                speed = -curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                direction = curOpMode.gamepad1.right_stick_x * (float) 0.5;
+            }
+            else{
+                speed = curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                direction = curOpMode.gamepad1.right_stick_x * (float) 0.5;
+            }
 
             driveSystem.drive(speed, direction);
+            if(curOpMode.gamepad1.x){
+                isReverse = true;
+            }
+            else if(curOpMode.gamepad1.b){
+                isReverse = false;
+            }
             for (int i=0; i<attachmentsArr.length; i++) {
                 attachmentsArr[i].getAndApplyDScmd();
             }
