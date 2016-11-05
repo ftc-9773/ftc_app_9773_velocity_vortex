@@ -93,7 +93,7 @@ public class FTCRobot {
 
         curOpMode.waitForStart();
         while(curOpMode.opModeIsActive()){
-            speed = curOpMode.gamepad1.left_stick_y;
+            speed = -curOpMode.gamepad1.left_stick_y;
             direction = curOpMode.gamepad1.right_stick_x;
 
             driveSystem.drive(speed, direction);
@@ -165,8 +165,8 @@ public class FTCRobot {
         long sleepTime = 0;
         double spinAngle = 0;
         while (curOpMode.opModeIsActive()) {
-            double speed = curOpMode.gamepad1.left_stick_y * 0.5;
-            double direction = curOpMode.gamepad1.right_stick_x;
+            double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+            double direction = curOpMode.gamepad1.right_stick_x * 0.5;
             if(curOpMode.gamepad1.left_bumper){
                 spinAngle = navigation.navxMicro.getModifiedYaw();
             }

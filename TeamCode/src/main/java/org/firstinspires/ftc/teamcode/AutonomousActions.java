@@ -124,6 +124,15 @@ public class AutonomousActions {
         else if (methodName.equalsIgnoreCase("testSetRobotOrientation")){
             robot.navigation.navxMicro.setRobotOrientation(270);
         }
+        else if(methodName.equalsIgnoreCase("moveBackFor1s")){
+            while (robot.navigation.rangeSensor.cmUltrasonic() < 25){
+                robot.driveSystem.drive((float) -0.3,0);
+            }
+            driveSystem.stop();
+        }
+        else if (methodName.equalsIgnoreCase("Turn90Degrees")){
+            robot.navigation.navxMicro.turnRobot(90);
+        }
     }
 
     public void doActions() throws InterruptedException {

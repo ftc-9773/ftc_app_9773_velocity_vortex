@@ -92,13 +92,13 @@ public class LineFollow{
         double error, correction;
         double leftPower, rightPower;
 
-        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
+//        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
         error = lightSensor.getLightDetected() - mid;
         correction = Kp * error;
         leftPower = basePower - (correction / 2);
         rightPower = basePower + (correction / 2);
-        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
-                error, correction, leftPower, rightPower);
+//        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
+//                error, correction, leftPower, rightPower);
         driveSystem.turnOrSpin(leftPower, rightPower);
     }
 

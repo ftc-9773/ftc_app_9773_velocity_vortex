@@ -18,7 +18,7 @@
         "motorType" : "servo",
         "motor" : "Tetrix-HS755-HB",
         "scaleRangeMin" : 0.115,
-        "scaleRangeMax" : 0.5,
+        "scaleRangeMax" : 0.55,
         "needReverse" : true,
         "fixedPositions" : true,
         "minButton" : "gamepad1.a",
