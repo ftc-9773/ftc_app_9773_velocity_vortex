@@ -1,16 +1,13 @@
 {
   "testing" : [
-    {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "searchForWhiteLine"}
+    {"type" : "Replay", "value" : "StartToBeacon1.csv"}
   ],
   "all_missions" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "searchForWhiteLine"},
-    {"type" : "Programmed", "value" : "lineFollow"},
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
     {"type" : "Programmed", "value" : "claimAbeacon"},
     {"type" : "Replay", "value" : "Beacon1ToBeacon2.csv"},
-    {"type" : "Programmed", "value" : "searchForWhiteLine"},
-    {"type" : "Programmed", "value" : "lineFollow"},
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
     {"type" : "Programmed", "value" : "claimAbeacon"},
     {"type" : "Replay", "value" : "Beacon2ToCapBall.csv"}
   ],

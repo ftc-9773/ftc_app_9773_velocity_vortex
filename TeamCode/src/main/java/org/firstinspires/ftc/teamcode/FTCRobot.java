@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
 import org.firstinspires.ftc.teamcode.attachments.Harvester;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
+import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
@@ -162,14 +163,25 @@ public class FTCRobot {
         long startingTime = System.nanoTime();
         long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
+        double spinAngle = 0;
         while (curOpMode.opModeIsActive()) {
             double speed = curOpMode.gamepad1.left_stick_y * 0.5;
             double direction = curOpMode.gamepad1.right_stick_x;
+            if(curOpMode.gamepad1.left_bumper){
+                spinAngle = navigation.navxMicro.getModifiedYaw();
+            }
 
             elapsedTime = System.nanoTime() - startingTime;
             driveSystem.drive((float) speed, (float) direction);
-            fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
-                    Double.toString(direction));
+            if(spinAngle != 0) {
+                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
+                        Double.toString(direction) + "," + Double.toString(spinAngle));
+                spinAngle = 0;
+            }
+            else if(spinAngle == 0){
+                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
+                        Double.toString(direction));
+            }
 
             DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
 

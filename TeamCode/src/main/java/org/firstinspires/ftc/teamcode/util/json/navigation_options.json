@@ -7,7 +7,7 @@
       },
       "lineFollowVariables": {
         "basePower": 0.15,
-        "Kp": 0.5,
+        "Kp": 0.6,
         "white": 0.996,
         "black" : 0.175,
         "lowSpeed": 0.15,
@@ -21,7 +21,7 @@
       "type" : "navx-micro",
       "porttype": "i2c",
       "portnum": 0,
-      "driveSysPower": 0.3,
+      "driveSysPower": 0.35,
       "angleTolerance": 3.0
     },
     "RangeSensor" : {
