@@ -172,6 +172,11 @@ public class FTCRobot {
             }
 
             elapsedTime = System.nanoTime() - startingTime;
+            sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
+            if (sleepTime > 0) {
+                TimeUnit.NANOSECONDS.sleep(sleepTime);
+            }
+            elapsedTime = System.nanoTime() - startingTime;
             driveSystem.drive((float) speed, (float) direction);
             if(spinAngle != 0) {
                 fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
@@ -183,16 +188,13 @@ public class FTCRobot {
                         Double.toString(direction));
             }
 
-            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
+//            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
 
             if(curOpMode.gamepad1.a){
                 break;
             }
 
-            sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
-            if (sleepTime > 0) {
-                TimeUnit.NANOSECONDS.sleep(sleepTime);
-            }
+            DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
             prev_elapsedTime = elapsedTime;
             // sleep(5);
         }
