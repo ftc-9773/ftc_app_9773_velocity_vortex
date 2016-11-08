@@ -25,7 +25,7 @@ public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;
     public Navigation navigation =null;
-    public Attachment[] attachmentsArr;
+    private Attachment[] attachmentsArr;
     public AutonomousActions autonomousActions;
     public BeaconClaim beaconClaimObj;
     public CapBallLift capBallLiftObj;
@@ -63,28 +63,29 @@ public class FTCRobot {
         }
     }
 
-    public void createAttachments (String[] attachments) {
+    private void createAttachments(String[] attachments) {
         JsonReader attachmentsReader = new JsonReader(JsonReader.attachments);
         JSONObject rootObj = attachmentsReader.jsonRoot;
         attachmentsArr = new Attachment[attachments.length];
         for (int i=0; i<attachments.length; i++) {
-            if (attachments[i].equals("BeaconClaim")) {
-                attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
-                beaconClaimObj = (BeaconClaim) attachmentsArr[i];
-                DbgLog.msg("beaconClaimObj created");
-            }
-            else if (attachments[i].equals("CapBallLift")) {
-                attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
-                capBallLiftObj = (CapBallLift) attachmentsArr[i];
-                DbgLog.msg("capBallLiftObj created");
-            }
-            else if (attachments[i].equals("Harvester")){
-                attachmentsArr[i] = new Harvester(this, curOpMode, rootObj);
-                harvesterObj = (Harvester) attachmentsArr[i];
-                DbgLog.msg("harvesterObj created");
+            switch (attachments[i]) {
+                case "BeaconClaim":
+                    attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
+                    beaconClaimObj = (BeaconClaim) attachmentsArr[i];
+                    DbgLog.msg("beaconClaimObj created");
+                    break;
+                case "CapBallLift":
+                    attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
+                    capBallLiftObj = (CapBallLift) attachmentsArr[i];
+                    DbgLog.msg("capBallLiftObj created");
+                    break;
+                case "Harvester":
+                    attachmentsArr[i] = new Harvester(this, curOpMode, rootObj);
+                    harvesterObj = (Harvester) attachmentsArr[i];
+                    DbgLog.msg("harvesterObj created");
+                    break;
             }
         }
-        return;
     }
 
     public void runTeleOp(String allianceColor) {
@@ -110,13 +111,12 @@ public class FTCRobot {
             else if(curOpMode.gamepad1.b){
                 isReverse = false;
             }
-            for (int i=0; i<attachmentsArr.length; i++) {
-                attachmentsArr[i].getAndApplyDScmd();
+            for (Attachment anAttachment : attachmentsArr) {
+                anAttachment.getAndApplyDScmd();
             }
 
             curOpMode.idle();
         }
-        return;
     }
 
     public void runAutonomous(String autonomousOpt, String allianceColor,
@@ -140,7 +140,6 @@ public class FTCRobot {
             driveSystem.stop();
             curOpMode.stop();
         }
-        return;
     }
 
     public void autonomousRecord(JsonReader opmodeCfg, String allianceColor) throws InterruptedException {
@@ -162,14 +161,14 @@ public class FTCRobot {
         catch (JSONException exc) {
             exc.printStackTrace();
         }
-        recordFilePath = new String(recordFilesDir + recordFileName);
+        recordFilePath = recordFilesDir + recordFileName;
 
         DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
         DbgLog.msg("record filepath = %s", recordFilePath);
 
         fileRW = new FileRW(recordFilePath, true);
         // First row is a header row.
-        String firstrow = new String("elapsedTimeNanoSec, speed, direction");
+        String firstrow = "elapsedTimeNanoSec, speed, direction";
         fileRW.fileWrite(firstrow);
 
         curOpMode.waitForStart();
@@ -196,7 +195,7 @@ public class FTCRobot {
                         Double.toString(direction) + "," + Double.toString(spinAngle));
                 spinAngle = 0;
             }
-            else if(spinAngle == 0){
+            else {
                 fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
                         Double.toString(direction));
             }
