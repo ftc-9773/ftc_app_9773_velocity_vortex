@@ -15,13 +15,13 @@ import org.json.JSONObject;
 
 
 public class BeaconClaim implements Attachment {
-    FTCRobot robot;
-    LinearOpMode curOpMode;
-    Servo buttonServo=null;
-    Servo colorServo=null;
-    ColorSensor colorSensor1=null;
-    TouchSensor touchSensor1=null;
-    I2cAddr i2cAddr=null;
+    private FTCRobot robot;
+    private LinearOpMode curOpMode;
+    private Servo buttonServo=null;
+    private Servo colorServo=null;
+    private ColorSensor colorSensor1=null;
+    private TouchSensor touchSensor1=null;
+    private I2cAddr i2cAddr=null;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
@@ -54,6 +54,8 @@ public class BeaconClaim implements Attachment {
             touchSensor1Obj = sensorsObj.getJSONObject(key);
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         if (buttonServoObj != null) {
@@ -103,6 +105,8 @@ public class BeaconClaim implements Attachment {
                 colorServo.setPosition(1.0);
             }
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
