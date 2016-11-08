@@ -32,8 +32,8 @@
   ],
   "skipBeacon2" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "claimAbeacon"},
-    {"type" : "Replay", "value" : "Beacon1ToCapBall.csv"}
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
+    {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "skipBeacon2NoCapBall" : [
   {"type" : "Replay", "value" : "StartToBeacon1.csv"},

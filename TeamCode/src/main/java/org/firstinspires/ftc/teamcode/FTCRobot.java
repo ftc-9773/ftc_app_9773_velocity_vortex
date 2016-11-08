@@ -96,11 +96,11 @@ public class FTCRobot {
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {
                 speed = -curOpMode.gamepad1.left_stick_y * (float) 0.7;
-                direction = curOpMode.gamepad1.right_stick_x * (float) 0.5;
+                direction = curOpMode.gamepad1.right_stick_x;
             }
             else{
                 speed = curOpMode.gamepad1.left_stick_y * (float) 0.7;
-                direction = curOpMode.gamepad1.right_stick_x * (float) 0.5;
+                direction = curOpMode.gamepad1.right_stick_x;
             }
 
             driveSystem.drive(speed, direction);

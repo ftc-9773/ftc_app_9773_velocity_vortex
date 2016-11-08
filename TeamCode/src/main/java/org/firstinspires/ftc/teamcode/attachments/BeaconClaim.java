@@ -128,6 +128,10 @@ public class BeaconClaim implements Attachment {
         // to claim the beacon.
         if((robot.autonomousActions.allianceColor.equalsIgnoreCase("blue") && isBeaconBlue()) ||
                 (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") && isBeaconRed())){
+            while (robot.navigation.rangeSensor.cmUltrasonic() < 25) {
+                robot.driveSystem.drive((float) -0.5, 0);
+            }
+            robot.driveSystem.stop();
             buttonServo.setPosition(0);
             curOpMode.sleep(1000);
             buttonServo.setPosition(1);
