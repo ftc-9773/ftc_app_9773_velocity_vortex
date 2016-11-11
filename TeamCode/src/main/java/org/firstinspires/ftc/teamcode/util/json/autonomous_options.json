@@ -1,9 +1,5 @@
 {
   "testing" : [
-    {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "lineFollowProportional"},
-    {"type" : "Programmed", "value" : "claimAbeacon"},
-    {"type" : "Programmed", "value" : "moveBackFor1s"},
     {"type" : "Programmed", "value" : "Turn90Degrees"}
   ],
   "all_missions" : [
