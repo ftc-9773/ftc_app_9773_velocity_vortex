@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 
+import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 public class NavxMicro {
@@ -90,33 +91,29 @@ public class NavxMicro {
     }
 
     public void turnRobot(double angle) {
-        double leftPower=0.0, rightPower=0.0;
+        double leftInitialPower=0.0, rightInitialPower=0.0;
+        double leftTargetPower=0.0, rightTargetPower=0.0;
         double startingYaw, targetYaw;
         boolean spinClockwise = false;
         if (angle > 0 && angle < 360) {
             // Spin clockwise
-            ElapsedTime elapsedTime = new ElapsedTime();
-            elapsedTime.reset();
-            while(elapsedTime.time()<0.1) {
-                leftPower = this.driveSysInitialPower;
-                rightPower = -1 * leftPower;
-                spinClockwise = true;
-            }
-            robot.driveSystem.turnOrSpin(leftPower,rightPower);
-        }
-        else if (angle < 0 && angle > -360) {
-            // Spin counter clockwise
-            ElapsedTime elapsedTime = new ElapsedTime();
-            elapsedTime.reset();
-            while(elapsedTime.time()<0.1) {
-              rightPower = this.driveSysInitialPower;
-              leftPower = -1 * rightPower;
-            }
-            robot.driveSystem.turnOrSpin(leftPower,rightPower);
+            leftInitialPower = this.driveSysInitialPower;
+            rightInitialPower = -1 * leftInitialPower;
+            leftTargetPower = this.driveSysTargetPower;
+            rightTargetPower = -1 * leftTargetPower;
+            spinClockwise = true;
         }
         else {
-            DbgLog.msg("angle %f is invalid!", angle);
-            return;
+            if (angle < 0 && angle > -360) {
+                // Spin counter clockwise
+                rightInitialPower = this.driveSysInitialPower;
+                leftInitialPower = -1 * rightInitialPower;
+                rightTargetPower = this.driveSysTargetPower;
+                leftTargetPower = -1 * rightTargetPower;
+            } else {
+                DbgLog.msg("angle %f is invalid!", angle);
+                return;
+            }
         }
 
         // Note the current yaw value
@@ -127,9 +124,15 @@ public class NavxMicro {
         } else if (targetYaw < 0) {
             targetYaw += 360;
         }
-
+        DbgLog.msg("initial power left = %f, right = %f",leftInitialPower, rightInitialPower);
+        DbgLog.msg("target power left = %f, right = %f",leftTargetPower, rightTargetPower);
+        ElapsedTime elapsedTime = new ElapsedTime();
+        elapsedTime.reset();
+        while(elapsedTime.time()<0.1) {
+            this.robot.driveSystem.turnOrSpin(leftInitialPower, rightInitialPower);
+        }
         while (true) {
-            this.robot.driveSystem.turnOrSpin(leftPower, rightPower);
+            this.robot.driveSystem.turnOrSpin(leftTargetPower,rightTargetPower);
             if (distanceBetweenAngles(getModifiedYaw(), targetYaw) < this.angleTolerance)
                 break;
         }
