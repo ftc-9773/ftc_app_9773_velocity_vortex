@@ -176,13 +176,24 @@ public class FTCRobot {
         long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
         double spinAngle = 0;
+        int targetDistance = 0;
+        double prevPower = 0;
+        int writeMode = 0; //0 for drive straight, 1 for spin
+        driveSystem.stop();
         while (curOpMode.opModeIsActive()) {
             double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
             double direction = curOpMode.gamepad1.right_stick_x * 0.5;
             if(curOpMode.gamepad1.left_bumper){
                 spinAngle = navigation.navxMicro.getModifiedYaw();
+                writeMode = 1;
             }
 
+            if(curOpMode.gamepad1.left_stick_y == 0){
+                if (prevPower > 0){
+                    targetDistance = driveSystem.getAvgEncoderVal();
+                    writeMode = 0;
+                }
+            }
             elapsedTime = System.nanoTime() - startingTime;
             sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
             if (sleepTime > 0) {
@@ -190,14 +201,14 @@ public class FTCRobot {
             }
             elapsedTime = System.nanoTime() - startingTime;
             driveSystem.drive((float) speed, (float) direction);
-            if(spinAngle != 0) {
-                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
-                        Double.toString(direction) + "," + Double.toString(spinAngle));
-                spinAngle = 0;
+            prevPower = speed;
+
+            if(writeMode == 0){
+                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Integer.toString(writeMode) + "," + Integer.toString(targetDistance));
             }
-            else {
-                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
-                        Double.toString(direction));
+            else if(writeMode == 1) {
+                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Integer.toString(writeMode) + "," + Double.toString(spinAngle));
+                curOpMode.sleep(300);
             }
 
 //            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));

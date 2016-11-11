@@ -51,24 +51,27 @@ public class AutonomousActions {
             }
             else {
                 long timestamp = Long.parseLong(lineElements[0]);
-                double speed = Double.parseDouble(lineElements[1]);
-                double direction = Double.parseDouble(lineElements[2]);
+                int driveMode = Integer.parseInt(lineElements[1]);
+
                 elapsedTime = System.nanoTime() - startingTime;
                 if (elapsedTime < timestamp) {
                     sleepTime = timestamp - elapsedTime;
                     TimeUnit.NANOSECONDS.sleep(sleepTime);
                 }
-                if(lineElements.length > 3){
-                    if(turnCounter == 0) {
-                        DbgLog.msg("Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
-                        robot.navigation.navxMicro.setRobotOrientation(Double.parseDouble(lineElements[3]));
+
+                switch (driveMode){
+                    case 0:
+                        int targetPosition = Integer.parseInt(lineElements[2]);
+                        driveSystem.drive(0.3f, 0, targetPosition);
+                        break;
+                    case 1:
+                        double spinAngle = Double.parseDouble(lineElements[2]);
+                        DbgLog.msg("Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), spinAngle);
+                        robot.navigation.navxMicro.setRobotOrientation(spinAngle);
                         DbgLog.msg("Reached target orientation");
-                    }
-                    turnCounter++;
-                }
-                else{
-                    turnCounter = 0;
-                    driveSystem.drive((float) speed, (float) direction);
+                        break;
+                    default:
+                        break;
                 }
             }
         }

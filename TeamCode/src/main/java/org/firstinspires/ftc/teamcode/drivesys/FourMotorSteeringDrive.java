@@ -23,6 +23,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorR2 = motorR2;
         this.motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
@@ -42,6 +46,43 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     @Override
+    public void drive(float speed, float direction, int distanceInCounts){
+        double left = (speed + direction) * frictionCoefficient;
+        double right = (speed - direction) * frictionCoefficient;
+
+        int targetDistance = getAvgEncoderVal() + distanceInCounts;
+
+        motorR1.setTargetPosition(targetDistance);
+        motorR2.setTargetPosition(targetDistance);
+        motorL1.setTargetPosition(targetDistance);
+        motorL2.setTargetPosition(targetDistance);
+
+        motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        motorL1.setPower(left);
+        motorL2.setPower(left);
+        motorR1.setPower(right);
+        motorR2.setPower(right);
+
+        while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()){
+
+        }
+
+        motorL1.setPower(0);
+        motorL2.setPower(0);
+        motorR1.setPower(0);
+        motorR2.setPower(0);
+
+        motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Override
     public void turnOrSpin(double leftSpeed, double rightSpeed) {
         motorL1.setPower(leftSpeed);
         motorL2.setPower(leftSpeed);
@@ -56,6 +97,17 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorL2.setPower(0.0);
         motorR1.setPower(0.0);
         motorR2.setPower(0.0);
+
+        motorL1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorL2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorR1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorR2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    @Override
+    public int getAvgEncoderVal(){
+        return (motorL1.getCurrentPosition() + motorL2.getCurrentPosition() + motorR2.getCurrentPosition()
+                + motorR1.getCurrentPosition()) / 4;
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){

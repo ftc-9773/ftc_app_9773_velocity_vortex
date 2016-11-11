@@ -67,6 +67,8 @@ public class DriveSystem {
     }
 
     public void drive(float speed, float direction) {return;}
+    public void drive(float speed, float direction, int distanceInCounts){return;}
+    public int getAvgEncoderVal(){return 0;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
 }
