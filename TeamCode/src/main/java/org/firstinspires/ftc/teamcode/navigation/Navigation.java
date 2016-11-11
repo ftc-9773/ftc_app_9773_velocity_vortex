@@ -43,7 +43,7 @@ public class Navigation {
 
         if (navOption.imuExists()) {
             this.navxMicro = new NavxMicro(curOpMode, robot, navOption.getIMUDIMname(),
-                    navOption.getIMUportNum(), navOption.getIMUdriveSysPower(), navOption.getIMUAngleTolerance());
+                    navOption.getIMUportNum(), navOption.getIMUdriveSysInitialPower(), navOption.getIMUdriveSysTargetPower(), navOption.getIMUAngleTolerance());
         }
         else {
             this.navxMicro = null;

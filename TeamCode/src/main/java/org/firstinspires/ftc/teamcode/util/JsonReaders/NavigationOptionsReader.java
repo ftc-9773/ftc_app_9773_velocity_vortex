@@ -156,11 +156,23 @@ public class NavigationOptionsReader extends JsonReader {
         return (imuPortNum);
     }
 
-    public double getIMUdriveSysPower() {
+    public double getIMUdriveSysInitialPower() {
         double driveSysPower=0.0;
 
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysPower");
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysInitialPower");
+            driveSysPower = imuObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (driveSysPower);
+    }
+
+    public double getIMUdriveSysTargetPower() {
+        double driveSysPower=0.0;
+
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysTargetPower");
             driveSysPower = imuObj.getDouble(key);
         } catch (JSONException e) {
             e.printStackTrace();
