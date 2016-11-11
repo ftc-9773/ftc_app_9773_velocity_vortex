@@ -10,19 +10,23 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 
+import java.util.concurrent.TimeUnit;
+
 public class NavxMicro {
     LinearOpMode curOpMode;
     FTCRobot robot;
 
     private AHRS navx_device;
     private double angleTolerance = 0.0;
-    private double driveSysPower = 0.0;
+    private double driveSysInitialPower = 0.0;
+    private double driveSysTargetPower = 0.0;
 
     public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, String dimName, int portNum,
-                     double driveSysPower, double angleTolerance) {
+                     double driveSysInitialPower, double driveSysTargetPower, double angleTolerance) {
         this.curOpMode = curOpMode;
         this.robot = robot;
-        this.driveSysPower = driveSysPower;
+        this.driveSysInitialPower = driveSysInitialPower;
+        this.driveSysTargetPower = driveSysTargetPower;
         this.angleTolerance = angleTolerance;
 
         navx_device = AHRS.getInstance(curOpMode.hardwareMap.deviceInterfaceModule.get(dimName),
@@ -91,14 +95,24 @@ public class NavxMicro {
         boolean spinClockwise = false;
         if (angle > 0 && angle < 360) {
             // Spin clockwise
-            leftPower = this.driveSysPower;
-            rightPower = -1 * leftPower;
-            spinClockwise = true;
+            ElapsedTime elapsedTime = new ElapsedTime();
+            elapsedTime.reset();
+            while(elapsedTime.time()<0.1) {
+                leftPower = this.driveSysInitialPower;
+                rightPower = -1 * leftPower;
+                spinClockwise = true;
+            }
+            robot.driveSystem.turnOrSpin(leftPower,rightPower);
         }
         else if (angle < 0 && angle > -360) {
             // Spin counter clockwise
-            rightPower = this.driveSysPower;
-            leftPower = -1 * rightPower;
+            ElapsedTime elapsedTime = new ElapsedTime();
+            elapsedTime.reset();
+            while(elapsedTime.time()<0.1) {
+              rightPower = this.driveSysInitialPower;
+              leftPower = -1 * rightPower;
+            }
+            robot.driveSystem.turnOrSpin(leftPower,rightPower);
         }
         else {
             DbgLog.msg("angle %f is invalid!", angle);

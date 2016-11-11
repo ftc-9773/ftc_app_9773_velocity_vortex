@@ -47,7 +47,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorL2.setPower(leftSpeed);
         motorR1.setPower(rightSpeed);
         motorR2.setPower(rightSpeed);
-
     }
 
     @Override
@@ -57,6 +56,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorR1.setPower(0.0);
         motorR2.setPower(0.0);
     }
+
 
     /*public void driveToDistance(float speed, float direction, double distance){
         double startingPositionL = motorL1.getCurrentPosition();
