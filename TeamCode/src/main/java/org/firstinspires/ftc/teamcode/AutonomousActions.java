@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 
-
 public class AutonomousActions {
     FTCRobot robot;
     LinearOpMode curOpMode;

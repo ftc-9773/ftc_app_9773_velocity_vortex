@@ -32,8 +32,6 @@ public class Navigation {
                     navOption.getLFvariableDouble("lowSpeed"),
                     navOption.getLFvariableDouble("highSpeed"),
                     navOption.getLFvariableDouble("timeOut"),
-                    navOption.getLFvariableDouble("basePower"),
-                    navOption.getLFvariableDouble("Kp"),
                     navOption.getLFvariableDouble("white"),
                     navOption.getLFvariableDouble("black"));
         }
