@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 
 /**
- * Created by Kids on 10/15/2016.
+ * Created by Luke on 10/15/2016.
  */
 public class LineFollow{
 
@@ -22,14 +22,14 @@ public class LineFollow{
     long timoutNanoSec=0;
 
     public LineFollow(FTCRobot robot, String lightSensorName, double lowSpeed,
-                      double highSpeed, double lineFollowTimeOut, double basePower, double Kp,
+                      double highSpeed, double lineFollowTimeOut,
                       double white, double black) {
         this.driveSystem = robot.driveSystem;
         this.lightSensor = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(lightSensorName);
         this.lowSpeed = lowSpeed;
         this.highSpeed = highSpeed;
-        this.basePower = basePower;
-        this.Kp = Kp;
+        this.basePower = (lowSpeed+highSpeed)/2;
+        this.Kp = (highSpeed-lowSpeed)/2;
         this.white = white;
         this.black = black;
         this.mid = (white + black) / 2;
@@ -49,6 +49,7 @@ public class LineFollow{
 
     public void setStartTimeStamp() {
         this.stopTimeStamp = System.nanoTime() + this.timoutNanoSec;
+        driveSystem.turnOrSpin(this.highSpeed,this.highSpeed);
     }
 
     public boolean timeoutReached() {
@@ -83,23 +84,24 @@ public class LineFollow{
         }
 
         DbgLog.msg(String.format("Light Detected= %f, mid=%f", light, mid));
+        DbgLog.msg("ahtoiqhtoiwnegt    o");
         //DbgLog.msg(String.format("MotorL power: %f", motor1.getPower()));
         //DbgLog.msg(String.format("MotorR power: %f", motor2.getPower()));
     }
 
     public void followLineProportional() {
+        light = lightSensor.getLightDetected();
 
-        double error, correction;
-        double leftPower, rightPower;
+        double lightOffset = (light-mid)/(white-mid);
+        double leftPower = basePower+ Kp*lightOffset;
+        double rightPower = basePower- Kp*lightOffset;
+        driveSystem.turnOrSpin(leftPower, rightPower);
+
+        DbgLog.msg("Here! light offset = %f, leftPower=%f, rightPower=%f", lightOffset,leftPower,rightPower);
 
 //        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
-        error = lightSensor.getLightDetected() - mid;
-        correction = Kp * error;
-        leftPower = basePower - (correction / 2);
-        rightPower = basePower + (correction / 2);
 //        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
 //                error, correction, leftPower, rightPower);
-        driveSystem.turnOrSpin(leftPower, rightPower);
     }
 
 }
