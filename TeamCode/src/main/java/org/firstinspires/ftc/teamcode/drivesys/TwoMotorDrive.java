@@ -43,17 +43,21 @@ public class TwoMotorDrive extends DriveSystem{
         motorR.setPower(0.0);
     }
 
-    public void driveToDistance(float speed, float direction, double distance){
-        double startingPositionL = motorL.getCurrentPosition();
-        double startingPositionR = motorR.getCurrentPosition();
-
-        double targetPosition =(distance / wheel.getCircumference()) * motorCPR;
-
-        while(((motorL.getCurrentPosition()-startingPositionL)<targetPosition) &&
-                ((motorR.getCurrentPosition()-startingPositionR)<targetPosition)){
-            drive(speed, direction);
-        }
-        motorR.setPower(0);
-        motorL.setPower(0);
+//    public void driveToDistance(float speed, float direction, double distance){
+//        double startingPositionL = motorL.getCurrentPosition();
+//        double startingPositionR = motorR.getCurrentPosition();
+//
+//        double targetPosition =(distance / wheel.getCircumference()) * motorCPR;
+//
+//        while(((motorL.getCurrentPosition()-startingPositionL)<targetPosition) &&
+//                ((motorR.getCurrentPosition()-startingPositionR)<targetPosition)){
+//            drive(speed, direction);
+//        }
+//        motorR.setPower(0);
+//        motorL.setPower(0);
+//    }
+    @Override
+    public void driveToDistance(float speed, double distance){
+        return;
     }
 }

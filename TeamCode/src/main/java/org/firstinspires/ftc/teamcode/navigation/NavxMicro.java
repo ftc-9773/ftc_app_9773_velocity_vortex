@@ -136,6 +136,6 @@ public class NavxMicro {
             if (distanceBetweenAngles(getModifiedYaw(), targetYaw) < this.angleTolerance)
                 break;
         }
-
+        this.robot.driveSystem.stop();
     }
 }

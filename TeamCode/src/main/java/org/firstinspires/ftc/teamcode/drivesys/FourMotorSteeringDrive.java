@@ -23,6 +23,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorR2 = motorR2;
         this.motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
@@ -57,7 +58,76 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorR2.setPower(0.0);
     }
 
+//    @Override
+//    public void drive(float speed, float direction, int distanceInCounts){
+//        double left = (speed + direction) * frictionCoefficient;
+//        double right = (speed - direction) * frictionCoefficient;
+//
+//        int targetDistance = getAvgEncoderVal() + distanceInCounts;
+//
+//        motorR1.setTargetPosition(targetDistance);
+//        motorR2.setTargetPosition(targetDistance);
+//        motorL1.setTargetPosition(targetDistance);
+//        motorL2.setTargetPosition(targetDistance);
+//
+//        motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        motorL1.setPower(left);
+//        motorL2.setPower(left);
+//        motorR1.setPower(right);
+//        motorR2.setPower(right);
+//
+//        while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()){
+//
+//        }
+//
+//        motorL1.setPower(0);
+//        motorL2.setPower(0);
+//        motorR1.setPower(0);
+//        motorR2.setPower(0);
+//
+//        motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    }
 
+    @Override
+    public void driveToDistance(float speed, double distanceInInches){
+        double countsPerInch = motorCPR / wheel.getCircumference();
+        double targetCounts = countsPerInch * distanceInInches;
+
+        motorL1.setTargetPosition((int) targetCounts);
+        motorL2.setTargetPosition((int) targetCounts);
+        motorR1.setTargetPosition((int) targetCounts);
+        motorR2.setTargetPosition((int) targetCounts);
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        motorL1.setPower(speed * frictionCoefficient);
+        motorL2.setPower(speed * frictionCoefficient);
+        motorR1.setPower(speed * frictionCoefficient);
+        motorR2.setPower(speed * frictionCoefficient);
+
+        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()){
+            curOpMode.idle();
+        }
+
+        this.stop();
+
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    private void setDriveSysMode(DcMotor.RunMode runMode){
+        motorL1.setMode(runMode);
+        motorL2.setMode(runMode);
+        motorR1.setMode(runMode);
+        motorR2.setMode(runMode);
+    }
     /*public void driveToDistance(float speed, float direction, double distance){
         double startingPositionL = motorL1.getCurrentPosition();
         double startingPositionR = motorR1.getCurrentPosition();

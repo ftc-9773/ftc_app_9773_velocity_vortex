@@ -74,7 +74,7 @@ public class AutonomousActions {
         fileRW.close();
     }
 
-    public void invokeMethod(String methodName) {
+    public void invokeMethod(String methodName, JSONObject actionObj) {
         // ToDo: invoke the findWhiteLine method
         if (methodName.equals("searchForWhiteLine")) {
             try {
@@ -129,8 +129,16 @@ public class AutonomousActions {
             }
             driveSystem.stop();
         }
-        else if (methodName.equalsIgnoreCase("Turn90Degrees")){
-            robot.navigation.navxMicro.turnRobot(90);
+        else if (methodName.equalsIgnoreCase("TurnDegrees")){
+            double methodParam = 0.0;
+            try {
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "param");
+                methodParam = actionObj.getDouble(key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            robot.navigation.navxMicro.turnRobot(methodParam);
+            DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
         }
     }
 
@@ -156,7 +164,7 @@ public class AutonomousActions {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     methodName = actionObj.getString(key);
                     curOpMode.telemetry.addData("Invoking method: %s", methodName);
-                    invokeMethod(methodName);
+                    invokeMethod(methodName,actionObj);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
