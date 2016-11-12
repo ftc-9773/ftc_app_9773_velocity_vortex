@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drivesys;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -8,6 +9,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorL2 = null;
     DcMotor motorR1 = null;
     DcMotor motorR2 = null;
+    int motorL1MaxSpeed = 0;
+    int motorL2MaxSpeed = 0;
+    int motorR1MaxSpeed = 0;
+    int motorR2MaxSpeed = 0;
     double frictionCoefficient;
     double maxSpeed;
     double minSpeed;
@@ -24,9 +29,17 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
         this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
+        this.motorL1MaxSpeed = this.motorL1.getMaxSpeed();
+        this.motorL2MaxSpeed = this.motorL2.getMaxSpeed();
+        this.motorR1MaxSpeed = this.motorR1.getMaxSpeed();
+        this.motorR2MaxSpeed = this.motorR2.getMaxSpeed();
         this.wheel = wheel;
         this.motorCPR = motorCPR;
     }
@@ -96,14 +109,17 @@ public class FourMotorSteeringDrive extends DriveSystem {
 //    }
 
     @Override
-    public void driveToDistance(float speed, double distanceInInches){
+    public void driveToDistance(float speed, double distanceInInches) {
+        this.setMaxSpeed(speed);
+
         double countsPerInch = motorCPR / wheel.getCircumference();
         double targetCounts = countsPerInch * distanceInInches;
 
-        motorL1.setTargetPosition((int) targetCounts);
-        motorL2.setTargetPosition((int) targetCounts);
-        motorR1.setTargetPosition((int) targetCounts);
-        motorR2.setTargetPosition((int) targetCounts);
+        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
+        motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
+        motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
+        motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
+        motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
 
         setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -118,6 +134,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         this.stop();
 
+        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
@@ -127,6 +144,14 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorL2.setMode(runMode);
         motorR1.setMode(runMode);
         motorR2.setMode(runMode);
+    }
+
+    @Override
+    public void setMaxSpeed(float speed){
+        motorL1.setMaxSpeed((int) (motorL1MaxSpeed * speed));
+        motorL2.setMaxSpeed((int) (motorL2MaxSpeed * speed));
+        motorR1.setMaxSpeed((int) (motorR1MaxSpeed * speed));
+        motorR2.setMaxSpeed((int) (motorR2MaxSpeed * speed));
     }
     /*public void driveToDistance(float speed, float direction, double distance){
         double startingPositionL = motorL1.getCurrentPosition();

@@ -19,8 +19,8 @@
       "type" : "navx-micro",
       "porttype": "i2c",
       "portnum": 0,
-      "driveSysInitialPower": 0.7,
-      "driveSysTargetPower": 0.5,
+      "driveSysInitialPower": 0.3,
+      "driveSysTargetPower": 0.3,
       "angleTolerance": 3.0
     },
     "RangeSensor" : {

@@ -130,6 +130,7 @@ public class AutonomousActions {
             driveSystem.stop();
         }
         else if (methodName.equalsIgnoreCase("TurnDegrees")){
+            DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
             double methodParam = 0.0;
             try {
                 String key = JsonReader.getRealKeyIgnoreCase(actionObj, "param");
@@ -139,6 +140,16 @@ public class AutonomousActions {
             }
             robot.navigation.navxMicro.turnRobot(methodParam);
             DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
+        }
+        else if(methodName.equalsIgnoreCase("DriveToDistance")){
+            double distance = 0.0;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "param");
+                distance = actionObj.getDouble(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            robot.driveSystem.driveToDistance((float) 0.4, distance);
         }
     }
 
