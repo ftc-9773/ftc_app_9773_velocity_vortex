@@ -70,4 +70,5 @@ public class DriveSystem {
     public void driveToDistance(float speed, double distanceInInches){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
+    public void setMaxSpeed(float speed){return;}
 }

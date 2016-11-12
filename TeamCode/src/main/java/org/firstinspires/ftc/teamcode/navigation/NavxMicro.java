@@ -4,9 +4,11 @@ import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.drivesys.FourMotorSteeringDrive;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 
@@ -128,11 +130,13 @@ public class NavxMicro {
         DbgLog.msg("target power left = %f, right = %f",leftTargetPower, rightTargetPower);
         ElapsedTime elapsedTime = new ElapsedTime();
         elapsedTime.reset();
-        while(elapsedTime.time()<0.1) {
-            this.robot.driveSystem.turnOrSpin(leftInitialPower, rightInitialPower);
-        }
+        this.robot.driveSystem.setMaxSpeed((float) driveSysInitialPower);
+//        while(elapsedTime.time()<0.1) {
+//            this.robot.driveSystem.turnOrSpin(leftInitialPower, rightInitialPower);
+//        }
+//        this.robot.driveSystem.setMaxSpeed((float) driveSysTargetPower);
         while (true) {
-            this.robot.driveSystem.turnOrSpin(leftTargetPower,rightTargetPower);
+            this.robot.driveSystem.turnOrSpin(leftInitialPower,rightInitialPower);
             if (distanceBetweenAngles(getModifiedYaw(), targetYaw) < this.angleTolerance)
                 break;
         }

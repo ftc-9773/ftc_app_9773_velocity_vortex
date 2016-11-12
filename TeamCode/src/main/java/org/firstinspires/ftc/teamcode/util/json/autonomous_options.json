@@ -1,6 +1,10 @@
 {
   "testing" : [
-    {"type" : "Programmed", "value" : "Turn90Degrees"}
+    {"type" : "Programmed", "value" : "DriveToDistance","param" : 10.0},
+    {"type" : "Programmed", "value" : "TurnDegrees","param" : -45.0},
+    {"type" : "Programmed", "value" : "DriveToDistance","param" : 60.0},
+    {"type" : "Programmed", "value" : "TurnDegrees","param" : -45.0},
+    {"type" : "Programmed", "value" : "lineFollowProportional"}
   ],
   "all_missions" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
