@@ -67,6 +67,7 @@ public class DriveSystem {
     }
 
     public void drive(float speed, float direction) {return;}
+    public void driveToDistance(float speed, double distanceInInches){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
 }
