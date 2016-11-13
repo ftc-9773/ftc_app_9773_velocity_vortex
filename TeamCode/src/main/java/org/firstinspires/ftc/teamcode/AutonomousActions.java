@@ -20,6 +20,7 @@ public class AutonomousActions {
     String replayFilesDir;
     DriveSystem driveSystem;
 
+
     public AutonomousActions(FTCRobot robot, LinearOpMode curOpMode, String autoOption,
                              String allianceColor) {
         this.robot = robot;
@@ -140,6 +141,9 @@ public class AutonomousActions {
             }
             robot.navigation.navxMicro.turnRobot(methodParam);
             DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
+        }
+        else if(methodName.equalsIgnoreCase("TurnUntilWhiteLine")){
+            robot.navigation.lf.turnUntilWhiteLine(false);
         }
         else if(methodName.equalsIgnoreCase("DriveToDistance")){
             double distance = 0.0;

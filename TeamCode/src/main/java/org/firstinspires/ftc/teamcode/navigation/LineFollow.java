@@ -20,10 +20,12 @@ public class LineFollow{
     DriveSystem driveSystem;
     long stopTimeStamp=0;
     long timoutNanoSec=0;
+    FTCRobot robot;
 
     public LineFollow(FTCRobot robot, String lightSensorName, double lowSpeed,
                       double highSpeed, double lineFollowTimeOut,
                       double white, double black) {
+        this.robot = robot;
         this.driveSystem = robot.driveSystem;
         this.lightSensor = robot.curOpMode.hardwareMap.opticalDistanceSensor.get(lightSensorName);
         this.lowSpeed = lowSpeed;
@@ -89,6 +91,27 @@ public class LineFollow{
         //DbgLog.msg(String.format("MotorR power: %f", motor2.getPower()));
     }
 
+    public void turnUntilWhiteLine(boolean spinClockwise) {
+        double leftInitialPower=0.4, rightInitialPower=0.0;
+        this.robot.driveSystem.setMaxSpeed((float) 0.4);
+        if(spinClockwise){
+            leftInitialPower = 0.4;
+            rightInitialPower = -leftInitialPower;
+        }
+        else{
+            leftInitialPower = -0.4;
+            rightInitialPower = -leftInitialPower;
+        }
+        while (true) {
+            this.robot.driveSystem.turnOrSpin(leftInitialPower,rightInitialPower);
+            if (lightSensor.getLightDetected()>=this.mid)
+                break;
+        }
+        this.robot.driveSystem.stop();
+
+    }
+
+
     public void followLineProportional() {
         light = lightSensor.getLightDetected();
 
@@ -97,7 +120,7 @@ public class LineFollow{
         double rightPower = basePower- Kp*lightOffset;
         driveSystem.turnOrSpin(leftPower, rightPower);
 
-        DbgLog.msg("Here! light offset = %f, leftPower=%f, rightPower=%f", lightOffset,leftPower,rightPower);
+        DbgLog.msg("Here! light = %f, light offset = %f, leftPower=%f, rightPower=%f", light, lightOffset,leftPower,rightPower);
 
 //        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
 //        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
