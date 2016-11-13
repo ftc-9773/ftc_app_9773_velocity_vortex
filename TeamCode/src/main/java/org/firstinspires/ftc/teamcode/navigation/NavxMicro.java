@@ -46,25 +46,9 @@ public class NavxMicro {
         // is '0'. targetAngle is between 0 to 360 degrees.
         double angleToTurn=0;
         double curYaw = getModifiedYaw();
-        boolean spinClockwise=false;
-
-        // 1. Calculate the angle to turn
-        angleToTurn = distanceBetweenAngles(curYaw, targetAngle);
         double diff = targetAngle - curYaw;
-        if (diff == angleToTurn) {
-            spinClockwise = true;
-        } else if (Math.abs(diff) > 180) {
-            spinClockwise = true;
-        } else {
-            spinClockwise = false;
-        }
-
-        // 2. turn the calculated angle
-        if (spinClockwise) {
-            turnRobot(angleToTurn);
-        } else {
-            turnRobot((-1 * angleToTurn));
-        }
+        angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
+        turnRobot(angleToTurn);
     }
 
     public double getModifiedYaw() {
