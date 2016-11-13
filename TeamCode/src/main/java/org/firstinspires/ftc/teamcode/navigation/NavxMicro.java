@@ -44,10 +44,9 @@ public class NavxMicro {
         // The orientation is with respect to the initial autonomous starting position
         // The initial orientation of the robot at the beginning of the autonomous period
         // is '0'. targetAngle is between 0 to 360 degrees.
-        double angleToTurn=0;
         double curYaw = getModifiedYaw();
         double diff = targetAngle - curYaw;
-        angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
+        double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
         turnRobot(angleToTurn);
     }
 
