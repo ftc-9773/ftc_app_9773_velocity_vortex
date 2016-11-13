@@ -4,6 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -48,6 +49,7 @@ public class Launcher implements Attachment{
     public void getAndApplyDScmd() {
         float power;
         power = curOpMode.gamepad2.right_stick_y;
+        power = Range.clip(power, -1, 1);
         launcherMotor.setPower(power);
     }
 }
