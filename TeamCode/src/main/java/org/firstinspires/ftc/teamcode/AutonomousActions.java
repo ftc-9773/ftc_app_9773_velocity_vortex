@@ -155,6 +155,29 @@ public class AutonomousActions {
             }
             robot.driveSystem.driveToDistance((float) 0.4, distance);
         }
+        else if(methodName.equalsIgnoreCase("DriveUntilWhiteLine")){
+            robot.navigation.lf.driveUntilWhiteLine();
+        }
+        else if(methodName.equalsIgnoreCase("SetRobotOrientation")){
+            double orientation = 0.0;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "param");
+                orientation = actionObj.getDouble(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            robot.navigation.navxMicro.setRobotOrientation(orientation);
+        }
+        else if(methodName.equalsIgnoreCase("Sleep")){
+            int milliseconds = 0;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "param");
+                milliseconds = actionObj.getInt(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            curOpMode.sleep(milliseconds);
+        }
     }
 
     public void doActions() throws InterruptedException {
