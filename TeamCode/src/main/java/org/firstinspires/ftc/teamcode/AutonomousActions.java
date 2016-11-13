@@ -76,7 +76,7 @@ public class AutonomousActions {
     }
 
     public void invokeMethod(String methodName, JSONObject actionObj) {
-        // ToDo: invoke the findWhiteLine method
+        // ToDo: Change this into a switch statement
         if (methodName.equals("searchForWhiteLine")) {
             try {
                 robot.navigation.lf.searchForWhiteLine();
