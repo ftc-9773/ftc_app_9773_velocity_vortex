@@ -17,7 +17,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     double maxSpeed;
     double minSpeed;
     Wheel wheel;
-    int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
+    int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   double maxSpeed, double minSpeed, double frictionCoefficient,
@@ -70,43 +70,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorR1.setPower(0.0);
         motorR2.setPower(0.0);
     }
-
-//    @Override
-//    public void drive(float speed, float direction, int distanceInCounts){
-//        double left = (speed + direction) * frictionCoefficient;
-//        double right = (speed - direction) * frictionCoefficient;
-//
-//        int targetDistance = getAvgEncoderVal() + distanceInCounts;
-//
-//        motorR1.setTargetPosition(targetDistance);
-//        motorR2.setTargetPosition(targetDistance);
-//        motorL1.setTargetPosition(targetDistance);
-//        motorL2.setTargetPosition(targetDistance);
-//
-//        motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//        motorL1.setPower(left);
-//        motorL2.setPower(left);
-//        motorR1.setPower(right);
-//        motorR2.setPower(right);
-//
-//        while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()){
-//
-//        }
-//
-//        motorL1.setPower(0);
-//        motorL2.setPower(0);
-//        motorR1.setPower(0);
-//        motorR2.setPower(0);
-//
-//        motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//    }
 
     @Override
     public void driveToDistance(float speed, double distanceInInches) {

@@ -92,26 +92,31 @@ public class LineFollow{
     }
 
     public void turnUntilWhiteLine(boolean spinClockwise) {
-        double leftInitialPower=0.4, rightInitialPower=0.0;
-        this.robot.driveSystem.setMaxSpeed((float) 0.4);
+        double leftInitialPower=0.0, rightInitialPower=0.0;
+        driveSystem.setMaxSpeed((float) 0.3);
         if(spinClockwise){
-            leftInitialPower = 0.4;
+            leftInitialPower = 0.3;
             rightInitialPower = -leftInitialPower;
         }
         else{
-            leftInitialPower = -0.4;
+            leftInitialPower = -0.3;
             rightInitialPower = -leftInitialPower;
         }
-        while (true) {
-            this.robot.driveSystem.turnOrSpin(leftInitialPower,rightInitialPower);
-            if (lightSensor.getLightDetected()>=this.mid)
-                break;
+        while (lightSensor.getLightDetected()<this.mid) {
+            driveSystem.turnOrSpin(leftInitialPower,rightInitialPower);
+//            if (lightSensor.getLightDetected()<this.mid)
+//                break;
         }
-        this.robot.driveSystem.stop();
+        driveSystem.stop();
 
     }
-
-
+    public void driveUntilWhiteLine(){
+        this.robot.driveSystem.setMaxSpeed((float)0.4);
+        while(lightSensor.getLightDetected()<this.mid) {
+            driveSystem.drive((float) 0.4, 0);
+        }
+        driveSystem.stop();
+    }
     public void followLineProportional() {
         light = lightSensor.getLightDetected();
 
@@ -126,5 +131,7 @@ public class LineFollow{
 //        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
 //                error, correction, leftPower, rightPower);
     }
+
+
 
 }
