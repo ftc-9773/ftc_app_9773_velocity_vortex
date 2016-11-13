@@ -71,6 +71,18 @@
       }
     }
   },
+  "Launcher" : {
+    "motors": {
+      "launcherMotor": {
+        "motorType" : "dc",
+        "motor" : "Neverest4",
+        "needReverse" : false,
+        "fixedPositions" : false,
+        "minButton" : "gamepad2.right_stick_y",
+        "maxButton" : "gamepad2.right_stick_y"
+      }
+    }
+  },
   "none" : {
   }
 }

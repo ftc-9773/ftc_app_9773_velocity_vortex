@@ -45,7 +45,6 @@ public class Harvester implements Attachment {
     @Override
     public void getAndApplyDScmd(){
         float power;
-
         power = curOpMode.gamepad2.left_stick_y;
         harvesterMotor.setPower(power);
     }

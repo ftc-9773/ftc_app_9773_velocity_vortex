@@ -69,7 +69,6 @@ public class RobotConfigReader extends JsonReader {
             DbgLog.error("Problem finding one or more attachments for the robot named %s",
                     robotName);
         }
-
         return (attachmentsArr);
     }
 }

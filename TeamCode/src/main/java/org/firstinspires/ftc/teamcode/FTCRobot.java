@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
 import org.firstinspires.ftc.teamcode.attachments.Harvester;
+import org.firstinspires.ftc.teamcode.attachments.Launcher;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
@@ -30,6 +31,7 @@ public class FTCRobot {
     public BeaconClaim beaconClaimObj;
     public CapBallLift capBallLiftObj;
     public Harvester harvesterObj;
+    public Launcher launcherObj;
 
     public FTCRobot(LinearOpMode curOpMode, String robotName) {
         this.curOpMode = curOpMode;
@@ -83,6 +85,11 @@ public class FTCRobot {
                     attachmentsArr[i] = new Harvester(this, curOpMode, rootObj);
                     harvesterObj = (Harvester) attachmentsArr[i];
                     DbgLog.msg("harvesterObj created");
+                    break;
+                case "Launcher":
+                    attachmentsArr[i] = new Launcher(this, curOpMode, rootObj);
+                    launcherObj = (Launcher) attachmentsArr[i];
+                    DbgLog.msg("launcherObj created");
                     break;
             }
         }
