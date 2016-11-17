@@ -13,6 +13,7 @@ public class NavigationOptionsReader extends JsonReader {
     public JSONObject lfObj=null;
     public JSONObject imuObj=null;
     public JSONObject rangeObj=null;
+    public JSONObject encoderVarsObj=null;
 
     public NavigationOptionsReader(String filePath, String navOptStr) {
         super(filePath);
@@ -31,6 +32,10 @@ public class NavigationOptionsReader extends JsonReader {
             if (key != null) {
                 rangeObj = navOptObj.getJSONObject(key);
             }
+            key = JsonReader.getRealKeyIgnoreCase(navOptObj, "DriveSysEncoderVariables");
+            if (key != null) {
+                encoderVarsObj = navOptObj.getJSONObject(key);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -45,6 +50,8 @@ public class NavigationOptionsReader extends JsonReader {
     }
 
     public boolean rangeSensorExists() { return (this.rangeObj != null); }
+
+    public boolean encoderVarsExist() { return (this.encoderVarsObj != null); }
 
     public String getLightSensorName() {
         String lightSensorName = null;
@@ -189,5 +196,38 @@ public class NavigationOptionsReader extends JsonReader {
             e.printStackTrace();
         }
         return angleTolerance;
+    }
+
+    public double getTurningMaxSpeed() {
+        double maxSpeed=1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, "TurningMaxSpeed");
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
+    }
+
+    public double getStraightLineMaxSpeed() {
+        double maxSpeed=1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, "StraightLineMaxSpeed");
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
+    }
+
+    public double getLineFollowMaxSpeed() {
+        double maxSpeed=1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, "LineFollowMaxSpeed");
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
     }
 }

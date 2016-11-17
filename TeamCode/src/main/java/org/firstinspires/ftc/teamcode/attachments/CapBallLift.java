@@ -38,12 +38,15 @@ public class CapBallLift implements  Attachment {
                 DbgLog.msg("Reversing the lift servo");
                 liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
+            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            double maxSpeed = liftMotorObj.getDouble("maxSpeed");
+            liftMotor.setMaxSpeed((int)(liftMotor.getMaxSpeed() * maxSpeed));
+
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
             liftServoObj = motorsObj.getJSONObject(key);
             liftServo = curOpMode.hardwareMap.servo.get("liftServo");
             liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
                     liftServoObj.getDouble("scaleRangeMax"));
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

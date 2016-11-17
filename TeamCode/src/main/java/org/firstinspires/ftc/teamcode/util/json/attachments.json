@@ -4,17 +4,17 @@
   "BeaconClaim" : {
     "motors" : {
       "buttonServo" : {
-        "motorType" : "servo",
+        "motorType" : "CRservo",
         "motor" : "Tetrix-HS755-HB",
         "__comment" : "The following 2 values have to be changed",
-        "scaleRangeMin" : 0.15,
-        "scaleRangeMax" : 0.549,
+        "__scaleRangeMin" : 0.15,
+        "__scaleRangeMax" : 0.549,
         "needReverse" : true,
-        "fixedPositions" : true,
+        "__fixedPositions" : true,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
       },
-      "colorServo" : {
+      "__colorServo_unused" : {
         "motorType" : "servo",
         "motor" : "Tetrix-HS755-HB",
         "scaleRangeMin" : 0.0,
@@ -43,8 +43,9 @@
         "motor" : "Neverest60",
         "needReverse" : false,
         "fixedPositions" : false,
-        "minButton" : "gamepad2.right_stick_y",
-        "maxButton" : "gamepad2.right_stick_y"
+        "maxSpeed" : 0.9,
+        "minButton" : "gamepad1.left_trigger",
+        "maxButton" : "gamepad1.right_trigger"
       },
       "liftServo":{
         "motorType" : "servo",
@@ -54,8 +55,8 @@
         "scaleRangeMax" : 0.902,
         "needReverse" : false,
         "fixedPositions" : true,
-        "minButton" : "gamepad2.y",
-        "maxButton" : "gamepad2.a"
+        "minButton" : "gamepad1.left_bumper",
+        "maxButton" : "gamepad1.right_bumper"
       }
     }
   },
@@ -66,26 +67,28 @@
         "motor" : "Neverest40",
         "needReverse" : false,
         "fixedPositions" : false,
+        "maxSpeed" : 0.9,
         "minButton" : "gamepad2.left_stick_y",
         "maxButton" : "gamepad2.left_stick_y"
       }
     }
   },
-  "Launcher" : {
+  "ParticleAccelerator" : {
     "motors": {
-      "launcherMotor": {
+      "partAccMotor": {
         "motorType" : "dc",
         "motor" : "Neverest4",
         "needReverse" : false,
         "fixedPositions" : false,
+        "maxSpeed" : 1.0,
         "minButton" : "gamepad2.right_stick_y",
         "maxButton" : "gamepad2.right_stick_y"
       }
     }
   },
-  "ParticleRelease_TBD":{
+  "ParticleRelease":{
     "motors": {
-      "particleServo":{
+      "particleReleaseServo":{
         "motorType" : "servo",
         "motor" : "Tetrix-HS755-HB",
         "__scaleRange" : "upright:120, expand: 230",

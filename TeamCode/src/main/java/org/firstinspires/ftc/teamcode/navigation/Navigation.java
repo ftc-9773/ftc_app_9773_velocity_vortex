@@ -18,6 +18,7 @@ public class Navigation {
     public NavxMicro navxMicro;
     public ModernRoboticsI2cRangeSensor rangeSensor;
     public double minDistance=15.0; // in cm
+    public double lfMaxSpeed=1.0, straightDrMaxSpeed=1.0, turnMaxSpeed=1.0;
 
     public Navigation(FTCRobot robot, LinearOpMode curOpMode, String navOptionStr) {
         this.robot = robot;
@@ -52,6 +53,12 @@ public class Navigation {
         }
          else {
             this.rangeSensor = null;
+        }
+
+        if (navOption.encoderVarsExist()) {
+            this.lfMaxSpeed = navOption.getLineFollowMaxSpeed();
+            this.straightDrMaxSpeed = navOption.getStraightLineMaxSpeed();
+            this.turnMaxSpeed = navOption.getTurningMaxSpeed();
         }
     }
 }

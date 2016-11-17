@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.navigation;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
@@ -93,7 +94,7 @@ public class LineFollow{
 
     public void turnUntilWhiteLine(boolean spinClockwise) {
         double leftInitialPower=0.0, rightInitialPower=0.0;
-        driveSystem.setMaxSpeed((float) 0.3);
+        driveSystem.setMaxSpeed((float) this.robot.navigation.turnMaxSpeed);
         if(spinClockwise){
             leftInitialPower = 0.3;
             rightInitialPower = -leftInitialPower;
@@ -108,15 +109,38 @@ public class LineFollow{
 //                break;
         }
         driveSystem.stop();
+        driveSystem.resumeMaxSpeed();
 
     }
     public void driveUntilWhiteLine(){
-        this.robot.driveSystem.setMaxSpeed((float)0.4);
+        this.robot.driveSystem.setMaxSpeed((float)this.robot.navigation.straightDrMaxSpeed);
         while(lightSensor.getLightDetected()<this.mid) {
-            driveSystem.drive((float) 0.4, 0);
+            driveSystem.drive(-(float) this.robot.navigation.lfMaxSpeed, 0);
         }
         driveSystem.stop();
+        driveSystem.resumeMaxSpeed();
     }
+
+    public void printMinMaxLightDetected() {
+        double minLight = 1.0, maxLight=0.0, curLight;
+        driveSystem.setMaxSpeed((float)robot.navigation.turnMaxSpeed);
+        robot.driveSystem.turnOrSpin(-0.4, 0.4);
+        double initialYaw = robot.navigation.navxMicro.getModifiedYaw();
+        double diffYaw=0.0;
+        while (diffYaw < 45.0) {
+            curLight = robot.navigation.lf.lightSensor.getLightDetected();
+            if (minLight > curLight) minLight = curLight;
+            if (maxLight < curLight) maxLight = curLight;
+            diffYaw = Math.abs(robot.navigation.navxMicro.getModifiedYaw() - initialYaw);
+            DbgLog.msg("diffYaw=%f, minLight=%f, maxLight=%f, curLight=%f", diffYaw,
+                    minLight, maxLight, curLight);
+        }
+        driveSystem.stop();
+        driveSystem.resumeMaxSpeed();
+        robot.curOpMode.telemetry.addData("Light Detected:", "minLight=%f, maxLight=%f", minLight, maxLight);
+        robot.curOpMode.telemetry.update();
+    }
+
     public void followLineProportional() {
         light = lightSensor.getLightDetected();
 

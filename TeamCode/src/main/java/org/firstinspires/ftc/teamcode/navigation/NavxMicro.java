@@ -36,6 +36,9 @@ public class NavxMicro {
                 portNum, AHRS.DeviceDataType.kProcessedData);
 
         // Set the yaw to zero
+        while (navx_device.isCalibrating()) {
+            curOpMode.idle();
+        }
         // ToDo:  The should be done only in the autonomous mode.
         navx_device.zeroYaw();
     }
@@ -113,16 +116,19 @@ public class NavxMicro {
         DbgLog.msg("target power left = %f, right = %f",leftTargetPower, rightTargetPower);
         ElapsedTime elapsedTime = new ElapsedTime();
         elapsedTime.reset();
-        this.robot.driveSystem.setMaxSpeed((float) driveSysInitialPower);
+        this.robot.driveSystem.setMaxSpeed((float) this.robot.navigation.turnMaxSpeed);
 //        while(elapsedTime.time()<0.1) {
 //            this.robot.driveSystem.turnOrSpin(leftInitialPower, rightInitialPower);
 //        }
 //        this.robot.driveSystem.setMaxSpeed((float) driveSysTargetPower);
         while (true) {
             this.robot.driveSystem.turnOrSpin(leftInitialPower,rightInitialPower);
+//            DbgLog.msg("raw Yaw = %f, Current Yaw = %f, targetYaw = %f", navx_device.getYaw(), getModifiedYaw(), targetYaw);
+            DbgLog.msg("light detected = %f", robot.navigation.lf.lightSensor.getLightDetected());
             if (distanceBetweenAngles(getModifiedYaw(), targetYaw) < this.angleTolerance)
                 break;
         }
         this.robot.driveSystem.stop();
+        this.robot.driveSystem.resumeMaxSpeed();
     }
 }

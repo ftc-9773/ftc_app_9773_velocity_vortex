@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drivesys;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class TwoMotorDrive extends DriveSystem{
     DcMotor motorL = null;
@@ -8,6 +9,7 @@ public class TwoMotorDrive extends DriveSystem{
     double frictionCoefficient;
     double maxSpeed;
     double minSpeed;
+    int motorLMaxSpeed, motorRMaxSpeed;
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
 
@@ -20,6 +22,8 @@ public class TwoMotorDrive extends DriveSystem{
         this.minSpeed = minSpeed;
         this.wheel = wheel;
         this.motorCPR = motorCPR;
+        this.motorLMaxSpeed = motorL.getMaxSpeed();
+        this.motorRMaxSpeed = motorR.getMaxSpeed();
     }
 
     @Override
@@ -59,5 +63,23 @@ public class TwoMotorDrive extends DriveSystem{
     @Override
     public void driveToDistance(float speed, double distance){
         return;
+    }
+
+    @Override
+    public void setMaxSpeed(float maxSpeed) {
+        motorL.setMaxSpeed((int)(motorLMaxSpeed * maxSpeed));
+        motorR.setMaxSpeed((int)(motorRMaxSpeed * maxSpeed));
+    }
+
+    @Override
+    public void resumeMaxSpeed() {
+        motorL.setMaxSpeed(motorLMaxSpeed);
+        motorR.setMaxSpeed(motorRMaxSpeed);
+    }
+
+    @Override
+    public void reverse() {
+        motorL.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorR.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }

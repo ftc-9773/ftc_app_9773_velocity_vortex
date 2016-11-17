@@ -103,10 +103,12 @@ public class AutonomousActions {
             boolean stopLineFollow = false;
             DbgLog.msg("minDistance=%f", robot.navigation.minDistance);
 
+            robot.beaconClaimObj.activateButtonServo(); // extend the arm for sensing the color
             while (!stopLineFollow) {
                 robot.navigation.lf.followLineProportional();
                 stopLineFollow = (robot.navigation.rangeSensor.cmUltrasonic() <=
-                        robot.navigation.minDistance);
+                        robot.navigation.minDistance) ||
+                        (robot.beaconClaimObj.isBeaconRed() || robot.beaconClaimObj.isBeaconBlue());
                 DbgLog.msg("Range sensor value = %f", robot.navigation.rangeSensor.cmUltrasonic());
             }
             DbgLog.msg("Done with lineFollowProportional");
@@ -153,7 +155,7 @@ public class AutonomousActions {
             }catch (JSONException e) {
                 e.printStackTrace();
             }
-            robot.driveSystem.driveToDistance((float) 0.4, distance);
+            robot.driveSystem.driveToDistance((float) robot.navigation.straightDrMaxSpeed, distance);
         }
         else if(methodName.equalsIgnoreCase("DriveUntilWhiteLine")){
             robot.navigation.lf.driveUntilWhiteLine();
@@ -167,6 +169,12 @@ public class AutonomousActions {
                 e.printStackTrace();
             }
             robot.navigation.navxMicro.setRobotOrientation(orientation);
+        }
+        else if(methodName.equalsIgnoreCase("printMinMaxLightDetected")) {
+            robot.navigation.lf.printMinMaxLightDetected();
+        }
+        else if(methodName.equalsIgnoreCase("reverseDriveSystem")) {
+            driveSystem.reverse();
         }
         else if(methodName.equalsIgnoreCase("Sleep")){
             int milliseconds = 0;
@@ -201,7 +209,7 @@ public class AutonomousActions {
                 else if (actionObj.getString(key).equalsIgnoreCase("Programmed")) {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     methodName = actionObj.getString(key);
-                    curOpMode.telemetry.addData("Invoking method: %s", methodName);
+                    DbgLog.msg("Invoking method: %s", methodName);
                     invokeMethod(methodName,actionObj);
                 }
             } catch (JSONException e) {

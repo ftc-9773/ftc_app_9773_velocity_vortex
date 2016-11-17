@@ -52,11 +52,9 @@ public class RobotConfigReader extends JsonReader {
     }
 
     public String[] getAttachments() {
-        // ToDo
         int len = 0;
         String[] attachmentsArr = null;
         try {
-            DbgLog.msg("Here!");
             JSONArray attachs = robotObj.getJSONArray("attachments");
             len = attachs.length();
             DbgLog.msg("Length of attachs array = %d", attachs.length());

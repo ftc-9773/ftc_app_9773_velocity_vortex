@@ -96,6 +96,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
 
         this.stop();
+        this.resumeMaxSpeed();
 
         DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -116,6 +117,23 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorR1.setMaxSpeed((int) (motorR1MaxSpeed * speed));
         motorR2.setMaxSpeed((int) (motorR2MaxSpeed * speed));
     }
+
+    @Override
+    public void resumeMaxSpeed() {
+        motorL1.setMaxSpeed(motorL1MaxSpeed);
+        motorL2.setMaxSpeed(motorL2MaxSpeed);
+        motorR1.setMaxSpeed(motorR1MaxSpeed);
+        motorR2.setMaxSpeed(motorR2MaxSpeed);
+    }
+
+    @Override
+    public void reverse() {
+        motorL1.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorL2.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
     /*public void driveToDistance(float speed, float direction, double distance){
         double startingPositionL = motorL1.getCurrentPosition();
         double startingPositionR = motorR1.getCurrentPosition();
