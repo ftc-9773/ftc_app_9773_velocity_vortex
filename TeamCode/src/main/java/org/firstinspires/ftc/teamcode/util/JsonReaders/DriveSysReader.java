@@ -9,15 +9,15 @@ import org.json.JSONObject;
 
 public class DriveSysReader extends JsonReader {
     JSONObject driveSysObj;
-    String driveSysType;
+    String driveSysName;
 
-    public DriveSysReader(String filePath, String driveSysType)
+    public DriveSysReader(String filePath, String driveSysName)
     {
         super(filePath);
         try {
-            driveSysType = JsonReader.getRealKeyIgnoreCase(jsonRoot, driveSysType);
-            driveSysObj = jsonRoot.getJSONObject(driveSysType);
-            this.driveSysType = driveSysType;
+            driveSysName = JsonReader.getRealKeyIgnoreCase(jsonRoot, driveSysName);
+            driveSysObj = jsonRoot.getJSONObject(driveSysName);
+            this.driveSysName = driveSysName;
         }catch (JSONException e){
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public class DriveSysReader extends JsonReader {
         return wheelType;
     }
 
-    public String getDriveSysType() {
-        return driveSysType;
+    public String getDriveSysName() {
+        return driveSysName;
     }
 }

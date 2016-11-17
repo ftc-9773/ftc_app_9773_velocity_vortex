@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
-import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
 import org.json.JSONException;
 
 @TeleOp(name = "TeleOpRed", group = "TeleOp")

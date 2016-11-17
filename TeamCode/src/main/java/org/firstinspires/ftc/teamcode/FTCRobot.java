@@ -7,11 +7,10 @@ import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
 import org.firstinspires.ftc.teamcode.attachments.Harvester;
-import org.firstinspires.ftc.teamcode.attachments.Launcher;
+import org.firstinspires.ftc.teamcode.attachments.ParticleAccelerator;
 import org.firstinspires.ftc.teamcode.attachments.ParticleRelease;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
-import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
@@ -32,7 +31,7 @@ public class FTCRobot {
     public BeaconClaim beaconClaimObj;
     public CapBallLift capBallLiftObj;
     public Harvester harvesterObj;
-    public Launcher launcherObj;
+    public ParticleAccelerator partAccObj;
     public ParticleRelease particleObj;
 
     public FTCRobot(LinearOpMode curOpMode, String robotName) {
@@ -53,7 +52,6 @@ public class FTCRobot {
         }
         if (driveSystem == null) {
             DbgLog.error("Drivesystem not properly initialized");
-            DbgLog.msg("");
         }
 
         // Create the objects for attachments
@@ -88,10 +86,10 @@ public class FTCRobot {
                     harvesterObj = (Harvester) attachmentsArr[i];
                     DbgLog.msg("harvesterObj created");
                     break;
-                case "Launcher":
-                    attachmentsArr[i] = new Launcher(this, curOpMode, rootObj);
-                    launcherObj = (Launcher) attachmentsArr[i];
-                    DbgLog.msg("launcherObj created");
+                case "ParticleAccelerator":
+                    attachmentsArr[i] = new ParticleAccelerator(this, curOpMode, rootObj);
+                    partAccObj = (ParticleAccelerator) attachmentsArr[i];
+                    DbgLog.msg("partAccObj created");
                     break;
                 case "ParticleRelease":
                     attachmentsArr[i] = new ParticleRelease(this, curOpMode, rootObj);
@@ -134,16 +132,14 @@ public class FTCRobot {
     }
 
     public void runAutonomous(String autonomousOpt, String allianceColor,
-                                           long startingDelay, int startingPosition) {
+                              long startingDelay, int startingPosition) {
         this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
 
         try {
             curOpMode.waitForStart();
             DbgLog.msg("Starting delay = %d seconds", startingDelay);
-            if (startingDelay > 0) {
-                sleep(startingDelay);
-            }
+            if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
             while (curOpMode.opModeIsActive()) {
                 autonomousActions.doActions();
                 break;

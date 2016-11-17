@@ -34,18 +34,15 @@ public class ParticleRelease implements Attachment{
             particleObj = rootObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(particleObj, "motors");
             motorsObj = particleObj.getJSONObject(key);
-//            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftMotor");
-//            liftMotorObj = motorsObj.getJSONObject(key);
-//            liftMotor = curOpMode.hardwareMap.dcMotor.get("liftMotor");
-//            if (liftMotorObj.getBoolean("needReverse")) {
-//                DbgLog.msg("Reversing the lift servo");
-//                liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//            }
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "particleServo");
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "particleReleaseServo");
             particleServoObj = motorsObj.getJSONObject(key);
-            particleServo = curOpMode.hardwareMap.servo.get("particleServo");
+            particleServo = curOpMode.hardwareMap.servo.get("particleReleaseServo");
             particleServo.scaleRange(particleServoObj.getDouble("scaleRangeMin"),
                     particleServoObj.getDouble("scaleRangeMax"));
+            if (particleServoObj.getBoolean("needReverse")) {
+                DbgLog.msg("Reversing the particle release servo");
+                particleServo.setDirection(Servo.Direction.REVERSE);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
