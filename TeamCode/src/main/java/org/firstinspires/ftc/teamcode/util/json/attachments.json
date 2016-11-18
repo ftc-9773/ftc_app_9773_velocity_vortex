@@ -91,9 +91,9 @@
       "particleReleaseServo":{
         "motorType" : "servo",
         "motor" : "Tetrix-HS755-HB",
-        "__scaleRange" : "upright:120, expand: 230",
-        "scaleRangeMin" : 0.47,
-        "scaleRangeMax" : 0.902,
+        "__scaleRange" : "block:140, release: 255",
+        "scaleRangeMin" : 0.549,
+        "scaleRangeMax" : 1.0,
         "needReverse" : false,
         "fixedPositions" : true,
         "minButton" : "gamepad2.y",

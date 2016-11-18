@@ -48,9 +48,11 @@ public class ParticleAccelerator implements Attachment{
     
     @Override
     public void getAndApplyDScmd() {
-        float power;
-        power = curOpMode.gamepad2.right_stick_y;
-        power = Range.clip(power, -1, 1);
-        launcherMotor.setPower(power);
+        if (curOpMode.gamepad1.dpad_up) {
+            launcherMotor.setPower(1.0);
+        }
+        else if (curOpMode.gamepad1.dpad_down) {
+            launcherMotor.setPower(0.0);
+        }
     }
 }

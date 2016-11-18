@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.attachments;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -91,7 +92,7 @@ public class BeaconClaim implements Attachment {
                     buttonServo.setDirection(CRServo.Direction.REVERSE);
                 }
                 // CR Servo should be set to 0.5 (or close to that value) to stop moving
-                buttonServo.setPower(0.5);
+                buttonServo.setPower(0.0);
 //                buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
 //                        buttonServoObj.getDouble("scaleRangeMax"));
 //                if (buttonServoObj.getBoolean("needReverse")) {
@@ -123,14 +124,14 @@ public class BeaconClaim implements Attachment {
     // This method should be called in the while(opModeIsActive) loop
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad1.a) {
-            buttonServo.setPower(0.0);
+        if (curOpMode.gamepad2.x) {
+            buttonServo.setPower(-0.5);
         }
-        if (curOpMode.gamepad1.y) {
-            buttonServo.setPower(1.0);
-        }
-        if (curOpMode.gamepad1.dpad_down) {
+        else if (curOpMode.gamepad2.b) {
             buttonServo.setPower(0.5);
+        }
+        else {
+            buttonServo.setPower(0.0);
         }
     }
 
