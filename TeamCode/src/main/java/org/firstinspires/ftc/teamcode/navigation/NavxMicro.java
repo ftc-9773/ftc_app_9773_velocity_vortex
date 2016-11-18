@@ -36,9 +36,9 @@ public class NavxMicro {
                 portNum, AHRS.DeviceDataType.kProcessedData);
 
         // Set the yaw to zero
-        while (navx_device.isCalibrating()) {
-            curOpMode.idle();
-        }
+//        while (navx_device.isCalibrating()) {
+//            curOpMode.idle();
+//        }
         // ToDo:  The should be done only in the autonomous mode.
         navx_device.zeroYaw();
     }

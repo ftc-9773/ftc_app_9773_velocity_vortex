@@ -30,7 +30,8 @@
       "__Comment" : "These values are applicable when driving with RUN_USING_ENCODERS or RUN_TO_POSITION setting",
       "LineFollowMaxSpeed" : 0.2,
       "TurningMaxSpeed" : 0.3,
-      "StraightLineMaxSpeed" : 0.5
+      "StraightLineMaxSpeed" : 0.5,
+      "DriveSysTeleOpMaxSpeed" : 1.0
     }
   },
   "LineFollowAndIMU" : {

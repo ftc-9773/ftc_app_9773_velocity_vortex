@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.attachments;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,7 +17,7 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    Servo liftServo;
+    CRServo liftServo;
 
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
@@ -44,9 +45,10 @@ public class CapBallLift implements  Attachment {
 
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
             liftServoObj = motorsObj.getJSONObject(key);
-            liftServo = curOpMode.hardwareMap.servo.get("liftServo");
-            liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
-                    liftServoObj.getDouble("scaleRangeMax"));
+            liftServo = curOpMode.hardwareMap.crservo.get("liftServo");
+//            liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
+//                    liftServoObj.getDouble("scaleRangeMax"));
+            liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -57,21 +59,18 @@ public class CapBallLift implements  Attachment {
         float power;
 
 
-        if(curOpMode.gamepad1.right_trigger > 0){
-            power = curOpMode.gamepad1.right_trigger;
+        power = curOpMode.gamepad2.right_stick_y;
+
+        liftMotor.setPower(power);
+
+        if (curOpMode.gamepad2.a){
+            liftServo.setPower(-0.5);
         }
-        else if(curOpMode.gamepad1.left_trigger > 0){
-            power = -curOpMode.gamepad1.left_trigger;
+        else if (curOpMode.gamepad2.y){
+            liftServo.setPower(0.5);
         }
         else{
-            power = 0;
-        }
-        liftMotor.setPower(power);
-        if (curOpMode.gamepad1.left_bumper){
-            liftServo.setPosition(0.0);
-        }
-        else if (curOpMode.gamepad1.right_bumper){
-            liftServo.setPosition(1.0);
+            liftServo.setPower(0.0);
         }
     }
 }

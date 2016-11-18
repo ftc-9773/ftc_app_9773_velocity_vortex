@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
@@ -104,17 +105,21 @@ public class FTCRobot {
         float speed;
         float direction;
 
+        // Set the drive system teleop mode max speed
+        driveSystem.setMaxSpeed((float) navigation.driveSysTeleopMaxSpeed);
         curOpMode.waitForStart();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {
-                speed = -curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                speed = -curOpMode.gamepad1.left_stick_y;
                 direction = curOpMode.gamepad1.right_stick_x;
             }
             else{
-                speed = curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                speed = curOpMode.gamepad1.left_stick_y;
                 direction = curOpMode.gamepad1.right_stick_x;
             }
+            speed = (float) Range.clip(speed, -1.0, 1.0);
+            direction = (float) Range.clip(direction, -1.0, 1.0);
 
             driveSystem.drive(speed, direction);
             if(curOpMode.gamepad1.x){

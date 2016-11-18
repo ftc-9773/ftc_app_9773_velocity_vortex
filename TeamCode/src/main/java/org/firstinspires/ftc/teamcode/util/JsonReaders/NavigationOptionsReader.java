@@ -96,51 +96,6 @@ public class NavigationOptionsReader extends JsonReader {
         return (value);
     }
 
-/*
-    public double  getLineFollowLowSpeed() {
-        JSONObject lfVarObj;
-        double lowSpeed = 0.0;
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
-            lfVarObj = lfObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, "lowSpeed");
-            lowSpeed = lfVarObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return (lowSpeed);
-    }
-
-    public double  getLineFollowHighSpeed() {
-        JSONObject lfVarObj;
-        double highSpeed = 0.0;
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
-            lfVarObj = lfObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, "highSpeed");
-            highSpeed = lfVarObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return (highSpeed);
-    }
-
-    public double getLineFollowTimeOut() {
-        double timeoutSec = 0.0;
-        JSONObject lfVarObj;
-
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
-            lfVarObj = lfObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, "timeOut");
-            timeoutSec = lfVarObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return (timeoutSec);
-    }
-*/
-
     public String getIMUDIMname() {
         String imuName = null;
         try {
@@ -196,6 +151,17 @@ public class NavigationOptionsReader extends JsonReader {
             e.printStackTrace();
         }
         return angleTolerance;
+    }
+
+    public double getDoubleDriveSysEncVar(String varName) {
+        double maxSpeed = 1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, varName);
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
     }
 
     public double getTurningMaxSpeed() {
