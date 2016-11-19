@@ -4,6 +4,9 @@
     {"type" : "Programmed", "value" : "lineFollowProportional"},
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
+  "testing2" : [
+    {"type" : "Replay", "value" : "StartToCapBall.csv"}
+  ],
   "FullTest" : [
     {"type" : "Programmed", "value" : "DriveToDistance","param" : -10.0},
     {"type" : "Programmed", "value" : "TurnDegrees","param" : -45.0},
