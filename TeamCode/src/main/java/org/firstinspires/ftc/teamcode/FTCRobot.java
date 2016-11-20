@@ -191,8 +191,21 @@ public class FTCRobot {
         long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
         double spinAngle = 0;
+        boolean isReverse = false;
         while (curOpMode.opModeIsActive()) {
-            double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+            double speed = 0;
+            if(!isReverse) {
+                speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+            }
+            if (isReverse){
+                speed = curOpMode.gamepad1.left_stick_y * 0.3;
+            }
+            if(curOpMode.gamepad1.x){
+                isReverse = true;
+            }
+            if (curOpMode.gamepad1.b){
+                isReverse = false;
+            }
             double direction = curOpMode.gamepad1.right_stick_x * 0.5;
             if(curOpMode.gamepad1.left_bumper){
                 spinAngle = navigation.navxMicro.getModifiedYaw();
