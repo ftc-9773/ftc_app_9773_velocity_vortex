@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
@@ -14,6 +15,9 @@ public class Navigation {
     LinearOpMode curOpMode;
     JSONObject navOptObj;
     public LineFollow lf;
+    public NavxMicro navxMicro;
+    public ModernRoboticsI2cRangeSensor rangeSensor;
+    public double minDistance=15.0; // in cm
 
     public Navigation(FTCRobot robot, LinearOpMode curOpMode, String navOptionStr) {
         this.robot = robot;
@@ -23,8 +27,33 @@ public class Navigation {
                 navOptionStr);
         this.navOptObj = navOption.jsonRoot;
 
-        this.lf = new LineFollow(robot, navOption.getLightSensorName(),
-                navOption.getLineFollowLowSpeed(), navOption.getLineFollowHighSpeed(),
-                navOption.getLineFollowTimeOut());
+        if (navOption.lineFollowerExists()) {
+            this.lf = new LineFollow(robot, navOption.getLightSensorName(),
+                    navOption.getLFvariableDouble("lowSpeed"),
+                    navOption.getLFvariableDouble("highSpeed"),
+                    navOption.getLFvariableDouble("timeOut"),
+                    navOption.getLFvariableDouble("basePower"),
+                    navOption.getLFvariableDouble("Kp"),
+                    navOption.getLFvariableDouble("white"),
+                    navOption.getLFvariableDouble("black"));
+        }
+        else {
+            this.lf = null;
+        }
+
+        if (navOption.imuExists()) {
+            this.navxMicro = new NavxMicro(curOpMode, robot, navOption.getIMUDIMname(),
+                    navOption.getIMUportNum(), navOption.getIMUdriveSysPower(), navOption.getIMUAngleTolerance());
+        }
+        else {
+            this.navxMicro = null;
+        }
+
+        if (navOption.rangeSensorExists()) {
+            this.rangeSensor = curOpMode.hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor1");
+        }
+         else {
+            this.rangeSensor = null;
+        }
     }
 }

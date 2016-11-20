@@ -42,6 +42,7 @@ public class AutonomousActions {
         long startingTime = System.nanoTime();
         long elapsedTime = 0;
         long sleepTime = 0;
+        int turnCounter = 0;
         while ((line = fileRW.getNextLine()) != null) {
             String[] lineElements = line.split(",");
 //            DbgLog.msg("lineElements length = %d", lineElements.length);
@@ -57,7 +58,18 @@ public class AutonomousActions {
                     sleepTime = timestamp - elapsedTime;
                     TimeUnit.NANOSECONDS.sleep(sleepTime);
                 }
-                driveSystem.drive((float) speed, (float) direction);
+                if(lineElements.length > 3){
+                    if(turnCounter == 0) {
+                        DbgLog.msg("Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
+                        robot.navigation.navxMicro.setRobotOrientation(Double.parseDouble(lineElements[3]));
+                        DbgLog.msg("Reached target orientation");
+                    }
+                    turnCounter++;
+                }
+                else{
+                    turnCounter = 0;
+                    driveSystem.drive((float) speed, (float) direction);
+                }
             }
         }
         fileRW.close();
@@ -87,11 +99,39 @@ public class AutonomousActions {
             DbgLog.msg("Done with lineFollow");
             robot.driveSystem.stop();
         }
+        else if (methodName.equalsIgnoreCase("lineFollowProportional")) {
+            boolean stopLineFollow = false;
+            DbgLog.msg("minDistance=%f", robot.navigation.minDistance);
+
+            while (!stopLineFollow) {
+                robot.navigation.lf.followLineProportional();
+                stopLineFollow = (robot.navigation.rangeSensor.cmUltrasonic() <=
+                        robot.navigation.minDistance);
+                DbgLog.msg("Range sensor value = %f", robot.navigation.rangeSensor.cmUltrasonic());
+            }
+            DbgLog.msg("Done with lineFollowProportional");
+            robot.driveSystem.stop();
+        }
         else if(methodName.equalsIgnoreCase("claimAbeacon")){
             robot.beaconClaimObj.claimABeacon();
         }
         else if(methodName.equalsIgnoreCase("verifyBeaconColor")){
             robot.beaconClaimObj.verifyBeaconColor();
+        }
+        else if (methodName.equalsIgnoreCase("checkBeaconColor")) {
+            robot.beaconClaimObj.checkBeaconColor();
+        }
+        else if (methodName.equalsIgnoreCase("testSetRobotOrientation")){
+            robot.navigation.navxMicro.setRobotOrientation(270);
+        }
+        else if(methodName.equalsIgnoreCase("moveBackFor1s")){
+            while (robot.navigation.rangeSensor.cmUltrasonic() < 25){
+                robot.driveSystem.drive((float) -0.3,0);
+            }
+            driveSystem.stop();
+        }
+        else if (methodName.equalsIgnoreCase("Turn90Degrees")){
+            robot.navigation.navxMicro.turnRobot(90);
         }
     }
 

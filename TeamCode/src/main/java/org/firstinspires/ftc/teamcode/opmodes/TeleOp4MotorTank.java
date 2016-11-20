@@ -8,9 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.drivesys.FourMotorTankDrive;
+import org.firstinspires.ftc.teamcode.drivesys.FourMotorSteeringDrive;
 import org.firstinspires.ftc.teamcode.drivesys.Wheel;
-import org.firstinspires.ftc.teamcode.util.JsonReaders.DriveSysReader;
 
 @TeleOp(name = "TeleOp4MotorTank", group = "TeleOp")
 public class TeleOp4MotorTank extends LinearOpMode {
@@ -18,7 +17,7 @@ public class TeleOp4MotorTank extends LinearOpMode {
     DcMotor motorL2;
     DcMotor motorR1;
     DcMotor motorR2;
-    FourMotorTankDrive drivesys;
+    FourMotorSteeringDrive drivesys;
     Wheel wheel;
 
     @Override
@@ -29,7 +28,7 @@ public class TeleOp4MotorTank extends LinearOpMode {
         motorR1 = hardwareMap.dcMotor.get("motorR1");
         motorR2 = hardwareMap.dcMotor.get("motorR2");
         wheel = new Wheel("rubber-treaded", 4.0);
-        drivesys = new FourMotorTankDrive(motorL1, motorL2, motorR1, motorR2, 1, 0, 1, wheel, 1120);
+        drivesys = new FourMotorSteeringDrive(motorL1, motorL2, motorR1, motorR2, 1, 0, 1, wheel, 1120);
 
         waitForStart();
         while (opModeIsActive()){

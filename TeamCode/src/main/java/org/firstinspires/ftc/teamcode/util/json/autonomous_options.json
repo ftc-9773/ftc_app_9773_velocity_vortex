@@ -1,16 +1,17 @@
 {
   "testing" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "searchForWhiteLine"}
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
+    {"type" : "Programmed", "value" : "claimAbeacon"},
+    {"type" : "Programmed", "value" : "moveBackFor1s"},
+    {"type" : "Programmed", "value" : "Turn90Degrees"}
   ],
   "all_missions" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "searchForWhiteLine"},
-    {"type" : "Programmed", "value" : "lineFollow"},
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
     {"type" : "Programmed", "value" : "claimAbeacon"},
     {"type" : "Replay", "value" : "Beacon1ToBeacon2.csv"},
-    {"type" : "Programmed", "value" : "searchForWhiteLine"},
-    {"type" : "Programmed", "value" : "lineFollow"},
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
     {"type" : "Programmed", "value" : "claimAbeacon"},
     {"type" : "Replay", "value" : "Beacon2ToCapBall.csv"}
   ],
@@ -31,8 +32,8 @@
   ],
   "skipBeacon2" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
-    {"type" : "Programmed", "value" : "claimAbeacon"},
-    {"type" : "Replay", "value" : "Beacon1ToCapBall.csv"}
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
+    {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "skipBeacon2NoCapBall" : [
   {"type" : "Replay", "value" : "StartToBeacon1.csv"},
@@ -45,6 +46,10 @@
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "verifyBeaconColorOnly" : [
-    {"type" : "Programmed", "value" : "lineFollow"}
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
+    {"type" : "Programmed", "value" : "claimAbeacon"}
+  ],
+  "lineFollowTest" : [
+    {"type" : "Programmed", "value" : "lineFollowProportional"}
   ]
 }

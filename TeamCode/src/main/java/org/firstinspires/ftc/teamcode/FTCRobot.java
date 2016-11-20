@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
 import org.firstinspires.ftc.teamcode.attachments.Harvester;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
+import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
@@ -24,7 +25,7 @@ public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;
     public Navigation navigation =null;
-    public Attachment[] attachmentsArr;
+    private Attachment[] attachmentsArr;
     public AutonomousActions autonomousActions;
     public BeaconClaim beaconClaimObj;
     public CapBallLift capBallLiftObj;
@@ -62,28 +63,29 @@ public class FTCRobot {
         }
     }
 
-    public void createAttachments (String[] attachments) {
+    private void createAttachments(String[] attachments) {
         JsonReader attachmentsReader = new JsonReader(JsonReader.attachments);
         JSONObject rootObj = attachmentsReader.jsonRoot;
         attachmentsArr = new Attachment[attachments.length];
         for (int i=0; i<attachments.length; i++) {
-            if (attachments[i].equals("BeaconClaim")) {
-                attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
-                beaconClaimObj = (BeaconClaim) attachmentsArr[i];
-                DbgLog.msg("beaconClaimObj created");
-            }
-            else if (attachments[i].equals("CapBallLift")) {
-                attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
-                capBallLiftObj = (CapBallLift) attachmentsArr[i];
-                DbgLog.msg("capBallLiftObj created");
-            }
-            else if (attachments[i].equals("Harvester")){
-                attachmentsArr[i] = new Harvester(this, curOpMode, rootObj);
-                harvesterObj = (Harvester) attachmentsArr[i];
-                DbgLog.msg("harvesterObj created");
+            switch (attachments[i]) {
+                case "BeaconClaim":
+                    attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
+                    beaconClaimObj = (BeaconClaim) attachmentsArr[i];
+                    DbgLog.msg("beaconClaimObj created");
+                    break;
+                case "CapBallLift":
+                    attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
+                    capBallLiftObj = (CapBallLift) attachmentsArr[i];
+                    DbgLog.msg("capBallLiftObj created");
+                    break;
+                case "Harvester":
+                    attachmentsArr[i] = new Harvester(this, curOpMode, rootObj);
+                    harvesterObj = (Harvester) attachmentsArr[i];
+                    DbgLog.msg("harvesterObj created");
+                    break;
             }
         }
-        return;
     }
 
     public void runTeleOp(String allianceColor) {
@@ -91,37 +93,53 @@ public class FTCRobot {
         float direction;
 
         curOpMode.waitForStart();
+        boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
-            speed = curOpMode.gamepad1.left_stick_y;
-            direction = curOpMode.gamepad1.right_stick_x;
+            if(!isReverse) {
+                speed = -curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                direction = curOpMode.gamepad1.right_stick_x;
+            }
+            else{
+                speed = curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                direction = curOpMode.gamepad1.right_stick_x;
+            }
 
             driveSystem.drive(speed, direction);
-            for (int i=0; i<attachmentsArr.length; i++) {
-                attachmentsArr[i].getAndApplyDScmd();
+            if(curOpMode.gamepad1.x){
+                isReverse = true;
+            }
+            else if(curOpMode.gamepad1.b){
+                isReverse = false;
+            }
+            for (Attachment anAttachment : attachmentsArr) {
+                anAttachment.getAndApplyDScmd();
             }
 
             curOpMode.idle();
         }
-        return;
     }
 
     public void runAutonomous(String autonomousOpt, String allianceColor,
-                                           long startingDelay, int startingPosition)
-            throws InterruptedException {
+                                           long startingDelay, int startingPosition) {
         this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
 
-        curOpMode.waitForStart();
-        DbgLog.msg("Starting delay = %d seconds", startingDelay);
-        if (startingDelay > 0) {
-            sleep(startingDelay);
+        try {
+            curOpMode.waitForStart();
+            DbgLog.msg("Starting delay = %d seconds", startingDelay);
+            if (startingDelay > 0) {
+                sleep(startingDelay);
+            }
+            while (curOpMode.opModeIsActive()) {
+                autonomousActions.doActions();
+                break;
+            }
+            driveSystem.stop();
+            curOpMode.stop();
+        } catch (InterruptedException e) {
+            driveSystem.stop();
+            curOpMode.stop();
         }
-        while (curOpMode.opModeIsActive()){
-            autonomousActions.doActions();
-            break;
-        }
-        curOpMode.stop();
-        return;
     }
 
     public void autonomousRecord(JsonReader opmodeCfg, String allianceColor) throws InterruptedException {
@@ -143,39 +161,52 @@ public class FTCRobot {
         catch (JSONException exc) {
             exc.printStackTrace();
         }
-        recordFilePath = new String(recordFilesDir + recordFileName);
+        recordFilePath = recordFilesDir + recordFileName;
 
         DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
         DbgLog.msg("record filepath = %s", recordFilePath);
 
         fileRW = new FileRW(recordFilePath, true);
         // First row is a header row.
-        String firstrow = new String("elapsedTimeNanoSec, speed, direction");
+        String firstrow = "elapsedTimeNanoSec, speed, direction";
         fileRW.fileWrite(firstrow);
 
         curOpMode.waitForStart();
         long startingTime = System.nanoTime();
         long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
+        double spinAngle = 0;
         while (curOpMode.opModeIsActive()) {
-            double speed = curOpMode.gamepad1.left_stick_y * 0.5;
-            double direction = curOpMode.gamepad1.right_stick_x;
+            double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+            double direction = curOpMode.gamepad1.right_stick_x * 0.5;
+            if(curOpMode.gamepad1.left_bumper){
+                spinAngle = navigation.navxMicro.getModifiedYaw();
+            }
 
             elapsedTime = System.nanoTime() - startingTime;
+            sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
+            if (sleepTime > 0) {
+                TimeUnit.NANOSECONDS.sleep(sleepTime);
+            }
+            elapsedTime = System.nanoTime() - startingTime;
             driveSystem.drive((float) speed, (float) direction);
-            fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
-                    Double.toString(direction));
+            if(spinAngle != 0) {
+                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
+                        Double.toString(direction) + "," + Double.toString(spinAngle));
+                spinAngle = 0;
+            }
+            else {
+                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
+                        Double.toString(direction));
+            }
 
-            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
+//            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
 
             if(curOpMode.gamepad1.a){
                 break;
             }
 
-            sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
-            if (sleepTime > 0) {
-                TimeUnit.NANOSECONDS.sleep(sleepTime);
-            }
+            DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
             prev_elapsedTime = elapsedTime;
             // sleep(5);
         }

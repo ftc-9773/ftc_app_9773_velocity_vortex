@@ -15,12 +15,13 @@ import org.json.JSONObject;
 
 
 public class BeaconClaim implements Attachment {
-    FTCRobot robot;
-    LinearOpMode curOpMode;
-    Servo buttonServo=null;
-    ColorSensor colorSensor1=null;
-    TouchSensor touchSensor1=null;
-    I2cAddr i2cAddr=null;
+    private FTCRobot robot;
+    private LinearOpMode curOpMode;
+    private Servo buttonServo=null;
+    private Servo colorServo=null;
+    private ColorSensor colorSensor1=null;
+    private TouchSensor touchSensor1=null;
+    private I2cAddr i2cAddr=null;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
@@ -45,31 +46,67 @@ public class BeaconClaim implements Attachment {
         try {
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServo");
             buttonServoObj = motorsObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "colorServo");
+            colorServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
             coloSensor1Obj = sensorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "touchSensor1");
             touchSensor1Obj = sensorsObj.getJSONObject(key);
+
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
-        buttonServo = curOpMode.hardwareMap.servo.get("buttonServo");
-        colorSensor1 = curOpMode.hardwareMap.colorSensor.get("colorSensor1");
-        colorSensor1.enableLed(false);
-        touchSensor1 = curOpMode.hardwareMap.touchSensor.get("touchSensor1");
-        //colorSensor1.setI2cAddress(i2cAddr);
+        if (buttonServoObj != null) {
+            try {
+                buttonServo = curOpMode.hardwareMap.servo.get("buttonServo");
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+        if (coloSensor1Obj != null) {
+            colorSensor1 = curOpMode.hardwareMap.colorSensor.get("colorSensor1");
+            colorSensor1.enableLed(false);
+        }
+        if (touchSensor1Obj != null) {
+            touchSensor1 = curOpMode.hardwareMap.touchSensor.get("touchSensor1");
+        }
+        if (colorServoObj != null) {
+            try {
+                colorServo = curOpMode.hardwareMap.servo.get("colorServo");
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         // Set the MIN and MAX positions for servos
         try {
-            buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
-                    buttonServoObj.getDouble("scaleRangeMax"));
-            if (buttonServoObj.getBoolean("needReverse")) {
-                DbgLog.msg("Reversing the button servo");
-                buttonServo.setDirection(Servo.Direction.REVERSE);
+            if (buttonServo != null) {
+                buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
+                        buttonServoObj.getDouble("scaleRangeMax"));
+                if (buttonServoObj.getBoolean("needReverse")) {
+                    DbgLog.msg("Reversing the button servo");
+                    buttonServo.setDirection(Servo.Direction.REVERSE);
+                }
+
+                // Set the initial positions for both the servos
+                buttonServo.setPosition(1.0);
             }
 
-            // Set the initial positions for both the servos
-            buttonServo.setPosition(1.0);
+            if (colorServo != null) {
+                colorServo.scaleRange(colorServoObj.getDouble("scaleRangeMin"),
+                        colorServoObj.getDouble("scaleRangeMax"));
+                if (colorServoObj.getBoolean("needReverse")) {
+                    DbgLog.msg("Reversing the color servo");
+                    colorServo.setDirection(Servo.Direction.REVERSE);
+                }
+                colorServo.setPosition(1.0);
+            }
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
@@ -86,7 +123,39 @@ public class BeaconClaim implements Attachment {
         }
     }
 
-    public void claimABeacon(){
+    public void claimABeacon() {
+
+        // Activate the colorServo to bring the color sensor close to the beacon
+        colorServo.setPosition(0);
+        curOpMode.sleep(1000);
+        // Read the color sensor value and determine if the button has to be pressed once or twice
+        // to claim the beacon.
+        if((robot.autonomousActions.allianceColor.equalsIgnoreCase("blue") && isBeaconBlue()) ||
+                (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") && isBeaconRed())){
+            while (robot.navigation.rangeSensor.cmUltrasonic() < 25) {
+                robot.driveSystem.drive((float) -0.5, 0);
+            }
+            robot.driveSystem.stop();
+            buttonServo.setPosition(0);
+            curOpMode.sleep(1000);
+            buttonServo.setPosition(1);
+            curOpMode.sleep(5000);
+            buttonServo.setPosition(0);
+            curOpMode.sleep(1000);
+            buttonServo.setPosition(1);
+        } else if((robot.autonomousActions.allianceColor.equalsIgnoreCase("blue") && isBeaconRed()) ||
+                    (robot.autonomousActions.allianceColor.equalsIgnoreCase("red") && isBeaconBlue())) {
+            buttonServo.setPosition(0);
+            curOpMode.sleep(1000);
+            buttonServo.setPosition(1);
+        }
+
+        colorServo.setPosition(1);
+        curOpMode.sleep(100);
+
+    }
+
+    public void claimABeaconOld(){
         // Move back for 1 sec, set the button servo, Check the color
         if (robot.beaconClaimObj.isBeaconBlue()){
             curOpMode.telemetry.addData("%s", "blue sensed");
@@ -142,20 +211,29 @@ public class BeaconClaim implements Attachment {
 
     public boolean isBeaconRed() {
         if (colorSensor1.red() > colorSensor1.blue()) {
+            DbgLog.msg("Red");
             return (true);
         }
         else {
+            DbgLog.msg("Not red");
             return (false);
         }
     }
 
     public boolean isBeaconBlue() {
         if (colorSensor1.blue() > colorSensor1.red()) {
+            DbgLog.msg("Blue");
             return (true);
         }
         else {
+            DbgLog.msg("Not blue");
             return (false);
         }
     }
 
+    public String checkBeaconColor() {
+        DbgLog.msg("red=%d, blue=%d, green=%d", colorSensor1.red(), colorSensor1.blue(),
+                colorSensor1.green());
+        return null;
+    }
 }
