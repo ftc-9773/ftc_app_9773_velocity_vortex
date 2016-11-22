@@ -49,7 +49,7 @@ public class AutonomousOptionsReader extends JsonReader {
 
         try {
             obj = (JSONObject) actions.get(actionNum);
-            String key = JsonReader.getRealKeyIgnoreCase(obj, "valule");
+            String key = JsonReader.getRealKeyIgnoreCase(obj, "value");
             replayFile = obj.getString(key);
             if (allianceColor.equalsIgnoreCase("red"))
                 replayFile = JsonReader.autonomousRedDir + "/" + replayFile;
