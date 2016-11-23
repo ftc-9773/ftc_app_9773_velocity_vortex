@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
+import android.util.Log;
+
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
@@ -7,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.FourMotorSteeringDrive;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -130,5 +133,13 @@ public class NavxMicro {
         }
         this.robot.driveSystem.stop();
         this.robot.driveSystem.resumeMaxSpeed();
+    }
+
+    public void navx_go_straight () {
+        // ToDo
+        navXPIDController yawPIDController = new navXPIDController(navx_device, navXPIDController.navXTimestampedDataSource.YAW);
+
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, 3);
+
     }
 }

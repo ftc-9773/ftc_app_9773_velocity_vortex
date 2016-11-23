@@ -14,6 +14,8 @@ public class TeleOpMode extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
 
+
+
             idle();
         }
     }
