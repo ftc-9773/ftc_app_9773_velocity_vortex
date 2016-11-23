@@ -16,6 +16,7 @@ public abstract class DriveSystem {
     FTCRobot robot;
     String driveSysType;
 
+
     public DriveSystem(LinearOpMode curOpMode, FTCRobot robot, String driveSysType) {
         this.curOpMode = curOpMode;
         this.robot = robot;
@@ -66,10 +67,11 @@ public abstract class DriveSystem {
         return (driveSys);
     }
 
+
     public void drive(float speed, float direction) {return;}
     public void driveToDistance(float speed, double distanceInInches){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
-    public int getAvgEncoderVal(){return 0;}
+    public int[] getEncoderValues(){return null;}
     public void stop() {return;}
     public abstract void setMaxSpeed(float speed);
     public abstract void resumeMaxSpeed();

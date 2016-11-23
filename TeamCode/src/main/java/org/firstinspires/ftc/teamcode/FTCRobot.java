@@ -245,12 +245,21 @@ public class FTCRobot {
                 curOpMode.waitForStart();
                 spinAngle = 0;
                 double prevPower = 0;
+                int[] encoderVals = null;
                 int writeMode = 0; //0 for no writes, 1 for move, 2 for spin
                 while (curOpMode.opModeIsActive()) {
                     double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
                     double direction = curOpMode.gamepad1.right_stick_x * 0.5;
-                    if(curOpMode.gamepad1.left_bumper){
+                    if((speed == 0) && (prevPower != 0)){
+                        encoderVals = driveSystem.getEncoderValues();
+                        writeMode = 1;
+                    }
+                    else if(curOpMode.gamepad1.left_bumper){
                         spinAngle = navigation.navxMicro.getModifiedYaw();
+                        writeMode = 2;
+                    }
+                    else {
+                        writeMode = 0;
                     }
 
                     driveSystem.drive((float) speed, (float) direction);
@@ -258,7 +267,15 @@ public class FTCRobot {
                         case 0:
                             break;
                         case 1:
-                            fileRW.fileWrite("encoder" + "," + Integer.toString());
+                            String values = "";
+                            for (int i=0;i<encoderVals.length;i++){
+                                values = values + Integer.toString(encoderVals[i]) + ",";
+                            }
+                            fileRW.fileWrite("encoder" + "," + values);
+                            break;
+                        case 2:
+                            fileRW.fileWrite("yaw" + "," + Double.toString(spinAngle));
+                            break;
                     }
 
 //            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));

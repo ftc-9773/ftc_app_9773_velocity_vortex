@@ -136,6 +136,18 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+    @Override
+    public int[] getEncoderValues(){
+        int[] values = new int[4];
+
+        values[0] = motorL1.getCurrentPosition();
+        values[1] = motorL2.getCurrentPosition();
+        values[2] = motorR1.getCurrentPosition();
+        values[3] = motorR2.getCurrentPosition();
+
+        return values;
+    }
+
     /*public void driveToDistance(float speed, float direction, double distance){
         double startingPositionL = motorL1.getCurrentPosition();
         double startingPositionR = motorR1.getCurrentPosition();
