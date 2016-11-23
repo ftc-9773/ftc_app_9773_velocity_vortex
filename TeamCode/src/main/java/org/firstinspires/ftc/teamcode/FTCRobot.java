@@ -159,7 +159,7 @@ public class FTCRobot {
 
     public void autonomousRecord(JsonReader opmodeCfg, String allianceColor) throws InterruptedException {
         long clockCycle=5000;
-        String recordFilePath, recordFileName=null;
+        String recordFilePath, recordType = null, recordFileName=null;
         FileRW fileRW;
         String recordFilesDir=null;
         if (allianceColor.equalsIgnoreCase("red"))
@@ -170,73 +170,105 @@ public class FTCRobot {
         try {
             String key = JsonReader.getRealKeyIgnoreCase(opmodeCfg.jsonRoot, "recordFileName");
             recordFileName = opmodeCfg.jsonRoot.getString(key);
-            clockCycle = opmodeCfg.jsonRoot.getLong("clock-cycle");
-            clockCycle = clockCycle * 1000000; // convert milli seconds into nano seconds
+            key = JsonReader.getRealKeyIgnoreCase(opmodeCfg.jsonRoot, "recordType");
+            recordType = opmodeCfg.jsonRoot.getString(key);
         }
         catch (JSONException exc) {
             exc.printStackTrace();
         }
+
         recordFilePath = recordFilesDir + recordFileName;
-
-        DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
         DbgLog.msg("record filepath = %s", recordFilePath);
-
         fileRW = new FileRW(recordFilePath, true);
-        // First row is a header row.
-        String firstrow = "elapsedTimeNanoSec, speed, direction";
-        fileRW.fileWrite(firstrow);
 
-        curOpMode.waitForStart();
-        long startingTime = System.nanoTime();
-        long elapsedTime=0, prev_elapsedTime = 0;
-        long sleepTime = 0;
-        double spinAngle = 0;
-        boolean isReverse = false;
-        while (curOpMode.opModeIsActive()) {
-            double speed = 0;
-            if(!isReverse) {
-                speed = -curOpMode.gamepad1.left_stick_y * 0.3;
-            }
-            else if(isReverse){
-                speed = curOpMode.gamepad1.left_stick_y * 0.3;
-            }
-            double direction = curOpMode.gamepad1.right_stick_x * 0.5;
-            if(curOpMode.gamepad1.x){
-                isReverse = true;
-            }
-            if(curOpMode.gamepad1.b){
-                isReverse = false;
-            }
-            if(curOpMode.gamepad1.left_bumper){
-                spinAngle = navigation.navxMicro.getModifiedYaw();
-            }
+        switch (recordType){
+            case "driverStation":
+                try {
+                    clockCycle = opmodeCfg.jsonRoot.getLong("clock-cycle");
+                    clockCycle = clockCycle * 1000000; // convert milli seconds into nano seconds
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
 
-            elapsedTime = System.nanoTime() - startingTime;
-            sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
-            if (sleepTime > 0) {
-                TimeUnit.NANOSECONDS.sleep(sleepTime);
-            }
-            elapsedTime = System.nanoTime() - startingTime;
-            driveSystem.drive((float) speed, (float) direction);
-            if(spinAngle != 0) {
-                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
-                        Double.toString(direction) + "," + Double.toString(spinAngle));
-                spinAngle = 0;
-            }
-            else {
-                fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
-                        Double.toString(direction));
-            }
+                DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
+
+                // First row is a header row.
+                String firstrow = "elapsedTimeNanoSec, speed, direction";
+                fileRW.fileWrite(firstrow);
+
+                curOpMode.waitForStart();
+                long startingTime = System.nanoTime();
+                long elapsedTime=0, prev_elapsedTime = 0;
+                long sleepTime = 0;
+                double spinAngle = 0;
+                while (curOpMode.opModeIsActive()) {
+                    double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+                    double direction = curOpMode.gamepad1.right_stick_x * 0.5;
+                    if(curOpMode.gamepad1.left_bumper){
+                        spinAngle = navigation.navxMicro.getModifiedYaw();
+                    }
+
+                    elapsedTime = System.nanoTime() - startingTime;
+                    sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
+                    if (sleepTime > 0) {
+                        TimeUnit.NANOSECONDS.sleep(sleepTime);
+                    }
+                    elapsedTime = System.nanoTime() - startingTime;
+                    driveSystem.drive((float) speed, (float) direction);
+                    if(spinAngle != 0) {
+                        fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
+                                Double.toString(direction) + "," + Double.toString(spinAngle));
+                        spinAngle = 0;
+                    }
+                    else {
+                        fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
+                                Double.toString(direction));
+                    }
 
 //            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
 
-            if(curOpMode.gamepad1.a){
-                break;
-            }
+                    if(curOpMode.gamepad1.a){
+                        break;
+                    }
 
-            DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
-            prev_elapsedTime = elapsedTime;
-            // sleep(5);
+                    DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
+                    prev_elapsedTime = elapsedTime;
+                    // sleep(5);
+                }
+                break;
+            case "sensor":
+                // First row is a header row.
+                firstrow = "sensor, value";
+                fileRW.fileWrite(firstrow);
+
+                curOpMode.waitForStart();
+                spinAngle = 0;
+                double prevPower = 0;
+                int writeMode = 0; //0 for no writes, 1 for move, 2 for spin
+                while (curOpMode.opModeIsActive()) {
+                    double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+                    double direction = curOpMode.gamepad1.right_stick_x * 0.5;
+                    if(curOpMode.gamepad1.left_bumper){
+                        spinAngle = navigation.navxMicro.getModifiedYaw();
+                    }
+
+                    driveSystem.drive((float) speed, (float) direction);
+                    switch (writeMode){
+                        case 0:
+                            break;
+                        case 1:
+                            fileRW.fileWrite("encoder" + "," + Integer.toString());
+                    }
+
+//            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
+
+                    if(curOpMode.gamepad1.a){
+                        break;
+                    }
+                    // sleep(5);
+                }
+                break;
         }
         DbgLog.msg("Is close executing?");
         fileRW.close();
