@@ -69,6 +69,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorL2.setPower(0.0);
         motorR1.setPower(0.0);
         motorR2.setPower(0.0);
+
+        this.setDriveSysMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     @Override
