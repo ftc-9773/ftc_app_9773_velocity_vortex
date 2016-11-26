@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.InstantRunDexHelper;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
@@ -177,6 +178,8 @@ public class BeaconClaim implements Attachment {
 //           colorSensor1.red();
 //       }
         colorSensor1.enableLed(false);
+        curOpMode.telemetry.addData("red: ", Integer.toString(colorSensor1.red()) + "blue: ", Integer.toString(colorSensor1.blue()));
+        curOpMode.telemetry.update();
         DbgLog.msg("red value = %d, blue value = %d",colorSensor1.red(),colorSensor1.blue());
         //DbgLog.msg("color number = %x", colorSensor1.getI2cAddress().get7Bit());
     }
