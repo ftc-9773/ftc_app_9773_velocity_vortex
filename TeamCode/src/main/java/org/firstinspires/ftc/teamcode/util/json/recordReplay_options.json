@@ -1,0 +1,14 @@
+{
+  "driveSys_DrvCmd" : {
+    "recordType" : "DSCommand",
+    "columns" : ["timeStamp", "gamepad1.left_stick_y", "gamepad1.right_stick_x"],
+    "Hanler" : "driveSys_DS_recrep",
+    "__comment1" : "clock-cycle is in milli seconds",
+    "clock-cycle" : 10
+  },
+  "driveSys_Sensors" : {
+    "recordType" : "Sensors",
+    "columns" : ["fMotorL_encoder", "rMotorL_encoder", "fMotorR_encoder", "rMotorR_encoder"],
+    "Handler" : "driveSys_sensor_recrep"
+  }
+}

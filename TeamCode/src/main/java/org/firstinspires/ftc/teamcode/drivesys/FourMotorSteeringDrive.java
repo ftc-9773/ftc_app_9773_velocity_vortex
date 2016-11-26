@@ -148,6 +148,33 @@ public class FourMotorSteeringDrive extends DriveSystem {
         return values;
     }
 
+    @Override
+    public void driveMotorsToDistance(int[] encoderValues){
+        motorL1.setTargetPosition(motorL1.getCurrentPosition() + encoderValues[0]);
+        motorL2.setTargetPosition(motorL2.getCurrentPosition() + encoderValues[1]);
+        motorR1.setTargetPosition(motorR1.getCurrentPosition() + encoderValues[2]);
+        motorR2.setTargetPosition(motorR2.getCurrentPosition() + encoderValues[3]);
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        motorL1.setPower(0.5 * frictionCoefficient);
+        motorL2.setPower(0.5 * frictionCoefficient);
+        motorR1.setPower(0.5 * frictionCoefficient);
+        motorR2.setPower(0.5 * frictionCoefficient);
+
+        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()){
+            curOpMode.idle();
+        }
+
+        this.stop();
+        this.resumeMaxSpeed();
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Override
+    public void resetEncoders(){
+        setDriveSysMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
     /*public void driveToDistance(float speed, float direction, double distance){
         double startingPositionL = motorL1.getCurrentPosition();
         double startingPositionR = motorR1.getCurrentPosition();

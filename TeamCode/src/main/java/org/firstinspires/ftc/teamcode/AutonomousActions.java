@@ -37,41 +37,64 @@ public class AutonomousActions {
     public void replayFileAction(String replayFile) throws InterruptedException {
         FileRW fileRW;
         fileRW = new FileRW(replayFile, false);
-        fileRW.getNextLine(); // skip the header row
+        String recordType = fileRW.getNextLine();
+        fileRW.getNextLine();
         String line;
-        long startingTime = System.nanoTime();
-        long elapsedTime = 0;
-        long sleepTime = 0;
-        int turnCounter = 0;
-        while ((line = fileRW.getNextLine()) != null) {
-            String[] lineElements = line.split(",");
+        switch (recordType){
+            case "fusion":
+                long startingTime = System.nanoTime();
+                long elapsedTime = 0;
+                long sleepTime = 0;
+                int turnCounter = 0;
+                while ((line = fileRW.getNextLine()) != null) {
+                    String[] lineElements = line.split(",");
 //            DbgLog.msg("lineElements length = %d", lineElements.length);
-            if(lineElements.length < 3){
-                continue;
-            }
-            else {
-                long timestamp = Long.parseLong(lineElements[0]);
-                double speed = Double.parseDouble(lineElements[1]);
-                double direction = Double.parseDouble(lineElements[2]);
-                elapsedTime = System.nanoTime() - startingTime;
-                if (elapsedTime < timestamp) {
-                    sleepTime = timestamp - elapsedTime;
-                    TimeUnit.NANOSECONDS.sleep(sleepTime);
-                }
-                if(lineElements.length > 3){
-                    if(turnCounter == 0) {
-                        DbgLog.msg("Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
-                        robot.navigation.navxMicro.setRobotOrientation(Double.parseDouble(lineElements[3]));
-                        DbgLog.msg("Reached target orientation");
+                    if(lineElements.length < 3){
+                        continue;
                     }
-                    turnCounter++;
+                    else {
+                        long timestamp = Long.parseLong(lineElements[0]);
+                        double speed = Double.parseDouble(lineElements[1]);
+                        double direction = Double.parseDouble(lineElements[2]);
+                        elapsedTime = System.nanoTime() - startingTime;
+                        if (elapsedTime < timestamp) {
+                            sleepTime = timestamp - elapsedTime;
+                            TimeUnit.NANOSECONDS.sleep(sleepTime);
+                        }
+                        if(lineElements.length > 3){
+                            if(turnCounter == 0) {
+                                DbgLog.msg("Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
+                                robot.navigation.navxMicro.setRobotOrientation(Double.parseDouble(lineElements[3]));
+                                DbgLog.msg("Reached target orientation");
+                            }
+                            turnCounter++;
+                        }
+                        else{
+                            turnCounter = 0;
+                            driveSystem.drive((float) speed, (float) direction);
+                        }
+                    }
                 }
-                else{
-                    turnCounter = 0;
-                    driveSystem.drive((float) speed, (float) direction);
+                break;
+            case "sensor":
+                while ((line = fileRW.getNextLine()) != null){
+                    String[] lineElements = line.split(",");
+
+                    switch (lineElements[0]){
+                        case "encoder":
+                            int[] targetPosition = new int[lineElements.length - 1];
+                            for (int i=0;i<targetPosition.length;i++){
+                                targetPosition[i] = Integer.parseInt(lineElements[i+1]);
+                            }
+
+                            driveSystem.driveMotorsToDistance(targetPosition);
+                            break;
+                        case "yaw":
+                            robot.navigation.navxMicro.setRobotOrientation(Double.parseDouble(lineElements[1]));
+                    }
                 }
-            }
         }
+
         fileRW.close();
     }
 

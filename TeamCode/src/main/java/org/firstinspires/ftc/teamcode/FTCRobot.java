@@ -181,8 +181,11 @@ public class FTCRobot {
         DbgLog.msg("record filepath = %s", recordFilePath);
         fileRW = new FileRW(recordFilePath, true);
 
+        //First row indicates type of record file, sensor or driver station
+        fileRW.fileWrite(recordType);
+
         switch (recordType){
-            case "driverStation":
+            case "driveSystem":
                 try {
                     clockCycle = opmodeCfg.jsonRoot.getLong("clock-cycle");
                     clockCycle = clockCycle * 1000000; // convert milli seconds into nano seconds
@@ -193,14 +196,57 @@ public class FTCRobot {
 
                 DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
 
-                // First row is a header row.
-                String firstrow = "elapsedTimeNanoSec, speed, direction";
-                fileRW.fileWrite(firstrow);
+                // Second row is a header row.
+                String header = "elapsedTimeNanoSec, speed, direction";
+                fileRW.fileWrite(header);
 
                 curOpMode.waitForStart();
                 long startingTime = System.nanoTime();
                 long elapsedTime=0, prev_elapsedTime = 0;
                 long sleepTime = 0;
+                while (curOpMode.opModeIsActive()) {
+                    double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+                    double direction = curOpMode.gamepad1.right_stick_x * 0.5;
+
+                    elapsedTime = System.nanoTime() - startingTime;
+                    sleepTime = clockCycle - (elapsedTime - prev_elapsedTime);
+                    if (sleepTime > 0) {
+                        TimeUnit.NANOSECONDS.sleep(sleepTime);
+                    }
+                    elapsedTime = System.nanoTime() - startingTime;
+                    driveSystem.drive((float) speed, (float) direction);
+                    fileRW.fileWrite(Long.toString(elapsedTime) + "," + Double.toString(speed) + "," +
+                                Double.toString(direction));
+
+                    if(curOpMode.gamepad1.a){
+                        break;
+                    }
+
+                    DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
+                    prev_elapsedTime = elapsedTime;
+                }
+                break;
+
+            case "fusion":
+                try {
+                    clockCycle = opmodeCfg.jsonRoot.getLong("clock-cycle");
+                    clockCycle = clockCycle * 1000000; // convert milli seconds into nano seconds
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
+
+                // Second row is a header row.
+                header = "elapsedTimeNanoSec, speed, direction";
+                fileRW.fileWrite(header);
+
+                curOpMode.waitForStart();
+                startingTime = System.nanoTime();
+                elapsedTime=0;
+                prev_elapsedTime = 0;
+                sleepTime = 0;
                 double spinAngle = 0;
                 while (curOpMode.opModeIsActive()) {
                     double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
@@ -226,7 +272,6 @@ public class FTCRobot {
                                 Double.toString(direction));
                     }
 
-//            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
 
                     if(curOpMode.gamepad1.a){
                         break;
@@ -234,22 +279,31 @@ public class FTCRobot {
 
                     DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
                     prev_elapsedTime = elapsedTime;
-                    // sleep(5);
                 }
                 break;
             case "sensor":
-                // First row is a header row.
-                firstrow = "sensor, value";
-                fileRW.fileWrite(firstrow);
+                //First row indicates record type, sensor or driver station
+                fileRW.fileWrite(recordType);
+                // Second row is a header row.
+                header = "sensor, value";
+                fileRW.fileWrite(header);
 
                 curOpMode.waitForStart();
                 spinAngle = 0;
                 double prevPower = 0;
+                int[] startingPosition = null;
                 int[] encoderVals = null;
-                int writeMode = 0; //0 for no writes, 1 for move, 2 for spin
+                int writeMode; //0 for no writes, 1 for move, 2 for spin
                 while (curOpMode.opModeIsActive()) {
                     double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
                     double direction = curOpMode.gamepad1.right_stick_x * 0.5;
+
+                    if((speed != 0) && (prevPower == 0)){
+                        startingPosition = driveSystem.getEncoderValues();
+                    }
+
+                    driveSystem.drive((float) speed, (float) direction);
+
                     if((speed == 0) && (prevPower != 0)){
                         encoderVals = driveSystem.getEncoderValues();
                         writeMode = 1;
@@ -261,15 +315,13 @@ public class FTCRobot {
                     else {
                         writeMode = 0;
                     }
-
-                    driveSystem.drive((float) speed, (float) direction);
                     switch (writeMode){
                         case 0:
                             break;
                         case 1:
                             String values = "";
                             for (int i=0;i<encoderVals.length;i++){
-                                values = values + Integer.toString(encoderVals[i]) + ",";
+                                values = values + Integer.toString(encoderVals[i] - startingPosition[i]) + ",";
                             }
                             fileRW.fileWrite("encoder" + "," + values);
                             break;
@@ -278,13 +330,14 @@ public class FTCRobot {
                             break;
                     }
 
-//            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
+                    prevPower = speed;
 
                     if(curOpMode.gamepad1.a){
                         break;
                     }
-                    // sleep(5);
                 }
+                break;
+            default:
                 break;
         }
         DbgLog.msg("Is close executing?");

@@ -70,8 +70,10 @@ public abstract class DriveSystem {
 
     public void drive(float speed, float direction) {return;}
     public void driveToDistance(float speed, double distanceInInches){return;}
+    public void driveMotorsToDistance(int[] encoderValues){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public int[] getEncoderValues(){return null;}
+    public void resetEncoders(){return;}
     public void stop() {return;}
     public abstract void setMaxSpeed(float speed);
     public abstract void resumeMaxSpeed();
