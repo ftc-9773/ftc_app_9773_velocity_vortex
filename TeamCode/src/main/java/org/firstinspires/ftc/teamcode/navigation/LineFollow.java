@@ -145,11 +145,14 @@ public class LineFollow{
         light = lightSensor.getLightDetected();
 
         double lightOffset = (light-mid)/(white-mid);
+        double odsOffset = (this.robot.distanceLeft/(this.robot.distanceLeft+this.robot.distanceRight));
         double leftPower = basePower+ Kp*lightOffset;
         double rightPower = basePower- Kp*lightOffset;
+        leftPower = leftPower*odsOffset*2;
+        rightPower = rightPower*(1-odsOffset)*2;
         driveSystem.turnOrSpin(leftPower, rightPower);
 
-        DbgLog.msg("Here! light = %f, light offset = %f, leftPower=%f, rightPower=%f", light, lightOffset,leftPower,rightPower);
+        DbgLog.msg("lightDetected = %f, light offset = %f, leftPower=%f, rightPower=%f", light, lightOffset,leftPower,rightPower);
 
 //        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
 //        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
