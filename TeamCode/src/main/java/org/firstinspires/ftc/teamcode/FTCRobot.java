@@ -20,6 +20,8 @@ import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Thread.sleep;
+
 
 public class FTCRobot {
     public LinearOpMode curOpMode;
@@ -114,7 +116,7 @@ public class FTCRobot {
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {
                 speed = -curOpMode.gamepad1.left_stick_y;
-                direction = curOpMode.gamepad1.right_stick_x * 0.6f;
+                direction = curOpMode.gamepad1.right_stick_x;
             }
             else{
                 speed = curOpMode.gamepad1.left_stick_y;
@@ -149,7 +151,6 @@ public class FTCRobot {
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
             while (curOpMode.opModeIsActive()) {
                 autonomousActions.doActions();
-                break;
             }
             driveSystem.stop();
             curOpMode.stop();
