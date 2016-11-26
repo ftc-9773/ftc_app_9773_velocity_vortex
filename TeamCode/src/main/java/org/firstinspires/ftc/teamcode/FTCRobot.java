@@ -34,12 +34,16 @@ public class FTCRobot {
     public Harvester harvesterObj;
     public ParticleAccelerator partAccObj;
     public ParticleRelease particleObj;
+    public double distanceLeft;
+    public double distanceRight;
 
     public FTCRobot(LinearOpMode curOpMode, String robotName) {
         this.curOpMode = curOpMode;
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
         String driveSysName = null;
+        distanceLeft = robotConfig.getDistanceLeft();
+        distanceRight = robotConfig.getDistanceRight();
 
         // Instantiate the Drive System
         try {
