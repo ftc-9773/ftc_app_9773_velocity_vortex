@@ -147,7 +147,6 @@ public class FTCRobot {
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
             while (curOpMode.opModeIsActive()) {
                 autonomousActions.doActions();
-                break;
             }
             driveSystem.stop();
             curOpMode.stop();

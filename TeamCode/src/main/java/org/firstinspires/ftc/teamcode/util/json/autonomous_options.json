@@ -5,7 +5,7 @@
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
   "testing2" : [
-    {"type" : "Replay", "value" : "StartToCapBall.csv"}
+    {"type" : "Programmed", "value" : "verifyBeaconColor"}
   ],
   "FullTest" : [
     {"type" : "Programmed", "value" : "DriveToDistance","param" : -10.0},
