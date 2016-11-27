@@ -15,9 +15,10 @@ public class RecordReplaySysReader extends JsonReader {
 
     public RecordReplaySysReader(String jsonFilePath, String recordType){
         super(jsonFilePath);
+        String key;
         try {
-            recordType = JsonReader.getRealKeyIgnoreCase(jsonRoot, recordType);
-            recordReplaySysObject = jsonRoot.getJSONObject(recordType);
+            key = JsonReader.getRealKeyIgnoreCase(jsonRoot, recordType);
+            recordReplaySysObject = jsonRoot.getJSONObject(key);
             this.recordType = recordType;
         }
         catch (JSONException e){
