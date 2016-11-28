@@ -1,11 +1,21 @@
 {
-  "testing" : [
+  "testing1" : [
+    {"type" : "Programmed", "value" : "printMinMaxLightDetected"}
+  ],
+  "testing2" : [
     {"type" : "Programmed", "value" : "reverseDriveSystem"},
     {"type" : "Programmed", "value" : "lineFollowProportional"},
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
-  "testing2" : [
-    {"type" : "Programmed", "value" : "verifyBeaconColor"}
+  "testing3" : [
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine"},
+    {"type" : "Programmed", "value" : "Sleep","param": 1000},
+    {"type" : "Programmed", "value" : "DriveToDistance", "param" : -7.0},
+    {"type" : "Programmed", "value" : "Sleep","param": 1000},
+    {"type" : "Programmed", "value" : "TurnUntilWhiteLine"},
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
   "FullTest" : [
     {"type" : "Programmed", "value" : "DriveToDistance","param" : -10.0},
