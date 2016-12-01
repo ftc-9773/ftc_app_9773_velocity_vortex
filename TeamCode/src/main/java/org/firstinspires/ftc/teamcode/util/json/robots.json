@@ -23,7 +23,7 @@
   },
   "2016_12_03_Peekskill_Robot" : {
     "driveSystem": "4Motor6WDSteering",
-    "attachments": ["BeaconClaim"],
+    "attachments": ["CapBallLift", "BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator"],
     "navigation": "LineFollow_IMU_DriveSysEncoders",
     "distanceBetweenLeftAndODS":11,
     "distanceBetweenRightAndODS":4

@@ -18,6 +18,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     double minSpeed;
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
+    boolean driveSysIsReversed = false;
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   double maxSpeed, double minSpeed, double frictionCoefficient,
@@ -26,8 +27,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorL2 = motorL2;
         this.motorR1 = motorR1;
         this.motorR2 = motorR2;
-        this.motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motorL1.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motorL2.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motorR1.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motorR2.setDirection(DcMotorSimple.Direction.FORWARD);
         this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -40,6 +43,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorL2MaxSpeed = this.motorL2.getMaxSpeed();
         this.motorR1MaxSpeed = this.motorR1.getMaxSpeed();
         this.motorR2MaxSpeed = this.motorR2.getMaxSpeed();
+        DbgLog.msg("max speeds: L1=%d, L2=%d, R1=%d, R2=%d", motorL1MaxSpeed, motorL2MaxSpeed,
+                motorR1MaxSpeed, motorR2MaxSpeed);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
     }
@@ -100,7 +105,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        resumeMaxSpeed();
     }
 
     private void setDriveSysMode(DcMotor.RunMode runMode){
@@ -112,6 +117,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void setMaxSpeed(float speed){
+        DbgLog.msg("Current max speed: L1=%d, L2=%d, R1=%d, R2=%d", motorL1.getMaxSpeed(),
+                motorL2.getMaxSpeed(), motorR1.getMaxSpeed(), motorR2.getMaxSpeed());
         motorL1.setMaxSpeed((int) (motorL1MaxSpeed * speed));
         motorL2.setMaxSpeed((int) (motorL2MaxSpeed * speed));
         motorR1.setMaxSpeed((int) (motorR1MaxSpeed * speed));
@@ -128,10 +135,20 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void reverse() {
-        motorL1.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorL2.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
+        if (driveSysIsReversed) {
+            motorL1.setDirection(DcMotorSimple.Direction.REVERSE);
+            motorL2.setDirection(DcMotorSimple.Direction.REVERSE);
+            motorR1.setDirection(DcMotorSimple.Direction.FORWARD);
+            motorR2.setDirection(DcMotorSimple.Direction.FORWARD);
+            driveSysIsReversed = false;
+        }
+        else {
+            motorL1.setDirection(DcMotorSimple.Direction.FORWARD);
+            motorL2.setDirection(DcMotorSimple.Direction.FORWARD);
+            motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
+            motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
+            driveSysIsReversed = true;
+        }
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){
