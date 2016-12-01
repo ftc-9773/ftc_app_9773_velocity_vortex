@@ -17,7 +17,8 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    CRServo liftServo;
+    CRServo liftServoCR = null;
+    Servo liftServo = null;
 
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
@@ -45,9 +46,20 @@ public class CapBallLift implements  Attachment {
 
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
             liftServoObj = motorsObj.getJSONObject(key);
-            liftServo = curOpMode.hardwareMap.crservo.get("liftServo");
-//            liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
-//                    liftServoObj.getDouble("scaleRangeMax"));
+            key = JsonReader.getRealKeyIgnoreCase(liftServoObj, "motorType");
+            String motorType = liftServoObj.getString(key);
+            if (motorType.equalsIgnoreCase("CRservo")) {
+                liftServoCR = curOpMode.hardwareMap.crservo.get("liftServo");
+            } else {
+                liftServo = curOpMode.hardwareMap.servo.get("liftServo");
+                liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
+                        liftServoObj.getDouble("scaleRangeMax"));
+                if (liftServoObj.getBoolean("needReverse")) {
+                    DbgLog.msg("Reversing the lift servo");
+                    liftServo.setDirection(Servo.Direction.REVERSE);
+                }
+                liftServo.setPosition(1);
+            }
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -70,14 +82,21 @@ public class CapBallLift implements  Attachment {
             liftMotor.setPower(0);
         }
 
-        if (curOpMode.gamepad2.a){
-            liftServo.setPower(-1);
+        if (liftServoCR != null) {
+            if (curOpMode.gamepad2.a) {
+                liftServoCR.setPower(-1);
+            } else if (curOpMode.gamepad2.y) {
+                liftServoCR.setPower(1);
+            } else {
+                liftServoCR.setPower(0.0);
+            }
         }
-        else if (curOpMode.gamepad2.y){
-            liftServo.setPower(1);
-        }
-        else{
-            liftServo.setPower(0.0);
+        if (liftServo != null) {
+            if (curOpMode.gamepad2.a) {
+                liftServo.setPosition(0);
+            } else if (curOpMode.gamepad2.y) {
+                liftServo.setPosition(1);
+            }
         }
     }
 }
