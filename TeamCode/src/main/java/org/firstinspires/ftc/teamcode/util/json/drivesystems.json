@@ -3,10 +3,10 @@
     "__Comment" : "It is assumed that each motor is individually connected to its wheel, and the system uses steering control",
     "MaxMotorSpeed": 1.0,
     "Motors": {
-      "fMotorL": "Neverest40",
-      "fMotorR": "Neverest40",
-      "rMotorL": "Neverest40",
-      "rMotorR": "Neverest40"
+      "fMotorL": "Neverest20",
+      "fMotorR": "Neverest20",
+      "rMotorL": "Neverest20",
+      "rMotorR": "Neverest20"
     },
     "WheelType": "rubber-treaded",
     "moveButton" : "gamepad1.left_stick_y",

@@ -1,10 +1,76 @@
 {
-  "testing" : [
-    {"type" : "Replay", "value" : "StartToBeacon1.csv"},
+  "testing1" : [
+    {"type" : "Programmed", "value" : "verifyBeaconServo"}
+  ],
+  "testing2" : [
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 315.0},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -45.0, "motorSpeed" : 1.0},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
+    {"type" : "Programmed", "value" : "DrivePastWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -6.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "TurnUntilWhiteLine"},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 6.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilWall", "distanceFromWall" : 15, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"}
+  ],
+  "testing3" : [
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.7},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 315.0},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -45.0, "motorSpeed" : 1.0},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 2.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilBeacon", "distanceFromWall" : 20, "motorSpeed" : 0.3, "BeaconId" : 1},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "claimAbeacon", "BeaconId" : 1},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 4.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -40.0, "motorSpeed" : 1.0},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilBeacon", "distanceFromWall" : 20, "motorSpeed" : 0.3, "BeaconId" : 2},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"}
+  ],
+  "FullTest" : [
+    {"type" : "Programmed", "value" : "DriveToDistance","inches" : -10.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "TurnDegrees", "degrees" : -45.0},
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -7.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "TurnUntilWhiteLine"},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 4.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
     {"type" : "Programmed", "value" : "lineFollowProportional"},
-    {"type" : "Programmed", "value" : "claimAbeacon"},
-    {"type" : "Programmed", "value" : "moveBackFor1s"},
-    {"type" : "Programmed", "value" : "Turn90Degrees"}
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 4.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "SetRobotOrientation","degrees" : 0},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -7.0},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "TurnUntilWhiteLine"},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 90},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 4.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "lineFollowProportional"}
   ],
   "all_missions" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
@@ -38,7 +104,7 @@
   "skipBeacon2NoCapBall" : [
   {"type" : "Replay", "value" : "StartToBeacon1.csv"},
   {"type" : "Programmed", "value" : "claimAbeacon"}
-],
+  ],
   "skipBothBeacons" : [
     {"type" : "Replay", "value" : "StartToCapBall.csv"}
   ],
@@ -46,8 +112,7 @@
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "verifyBeaconColorOnly" : [
-    {"type" : "Programmed", "value" : "lineFollowProportional"},
-    {"type" : "Programmed", "value" : "claimAbeacon"}
+    {"type" : "Programmed", "value" : "verifyBeaconColor"}
   ],
   "lineFollowTest" : [
     {"type" : "Programmed", "value" : "lineFollowProportional"}

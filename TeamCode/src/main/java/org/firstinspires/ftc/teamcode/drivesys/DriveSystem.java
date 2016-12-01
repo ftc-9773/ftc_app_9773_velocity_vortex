@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.MotorSpecsReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.WheelSpecsReader;
 
 
-public class DriveSystem {
+public abstract class DriveSystem {
     LinearOpMode curOpMode;
     FTCRobot robot;
     String driveSysType;
@@ -26,13 +26,13 @@ public class DriveSystem {
     }
 
     public static DriveSystem createDriveSystem(LinearOpMode curOpMode, FTCRobot robot,
-                                                String driveSysType) {
+                                                String driveSysName) {
         DriveSystem driveSys = null;
-        DriveSysReader driveSysReader = new DriveSysReader(JsonReader.driveSystemsFile, driveSysType);
-        DbgLog.msg("driveSysType=%s", driveSysReader.getDriveSysType());
+        DriveSysReader driveSysReader = new DriveSysReader(JsonReader.driveSystemsFile, driveSysName);
+        DbgLog.msg("driveSysName=%s", driveSysReader.getDriveSysName());
         WheelSpecsReader wheelSpecs = new WheelSpecsReader(JsonReader.wheelSpecsFile,
                 driveSysReader.getWheelType());
-        if(driveSysType.equals("4Motor4WDSteering")||driveSysType.equals("4Motor6WDSteering")) {
+        if(driveSysName.equals("4Motor4WDSteering")||driveSysName.equals("4Motor6WDSteering")) {
             int CPR = 0;
             double wheelDiameter = 0.0;
             double frictionCoeff = 1.0;
@@ -60,13 +60,17 @@ public class DriveSystem {
                     1, 0, frictionCoeff, wheel, CPR);
             fourMotorSteeringDrive.curOpMode = curOpMode;
             fourMotorSteeringDrive.robot = robot;
-            fourMotorSteeringDrive.driveSysType = driveSysType;
+            fourMotorSteeringDrive.driveSysType = driveSysName;
             driveSys = (DriveSystem) fourMotorSteeringDrive;
         }
         return (driveSys);
     }
 
     public void drive(float speed, float direction) {return;}
+    public void driveToDistance(float speed, double distanceInInches){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
+    public abstract void setMaxSpeed(float speed);
+    public abstract void resumeMaxSpeed();
+    public abstract void reverse();
 }

@@ -1,17 +1,15 @@
 {
-  "LineFollowAndIMU" : {
+  "LineFollow_IMU_DriveSysEncoders" : {
     "LineFollow": {
       "LightSensor": {
         "name": "ods",
         "type": "OpticalDistanceSensor"
       },
       "lineFollowVariables": {
-        "basePower": 0.15,
-        "Kp": 0.6,
-        "white": 0.996,
-        "black" : 0.175,
-        "lowSpeed": 0.15,
-        "highSpeed": 0.35,
+        "white": 0.722385,
+        "black" : 0.108504,
+        "lowSpeed": 0.4,
+        "highSpeed": 0.9,
         "timeOut": 4.0
       }
     },
@@ -21,7 +19,43 @@
       "type" : "navx-micro",
       "porttype": "i2c",
       "portnum": 0,
-      "driveSysPower": 0.35,
+      "driveSysInitialPower": 0.5,
+      "driveSysTargetPower": 0.5,
+      "angleTolerance": 3.0
+    },
+    "RangeSensor" : {
+      "name": "rangeSensor1"
+    },
+    "DriveSysEncoderVariables" : {
+      "__Comment" : "These values are applicable when driving with RUN_USING_ENCODERS or RUN_TO_POSITION setting",
+      "LineFollowMaxSpeed" : 0.3,
+      "TurningMaxSpeed" : 0.3,
+      "StraightLineMaxSpeed" : 0.5,
+      "DriveSysTeleOpMaxSpeed" : 1.0
+    }
+  },
+  "LineFollowAndIMU" : {
+    "LineFollow": {
+      "LightSensor": {
+        "name": "ods",
+        "type": "OpticalDistanceSensor"
+      },
+      "lineFollowVariables": {
+        "white": 0.996,
+        "black" : 0.175,
+        "lowSpeed": 0.10,
+        "highSpeed": 0.30,
+        "timeOut": 4.0
+      }
+    },
+    "IMU": {
+      "name" : "navx",
+      "DIMname" : "dim",
+      "type" : "navx-micro",
+      "porttype": "i2c",
+      "portnum": 0,
+      "driveSysInitialPower": 0.3,
+      "driveSysTargetPower": 0.3,
       "angleTolerance": 3.0
     },
     "RangeSensor" : {
@@ -35,10 +69,13 @@
         "type": "OpticalDistanceSensor"
       },
       "lineFollowVariables": {
-        "lowSpeed": 0.55,
-        "highSpeed": 0.65,
+        "lowSpeed": 0.15,
+        "highSpeed": 0.35,
         "timeOut": 2.5
       }
     }
+  },
+  "none" : {
+
   }
 }

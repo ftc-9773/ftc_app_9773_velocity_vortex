@@ -52,11 +52,9 @@ public class RobotConfigReader extends JsonReader {
     }
 
     public String[] getAttachments() {
-        // ToDo
         int len = 0;
         String[] attachmentsArr = null;
         try {
-            DbgLog.msg("Here!");
             JSONArray attachs = robotObj.getJSONArray("attachments");
             len = attachs.length();
             DbgLog.msg("Length of attachs array = %d", attachs.length());
@@ -69,7 +67,30 @@ public class RobotConfigReader extends JsonReader {
             DbgLog.error("Problem finding one or more attachments for the robot named %s",
                     robotName);
         }
-
         return (attachmentsArr);
+    }
+
+    public double getDistanceLeft() {
+        double value = 0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenLeftAndODS");
+            value = robotObj.getDouble(key);
+            DbgLog.msg("getDistanceLeft(): key = %s, value=%f", key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
+    }
+
+    public double getDistanceRight() {
+        double value = 0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenRightAndODS");
+            value = robotObj.getDouble(key);
+            DbgLog.msg("getDistanceRight(): key = %s, value=%f", key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
     }
 }
