@@ -12,6 +12,7 @@ public class TwoMotorDrive extends DriveSystem{
     int motorLMaxSpeed, motorRMaxSpeed;
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
+    boolean driveSysIsReversed = false;
 
     public TwoMotorDrive(DcMotor motorL, DcMotor motorR, double maxSpeed, double minSpeed,
                          double frictionCoefficient, Wheel wheel, int motorCPR){
@@ -79,7 +80,15 @@ public class TwoMotorDrive extends DriveSystem{
 
     @Override
     public void reverse() {
-        motorL.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorR.setDirection(DcMotorSimple.Direction.REVERSE);
+        if (driveSysIsReversed) {
+            motorL.setDirection(DcMotorSimple.Direction.FORWARD);
+            motorR.setDirection(DcMotorSimple.Direction.REVERSE);
+            driveSysIsReversed = false;
+        }
+        else {
+            motorL.setDirection(DcMotorSimple.Direction.REVERSE);
+            motorR.setDirection(DcMotorSimple.Direction.FORWARD);
+            driveSysIsReversed = true;
+        }
     }
 }

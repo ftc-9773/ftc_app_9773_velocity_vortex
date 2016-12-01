@@ -149,9 +149,7 @@ public class FTCRobot {
             curOpMode.waitForStart();
             DbgLog.msg("Starting delay = %d seconds", startingDelay);
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
-            while (curOpMode.opModeIsActive()) {
-                autonomousActions.doActions();
-            }
+            autonomousActions.doActions();
             driveSystem.stop();
             curOpMode.stop();
         } catch (InterruptedException e) {
@@ -198,18 +196,27 @@ public class FTCRobot {
         while (curOpMode.opModeIsActive()) {
             double speed = 0;
             if(!isReverse) {
+                // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+                //       "DriveSysEncoderVariables"->"StraightLineMaxSpeed" instead of
+                //       multiplying with a hardcoded number 0.3
                 speed = -curOpMode.gamepad1.left_stick_y * 0.3;
             }
-            if (isReverse){
+            else if(isReverse){
+                // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+                //       "DriveSysEncoderVariables"->"StraightLineMaxSpeed" instead of
+                //       multiplying with a hardcoded number 0.3
                 speed = curOpMode.gamepad1.left_stick_y * 0.3;
             }
+            // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+            //       "DriveSysEncoderVariables"->"TurningMaxSpeed" instead of
+            //       multiplying with a hardcoded number 0.5
+            double direction = curOpMode.gamepad1.right_stick_x * 0.5;
             if(curOpMode.gamepad1.x){
                 isReverse = true;
             }
-            if (curOpMode.gamepad1.b){
+            if(curOpMode.gamepad1.b){
                 isReverse = false;
             }
-            double direction = curOpMode.gamepad1.right_stick_x * 0.5;
             if(curOpMode.gamepad1.left_bumper){
                 spinAngle = navigation.navxMicro.getModifiedYaw();
             }

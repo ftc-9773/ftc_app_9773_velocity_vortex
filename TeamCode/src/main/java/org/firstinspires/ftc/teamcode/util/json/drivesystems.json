@@ -16,19 +16,6 @@
     "__Comment" : "2 motors are linked to drive 3 wheels on each side, and the system uses steering control",
     "MaxMotorSpeed": 1.0,
     "Motors": {
-      "fMotorL": "Neverest20",
-      "fMotorR": "Neverest20",
-      "rMotorL": "Neverest20",
-      "rMotorR": "Neverest20"
-    },
-    "WheelType": "rubber-treaded",
-    "moveButton" : "gamepad1.left_stick_y",
-    "spinButton" : "gamepad1.right_stick_x"
-  },
-  "4Motor6WDNeverest40Steering" : {
-    "__Comment" : "2 motors are linked to drive 3 wheels on each side, and the system uses steering control",
-    "MaxMotorSpeed": 1.0,
-    "Motors": {
       "fMotorL": "Neverest40",
       "fMotorR": "Neverest40",
       "rMotorL": "Neverest40",

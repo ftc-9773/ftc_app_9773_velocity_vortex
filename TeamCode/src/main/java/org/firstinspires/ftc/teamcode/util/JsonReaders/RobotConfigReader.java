@@ -73,8 +73,8 @@ public class RobotConfigReader extends JsonReader {
     public double getDistanceLeft() {
         double value = 0.0;
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(jsonRoot, "distanceBetweenLeftAndODS");
-            value = jsonRoot.getDouble(key);
+            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenLeftAndODS");
+            value = robotObj.getDouble(key);
             DbgLog.msg("getDistanceLeft(): key = %s, value=%f", key, value);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -85,8 +85,8 @@ public class RobotConfigReader extends JsonReader {
     public double getDistanceRight() {
         double value = 0.0;
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(jsonRoot, "distanceBetweenRightAndODS");
-            value = jsonRoot.getDouble(key);
+            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenRightAndODS");
+            value = robotObj.getDouble(key);
             DbgLog.msg("getDistanceRight(): key = %s, value=%f", key, value);
         } catch (JSONException e) {
             e.printStackTrace();
