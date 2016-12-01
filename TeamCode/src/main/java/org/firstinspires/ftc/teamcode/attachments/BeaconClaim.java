@@ -98,8 +98,8 @@ public class BeaconClaim implements Attachment {
                     DbgLog.msg("Reversing the button servo");
                     buttonServo.setDirection(CRServo.Direction.REVERSE);
                 }
-                // CR Servo should be set to 0.5 (or close to that value) to stop moving
-                buttonServo.setPower(0.0);
+                // CR Servo should be set to 0 to stop moving
+                deactivateButtonServo();
 //                buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
 //                        buttonServoObj.getDouble("scaleRangeMax"));
 //                if (buttonServoObj.getBoolean("needReverse")) {
