@@ -146,10 +146,10 @@ public class BeaconClaim implements Attachment {
     @Override
     public void getAndApplyDScmd() {
         if (curOpMode.gamepad2.x) {
-            buttonServo.setPower(-0.5);
+            buttonServo.setPower(-1.0);
         }
         else if (curOpMode.gamepad2.b) {
-            buttonServo.setPower(0.5);
+            buttonServo.setPower(1.0);
         }
         else {
             buttonServo.setPower(0.0);
@@ -170,7 +170,7 @@ public class BeaconClaim implements Attachment {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
         while (elapsedTime.milliseconds() < 2000) {
-            buttonServo.setPower(-0.5);
+            buttonServo.setPower(-1.0);
         }
 //        curOpMode.sleep(500);
         buttonServo.setPower(0.0);

@@ -43,20 +43,27 @@ public class ParticleRelease implements Attachment{
                 DbgLog.msg("Reversing the particle release servo");
                 particleServo.setDirection(Servo.Direction.REVERSE);
             }
-
+            particleServo.setPosition(1.0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    public void releaseParticles() {
+        particleServo.setPosition(0.0);
+    }
+
+    public void keepParticles() {
+        particleServo.setPosition(1.0);
+    }
     
     @Override
     public void getAndApplyDScmd() {
-        //gamepad TBD TODO:
         if (curOpMode.gamepad1.a) {
-            particleServo.setPosition(0.0);
+            releaseParticles();
         }
         if (curOpMode.gamepad1.y) {
-            particleServo.setPosition(1.0);
+            keepParticles();
         }
     }
 }

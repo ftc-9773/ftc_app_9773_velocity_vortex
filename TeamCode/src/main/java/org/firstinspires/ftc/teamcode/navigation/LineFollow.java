@@ -76,13 +76,14 @@ public class LineFollow{
     }
     public void driveUntilWhiteLine(double speed, long timeoutMillis){
         // timeout puts an upper limit on how long the while loop can run
-        ElapsedTime timeout = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        long startTime = System.nanoTime();
         this.robot.driveSystem.setMaxSpeed((float) speed);
-        timeout.reset();
         while((lightSensor.getLightDetected()<this.mid) && robot.curOpMode.opModeIsActive()
-                && (timeout.milliseconds() < timeoutMillis)) {
+                && ((System.nanoTime() - startTime) < (timeoutMillis*1000000))) {
             driveSystem.drive((float) 1.0, 0);
+            DbgLog.msg("light detected = %f", lightSensor.getLightDetected());
         }
+        DbgLog.msg("light detected = %f", lightSensor.getLightDetected());
         driveSystem.stop();
         driveSystem.resumeMaxSpeed();
     }
