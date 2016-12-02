@@ -105,7 +105,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        resumeMaxSpeed();
     }
 
     private void setDriveSysMode(DcMotor.RunMode runMode){

@@ -166,7 +166,7 @@ public class AutonomousActions {
                 String key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                 speed = actionObj.getDouble(key);
                 key = JsonReader.getRealKeyIgnoreCase(actionObj, "timeoutMillis");
-                speed = actionObj.getDouble(key);
+                timeoutMillis = actionObj.getLong(key);
             }catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -244,7 +244,16 @@ public class AutonomousActions {
             robot.beaconClaimObj.verifyBeaconColor();
             robot.beaconClaimObj.setBeaconStatus(beaconId, robot.autonomousActions.allianceColor,
                     numBlueDetected, numRedDetected);
-            DbgLog.msg("rngeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
+            DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
+        }
+        else if (methodName.equalsIgnoreCase("startPartAcc")) {
+            robot.partAccObj.activateParticleAccelerator();
+        }
+        else if (methodName.equalsIgnoreCase("stopPartAcc")) {
+            robot.partAccObj.deactivateParticleAccelerator();
+        }
+        else if (methodName.equalsIgnoreCase("releaseParticles")) {
+            robot.particleObj.releaseParticles();
         }
     }
 

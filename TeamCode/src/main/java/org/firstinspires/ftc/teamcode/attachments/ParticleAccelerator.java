@@ -52,21 +52,30 @@ public class ParticleAccelerator implements Attachment{
             e.printStackTrace();
         }
     }
+
+    public void activateParticleAccelerator() {
+        // Ramp up the power gradually.
+        // This is recommended for high speed low torque motors
+//        ElapsedTime rampUpTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+//        rampUpTimer.reset();
+//        while ((rampUpTimer.milliseconds() < rampUpTime) && curOpMode.opModeIsActive()) {
+//            launcherMotor.setPower(1 - (rampUpTimer.milliseconds() / rampUpTime));
+//        }
+        launcherMotor.setPower(1.0);
+    }
+
+    public void deactivateParticleAccelerator() {
+        // Zero power behaviour was set to FLOAT in the constructor.
+        launcherMotor.setPower(0.0);
+    }
     
     @Override
     public void getAndApplyDScmd() {
         if (curOpMode.gamepad1.dpad_up) {
-            // Ramp up the power gradually.
-            // This is recommended for high speed low torque motors
-            ElapsedTime rampUpTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-            rampUpTimer.reset();
-            while ((rampUpTimer.milliseconds() < rampUpTime) && curOpMode.opModeIsActive()) {
-                launcherMotor.setPower(1 - (rampUpTimer.milliseconds() / rampUpTime));
-            }
+            activateParticleAccelerator();
         }
         else if (curOpMode.gamepad1.dpad_down) {
-            // Zero power behaviour was set to FLOAT in the constructor.
-            launcherMotor.setPower(0.0);
+            deactivateParticleAccelerator();
         }
     }
 }
