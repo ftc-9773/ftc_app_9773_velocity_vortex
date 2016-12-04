@@ -255,6 +255,9 @@ public class AutonomousActions {
         else if (methodName.equalsIgnoreCase("releaseParticles")) {
             robot.particleObj.releaseParticles();
         }
+        else if (methodName.equalsIgnoreCase("keepParticles")){
+            robot.particleObj.keepParticles();
+        }
     }
 
     public void doActions() throws InterruptedException {
