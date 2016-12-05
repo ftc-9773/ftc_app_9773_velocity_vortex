@@ -251,4 +251,8 @@ public class FTCRobot {
         DbgLog.msg("Is close executing?");
         fileRW.close();
     }
+
+    public double getVoltage() {
+        return (curOpMode.hardwareMap.voltageSensor.iterator().next().getVoltage());
+    }
 }

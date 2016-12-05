@@ -9,7 +9,7 @@
         "__comment" : "The following 2 values have to be changed",
         "__scaleRangeMin" : 0.15,
         "__scaleRangeMax" : 0.549,
-        "needReverse" : true,
+        "needReverse" : false,
         "__fixedPositions" : true,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"

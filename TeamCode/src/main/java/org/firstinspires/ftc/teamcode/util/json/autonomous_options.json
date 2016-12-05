@@ -21,7 +21,7 @@
     {"type" : "Programmed", "value" : "DriveUntilWall", "distanceFromWall" : 15, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
-  "Beacon1Red" : [
+  "Beacon1AndShootRed_Brooklyn" : [
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.7},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 315.0},
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -45.0, "motorSpeed" : 1.0},
@@ -33,9 +33,16 @@
     {"type" : "Programmed", "value" : "reverseDriveSystem"},
     {"type" : "Programmed", "value" : "DriveUntilBeacon", "distanceFromWall" : 20, "motorSpeed" : 0.3, "BeaconId" : 1},
     {"type" : "Programmed", "value" : "reverseDriveSystem"},
-    {"type" : "Programmed", "value" : "claimAbeacon", "BeaconId" : 1}
+    {"type" : "Programmed", "value" : "claimAbeacon", "BeaconId" : 1},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 20.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 255},
+    {"type" : "Programmed", "value" : "startPartAcc", "motorSpeed" : 1.0},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 2000},
+    {"type" : "Programmed", "value" : "releaseParticles"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 10000},
+    {"type" : "Programmed", "value" : "stopPartAcc"}
   ],
-  "Beacon1AndShootRed" : [
+  "Beacon1AndShootRed_Peekskill" : [
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.7},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 315.0},
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -45.0, "motorSpeed" : 1.0},
@@ -56,7 +63,7 @@
     {"type" : "Programmed", "value" : "Sleep","milliSeconds": 10000},
     {"type" : "Programmed", "value" : "stopPartAcc"}
     ],
-  "Beacon1AndShootBlue" : [
+  "Beacon1AndShootBlue_Peekskill" : [
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.7},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 40.0},
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -45.0, "motorSpeed" : 1.0},

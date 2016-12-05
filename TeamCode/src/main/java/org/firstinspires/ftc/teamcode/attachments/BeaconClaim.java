@@ -99,7 +99,7 @@ public class BeaconClaim implements Attachment {
                     buttonServo.setDirection(CRServo.Direction.REVERSE);
                 }
                 // CR Servo should be set to 0 to stop moving
-                deactivateButtonServo();
+//                deactivateButtonServo();
 //                buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
 //                        buttonServoObj.getDouble("scaleRangeMax"));
 //                if (buttonServoObj.getBoolean("needReverse")) {
@@ -159,7 +159,7 @@ public class BeaconClaim implements Attachment {
     public void activateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 2000) {
+        while (elapsedTime.milliseconds() < 1000) {
             buttonServo.setPower(1.0);
         }
 //        curOpMode.sleep(500);
@@ -169,7 +169,7 @@ public class BeaconClaim implements Attachment {
     public void deactivateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 2000) {
+        while (elapsedTime.milliseconds() < 1000) {
             buttonServo.setPower(-1.0);
         }
 //        curOpMode.sleep(500);
