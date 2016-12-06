@@ -13,6 +13,7 @@ public class NavigationOptionsReader extends JsonReader {
     public JSONObject lfObj=null;
     public JSONObject imuObj=null;
     public JSONObject rangeObj=null;
+    public JSONObject encoderVarsObj=null;
 
     public NavigationOptionsReader(String filePath, String navOptStr) {
         super(filePath);
@@ -31,6 +32,10 @@ public class NavigationOptionsReader extends JsonReader {
             if (key != null) {
                 rangeObj = navOptObj.getJSONObject(key);
             }
+            key = JsonReader.getRealKeyIgnoreCase(navOptObj, "DriveSysEncoderVariables");
+            if (key != null) {
+                encoderVarsObj = navOptObj.getJSONObject(key);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -45,6 +50,8 @@ public class NavigationOptionsReader extends JsonReader {
     }
 
     public boolean rangeSensorExists() { return (this.rangeObj != null); }
+
+    public boolean encoderVarsExist() { return (this.encoderVarsObj != null); }
 
     public String getLightSensorName() {
         String lightSensorName = null;
@@ -89,51 +96,6 @@ public class NavigationOptionsReader extends JsonReader {
         return (value);
     }
 
-/*
-    public double  getLineFollowLowSpeed() {
-        JSONObject lfVarObj;
-        double lowSpeed = 0.0;
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
-            lfVarObj = lfObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, "lowSpeed");
-            lowSpeed = lfVarObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return (lowSpeed);
-    }
-
-    public double  getLineFollowHighSpeed() {
-        JSONObject lfVarObj;
-        double highSpeed = 0.0;
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
-            lfVarObj = lfObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, "highSpeed");
-            highSpeed = lfVarObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return (highSpeed);
-    }
-
-    public double getLineFollowTimeOut() {
-        double timeoutSec = 0.0;
-        JSONObject lfVarObj;
-
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(lfObj, "lineFollowVariables");
-            lfVarObj = lfObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(lfVarObj, "timeOut");
-            timeoutSec = lfVarObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return (timeoutSec);
-    }
-*/
-
     public String getIMUDIMname() {
         String imuName = null;
         try {
@@ -156,11 +118,23 @@ public class NavigationOptionsReader extends JsonReader {
         return (imuPortNum);
     }
 
-    public double getIMUdriveSysPower() {
+    public double getIMUdriveSysInitialPower() {
         double driveSysPower=0.0;
 
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysPower");
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysInitialPower");
+            driveSysPower = imuObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (driveSysPower);
+    }
+
+    public double getIMUdriveSysTargetPower() {
+        double driveSysPower=0.0;
+
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysTargetPower");
             driveSysPower = imuObj.getDouble(key);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -177,5 +151,49 @@ public class NavigationOptionsReader extends JsonReader {
             e.printStackTrace();
         }
         return angleTolerance;
+    }
+
+    public double getDoubleDriveSysEncVar(String varName) {
+        double maxSpeed = 1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, varName);
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
+    }
+
+    public double getTurningMaxSpeed() {
+        double maxSpeed=1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, "TurningMaxSpeed");
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
+    }
+
+    public double getStraightLineMaxSpeed() {
+        double maxSpeed=1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, "StraightLineMaxSpeed");
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
+    }
+
+    public double getLineFollowMaxSpeed() {
+        double maxSpeed=1.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(encoderVarsObj, "LineFollowMaxSpeed");
+            maxSpeed = encoderVarsObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxSpeed);
     }
 }

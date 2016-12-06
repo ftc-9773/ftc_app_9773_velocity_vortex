@@ -2,14 +2,16 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
 import org.firstinspires.ftc.teamcode.attachments.Harvester;
+import org.firstinspires.ftc.teamcode.attachments.ParticleAccelerator;
+import org.firstinspires.ftc.teamcode.attachments.ParticleRelease;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
-import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
@@ -30,12 +32,18 @@ public class FTCRobot {
     public BeaconClaim beaconClaimObj;
     public CapBallLift capBallLiftObj;
     public Harvester harvesterObj;
+    public ParticleAccelerator partAccObj;
+    public ParticleRelease particleObj;
+    public double distanceLeft;
+    public double distanceRight;
 
     public FTCRobot(LinearOpMode curOpMode, String robotName) {
         this.curOpMode = curOpMode;
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
         String driveSysName = null;
+        distanceLeft = robotConfig.getDistanceLeft();
+        distanceRight = robotConfig.getDistanceRight();
 
         // Instantiate the Drive System
         try {
@@ -49,7 +57,6 @@ public class FTCRobot {
         }
         if (driveSystem == null) {
             DbgLog.error("Drivesystem not properly initialized");
-            DbgLog.msg("");
         }
 
         // Create the objects for attachments
@@ -84,6 +91,16 @@ public class FTCRobot {
                     harvesterObj = (Harvester) attachmentsArr[i];
                     DbgLog.msg("harvesterObj created");
                     break;
+                case "ParticleAccelerator":
+                    attachmentsArr[i] = new ParticleAccelerator(this, curOpMode, rootObj);
+                    partAccObj = (ParticleAccelerator) attachmentsArr[i];
+                    DbgLog.msg("partAccObj created");
+                    break;
+                case "ParticleRelease":
+                    attachmentsArr[i] = new ParticleRelease(this, curOpMode, rootObj);
+                    particleObj = (ParticleRelease) attachmentsArr[i];
+                    DbgLog.msg("particleObj created");
+                    break;
             }
         }
     }
@@ -92,17 +109,21 @@ public class FTCRobot {
         float speed;
         float direction;
 
+        // Set the drive system teleop mode max speed
+        driveSystem.setMaxSpeed((float) navigation.driveSysTeleopMaxSpeed);
         curOpMode.waitForStart();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {
-                speed = -curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                speed = -curOpMode.gamepad1.left_stick_y;
                 direction = curOpMode.gamepad1.right_stick_x;
             }
             else{
-                speed = curOpMode.gamepad1.left_stick_y * (float) 0.7;
+                speed = curOpMode.gamepad1.left_stick_y;
                 direction = curOpMode.gamepad1.right_stick_x;
             }
+            speed = (float) Range.clip(speed, -1.0, 1.0);
+            direction = (float) Range.clip(direction, -1.0, 1.0);
 
             driveSystem.drive(speed, direction);
             if(curOpMode.gamepad1.x){
@@ -120,20 +141,15 @@ public class FTCRobot {
     }
 
     public void runAutonomous(String autonomousOpt, String allianceColor,
-                                           long startingDelay, int startingPosition) {
+                              long startingDelay, int startingPosition) {
         this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
 
         try {
             curOpMode.waitForStart();
             DbgLog.msg("Starting delay = %d seconds", startingDelay);
-            if (startingDelay > 0) {
-                sleep(startingDelay);
-            }
-            while (curOpMode.opModeIsActive()) {
-                autonomousActions.doActions();
-                break;
-            }
+            if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
+            autonomousActions.doActions();
             driveSystem.stop();
             curOpMode.stop();
         } catch (InterruptedException e) {
@@ -176,9 +192,31 @@ public class FTCRobot {
         long elapsedTime=0, prev_elapsedTime = 0;
         long sleepTime = 0;
         double spinAngle = 0;
+        boolean isReverse = false;
         while (curOpMode.opModeIsActive()) {
-            double speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+            double speed = 0;
+            if(!isReverse) {
+                // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+                //       "DriveSysEncoderVariables"->"StraightLineMaxSpeed" instead of
+                //       multiplying with a hardcoded number 0.3
+                speed = -curOpMode.gamepad1.left_stick_y * 0.3;
+            }
+            else if(isReverse){
+                // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+                //       "DriveSysEncoderVariables"->"StraightLineMaxSpeed" instead of
+                //       multiplying with a hardcoded number 0.3
+                speed = curOpMode.gamepad1.left_stick_y * 0.3;
+            }
+            // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+            //       "DriveSysEncoderVariables"->"TurningMaxSpeed" instead of
+            //       multiplying with a hardcoded number 0.5
             double direction = curOpMode.gamepad1.right_stick_x * 0.5;
+            if(curOpMode.gamepad1.x){
+                isReverse = true;
+            }
+            if(curOpMode.gamepad1.b){
+                isReverse = false;
+            }
             if(curOpMode.gamepad1.left_bumper){
                 spinAngle = navigation.navxMicro.getModifiedYaw();
             }

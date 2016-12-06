@@ -14,7 +14,7 @@ public class AutonomousRed extends LinearOpMode {
     FTCRobot robot;
 
     @Override
-    public void runOpMode() throws InterruptedException{
+    public void runOpMode() {
         JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "AutonomousRed.json");
         String autonomousOpt = null;
         String robotName = null;

@@ -4,11 +4,16 @@ import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.drivesys.FourMotorSteeringDrive;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
+
+import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
 public class NavxMicro {
     LinearOpMode curOpMode;
@@ -16,48 +21,36 @@ public class NavxMicro {
 
     private AHRS navx_device;
     private double angleTolerance = 0.0;
-    private double driveSysPower = 0.0;
+    private double driveSysInitialPower = 0.0;
+    private double driveSysTargetPower = 0.0;
 
     public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, String dimName, int portNum,
-                     double driveSysPower, double angleTolerance) {
+                     double driveSysInitialPower, double driveSysTargetPower, double angleTolerance) {
         this.curOpMode = curOpMode;
         this.robot = robot;
-        this.driveSysPower = driveSysPower;
+        this.driveSysInitialPower = driveSysInitialPower;
+        this.driveSysTargetPower = driveSysTargetPower;
         this.angleTolerance = angleTolerance;
 
         navx_device = AHRS.getInstance(curOpMode.hardwareMap.deviceInterfaceModule.get(dimName),
                 portNum, AHRS.DeviceDataType.kProcessedData);
 
         // Set the yaw to zero
+//        while (navx_device.isCalibrating()) {
+//            curOpMode.idle();
+//        }
         // ToDo:  The should be done only in the autonomous mode.
         navx_device.zeroYaw();
     }
 
-    public void setRobotOrientation(double targetAngle) {
+    public void setRobotOrientation(double targetAngle, double speed) {
         // The orientation is with respect to the initial autonomous starting position
         // The initial orientation of the robot at the beginning of the autonomous period
         // is '0'. targetAngle is between 0 to 360 degrees.
-        double angleToTurn=0;
         double curYaw = getModifiedYaw();
-        boolean spinClockwise=false;
-
-        // 1. Calculate the angle to turn
-        angleToTurn = distanceBetweenAngles(curYaw, targetAngle);
         double diff = targetAngle - curYaw;
-        if (diff == angleToTurn) {
-            spinClockwise = true;
-        } else if (Math.abs(diff) > 180) {
-            spinClockwise = true;
-        } else {
-            spinClockwise = false;
-        }
-
-        // 2. turn the calculated angle
-        if (spinClockwise) {
-            turnRobot(angleToTurn);
-        } else {
-            turnRobot((-1 * angleToTurn));
-        }
+        double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
+        turnRobot(angleToTurn, speed);
     }
 
     public double getModifiedYaw() {
@@ -85,24 +78,25 @@ public class NavxMicro {
         return (angleDistance);
     }
 
-    public void turnRobot(double angle) {
+    public void turnRobot(double angle, double speed) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw;
         boolean spinClockwise = false;
         if (angle > 0 && angle < 360) {
             // Spin clockwise
-            leftPower = this.driveSysPower;
+            leftPower = this.driveSysInitialPower;
             rightPower = -1 * leftPower;
             spinClockwise = true;
         }
-        else if (angle < 0 && angle > -360) {
-            // Spin counter clockwise
-            rightPower = this.driveSysPower;
-            leftPower = -1 * rightPower;
-        }
         else {
-            DbgLog.msg("angle %f is invalid!", angle);
-            return;
+            if (angle < 0 && angle > -360) {
+                // Spin counter clockwise
+                rightPower = this.driveSysInitialPower;
+                leftPower = -1 * rightPower;
+            } else {
+                DbgLog.msg("angle %f is invalid!", angle);
+                return;
+            }
         }
 
         // Note the current yaw value
@@ -113,12 +107,18 @@ public class NavxMicro {
         } else if (targetYaw < 0) {
             targetYaw += 360;
         }
-
-        while (true) {
-            this.robot.driveSystem.turnOrSpin(leftPower, rightPower);
+        DbgLog.msg("initial power left = %f, right = %f",leftPower, rightPower);
+            DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
+                    navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
+        this.robot.driveSystem.setMaxSpeed((float) speed);
+        while (curOpMode.opModeIsActive()) {
+            this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
+//            DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
+//                    navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
             if (distanceBetweenAngles(getModifiedYaw(), targetYaw) < this.angleTolerance)
                 break;
         }
-
+        this.robot.driveSystem.stop();
+        this.robot.driveSystem.resumeMaxSpeed();
     }
 }

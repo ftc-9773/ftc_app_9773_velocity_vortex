@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.attachments;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,7 +17,8 @@ public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;
     DcMotor liftMotor;
-    Servo liftServo;
+    CRServo liftServoCR = null;
+    Servo liftServo = null;
 
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
@@ -38,12 +40,27 @@ public class CapBallLift implements  Attachment {
                 DbgLog.msg("Reversing the lift servo");
                 liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
+            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            double maxSpeed = liftMotorObj.getDouble("maxSpeed");
+            liftMotor.setMaxSpeed((int)(liftMotor.getMaxSpeed() * maxSpeed));
+
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
             liftServoObj = motorsObj.getJSONObject(key);
-            liftServo = curOpMode.hardwareMap.servo.get("liftServo");
-            liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
-                    liftServoObj.getDouble("scaleRangeMax"));
-
+            key = JsonReader.getRealKeyIgnoreCase(liftServoObj, "motorType");
+            String motorType = liftServoObj.getString(key);
+            if (motorType.equalsIgnoreCase("CRservo")) {
+                liftServoCR = curOpMode.hardwareMap.crservo.get("liftServo");
+            } else {
+                liftServo = curOpMode.hardwareMap.servo.get("liftServo");
+                liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
+                        liftServoObj.getDouble("scaleRangeMax"));
+                if (liftServoObj.getBoolean("needReverse")) {
+                    DbgLog.msg("Reversing the lift servo");
+                    liftServo.setDirection(Servo.Direction.REVERSE);
+                }
+                liftServo.setPosition(1);
+            }
+            liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -54,21 +71,32 @@ public class CapBallLift implements  Attachment {
         float power;
 
 
-        if(curOpMode.gamepad1.right_trigger > 0){
-            power = curOpMode.gamepad1.right_trigger;
-        }
-        else if(curOpMode.gamepad1.left_trigger > 0){
-            power = -curOpMode.gamepad1.left_trigger;
-        }
-        else{
-            power = 0;
-        }
+        power = -curOpMode.gamepad2.right_stick_y;
+
         liftMotor.setPower(power);
-        if (curOpMode.gamepad1.left_bumper){
-            liftServo.setPosition(0.0);
+
+        if(curOpMode.gamepad2.right_bumper){
+            liftMotor.setPower(0.05);
         }
-        else if (curOpMode.gamepad1.right_bumper){
-            liftServo.setPosition(1.0);
+        if(curOpMode.gamepad2.left_bumper){
+            liftMotor.setPower(0);
+        }
+
+        if (liftServoCR != null) {
+            if (curOpMode.gamepad2.a) {
+                liftServoCR.setPower(-1);
+            } else if (curOpMode.gamepad2.y) {
+                liftServoCR.setPower(1);
+            } else {
+                liftServoCR.setPower(0.0);
+            }
+        }
+        if (liftServo != null) {
+            if (curOpMode.gamepad2.a) {
+                liftServo.setPosition(0);
+            } else if (curOpMode.gamepad2.y) {
+                liftServo.setPosition(1);
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.attachments;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -37,6 +38,9 @@ public class Harvester implements Attachment {
             if (harvesterMotorObj.getBoolean("needReverse")) {
                 harvesterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
+            harvesterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            double maxSpeed = harvesterMotorObj.getDouble("maxSpeed");
+            harvesterMotor.setMaxSpeed((int)(harvesterMotor.getMaxSpeed() * maxSpeed));
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -44,9 +48,14 @@ public class Harvester implements Attachment {
 
     @Override
     public void getAndApplyDScmd(){
-        float power;
-
-        power = curOpMode.gamepad2.left_stick_y;
-        harvesterMotor.setPower(power);
+        if(curOpMode.gamepad2.dpad_down){
+            harvesterMotor.setPower(-1);
+        }
+        else if (curOpMode.gamepad2.dpad_up){
+            harvesterMotor.setPower(1);
+        }
+        else {
+            harvesterMotor.setPower(0);
+        }
     }
 }
