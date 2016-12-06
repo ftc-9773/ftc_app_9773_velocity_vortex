@@ -27,8 +27,9 @@
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 86.0, "motorSpeed" : 5000},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0},
     {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
-    {"type" : "Programmed", "value" : "verifyBeaconColor"},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 90}
+    {"type" : "Programmed", "value" : "setBeaconStatusV2", "beaconId" : 1},
+    {"type" : "Programmed", "value" : "driveUntilBeaconV2", "distanceFromWall" : 20, "motorSpeed" : 0.3, "BeaconId" : 1, "distance1": 8, "distance2": 13.5},
+    {"type" : "Programmed", "value" : "claimAbeaconV2"}
     ],
   "Beacon1AndShootRed_Peekskill" : [
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.7},

@@ -117,7 +117,10 @@ public class AutonomousActions {
             }catch (JSONException e) {
                 e.printStackTrace();
             }
-            robot.beaconClaimObj.claimABeaconV2(beaconId);
+            robot.beaconClaimObj.claimABeacon(beaconId);
+        }
+        else if(methodName.equalsIgnoreCase("claimAbeaconV2")){
+            robot.beaconClaimObj.claimABeaconV2();
         }
         else if(methodName.equalsIgnoreCase("verifyBeaconColor")){
             robot.beaconClaimObj.verifyBeaconColor();
@@ -250,7 +253,8 @@ public class AutonomousActions {
             double distFromWall = 0.0;
             double speed = 0.0;
             int beaconId=1;
-            int numBlueDetected=0, numRedDetected=0;
+            double distance1 = 0.0;
+            double distance2 = 0.0;
             try{
                 String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distanceFromWall");
                 distFromWall = actionObj.getInt(key);
@@ -258,28 +262,46 @@ public class AutonomousActions {
                 speed = actionObj.getDouble(key);
                 key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
                 beaconId = actionObj.getInt(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance1");
+                distance1 = actionObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance2");
+                distance2 = actionObj.getDouble(key);
             }catch (JSONException e) {
                 e.printStackTrace();
             }
-            DbgLog.msg("DistanceFromWall = %f, speed = %f", distFromWall, speed);
+            DbgLog.msg("DistanceFromWall = %f, speed = %f, distance1 = %f, distance2 = %f", distFromWall, speed, distance1, distance2);
 
             driveSystem.setMaxSpeed((float)speed);
+            if (robot.beaconClaimObj.numPressesNeeded[beaconId-1] == 1){
+                driveSystem.driveToDistance(1.0f, distance1);
+            }
+            else if (robot.beaconClaimObj.numPressesNeeded[beaconId-1] == 2){
+                driveSystem.driveToDistance(1.0f, distance2);
+            }
+
+            robot.navigation.navxMicro.setRobotOrientation(90.0, 0.3);
+
             while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
                 driveSystem.drive(1.0f, 0);
-                if (robot.beaconClaimObj.isBeaconBlue()){
-                    numBlueDetected++;
-                }
-                else if(robot.beaconClaimObj.isBeaconRed()){
-                    numRedDetected++;
-                }
             }
             driveSystem.stop();
             driveSystem.resumeMaxSpeed();
-            DbgLog.msg("numBlueDetected = %d, numRedDetected = %d", numBlueDetected, numRedDetected);
             robot.beaconClaimObj.verifyBeaconColor();
-            robot.beaconClaimObj.setBeaconStatus(beaconId, robot.autonomousActions.allianceColor,
-                    numBlueDetected, numRedDetected);
             DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
+        }
+        else if (methodName.equalsIgnoreCase("setBeaconStatusV2")){
+            int beaconId=1;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
+                beaconId = actionObj.getInt(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            robot.beaconClaimObj.setBeaconStatusV2(beaconId, allianceColor);
+        }
+        else if (methodName.equalsIgnoreCase("driveUntilBeacon")){
+
         }
         else if (methodName.equalsIgnoreCase("startPartAcc")) {
             robot.partAccObj.activateParticleAccelerator();

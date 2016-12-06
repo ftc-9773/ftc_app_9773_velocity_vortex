@@ -192,21 +192,9 @@ public class BeaconClaim implements Attachment {
         curOpMode.sleep(100);
     }
 
-    public void claimABeaconV2(int beaconId) {
-        // Do different actions based on whether the beacon button has to be pressed once or twice.
-        DbgLog.msg("beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
-        if (numPressesNeeded[beaconId-1] == 1) {
-            activateButtonServo();
-            deactivateButtonServo();
-        } else if (numPressesNeeded[beaconId-1] == 2) {
-            robot.driveSystem.reverse();
-            robot.driveSystem.driveToDistance(1.0f, 13.5);
-            robot.driveSystem.reverse();
-            robot.navigation.navxMicro.setRobotOrientation(90, 0.3);
-            activateButtonServo();
-            deactivateButtonServo();
-        }
-        curOpMode.sleep(100);
+    public void claimABeaconV2() {
+        activateButtonServo();
+        deactivateButtonServo();
     }
 
     public void verifyBeaconColor(){
@@ -257,12 +245,30 @@ public class BeaconClaim implements Attachment {
     public void setBeaconStatus(int beaconId, String allianceColor, int numBlues, int numReds) {
         DbgLog.msg("setBeaconStatus: beaconID=%d, allianceColor=%s, numBlues=%d, numReds=%d",
                 beaconId, allianceColor, numBlues, numReds);
-        numRedDetected[beaconId-1] = numBlues;
+        numBlueDetected[beaconId-1] = numBlues;
         numRedDetected[beaconId-1] = numReds;
         // If numBlues >>>>> numReds
         if ((numBlues - numReds > 100) || (this.isBeaconBlue())) {
             beaconColor[beaconId-1] = "blue";
         } else if ((numReds - numBlues > 100) || this.isBeaconRed()) {
+            beaconColor[beaconId-1] = "red";
+        }
+
+        if (beaconColor[beaconId-1].equalsIgnoreCase(allianceColor)) {
+            numPressesNeeded[beaconId-1] = 1;
+        } else {
+            numPressesNeeded[beaconId-1] = 2;
+        }
+        DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
+    }
+
+    public void setBeaconStatusV2(int beaconId, String allianceColor) {
+        DbgLog.msg("setBeaconStatus: beaconID=%d, allianceColor=%s",
+                beaconId, allianceColor);
+
+        if (this.isBeaconBlue()) {
+            beaconColor[beaconId-1] = "blue";
+        } else if (this.isBeaconRed()) {
             beaconColor[beaconId-1] = "red";
         }
 
