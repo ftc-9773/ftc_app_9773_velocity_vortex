@@ -121,4 +121,8 @@ public class NavxMicro {
         this.robot.driveSystem.stop();
         this.robot.driveSystem.resumeMaxSpeed();
     }
+
+    public void goStraight(int degrees){
+
+    }
 }
