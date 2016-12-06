@@ -1,6 +1,6 @@
 {
   "testing1" : [
-    {"type" : "Programmed", "value" : "verifyBeaconServo"}
+    {"type" : "Programmed", "value" : "verifyBeaconColor"}
   ],
   "testing2" : [
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.5},
@@ -22,26 +22,14 @@
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
   "Beacon1AndShootRed_Brooklyn" : [
-    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.7},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 315.0},
-    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -45.0, "motorSpeed" : 1.0},
-    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 18.0, "motorSpeed" : 0.7},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 335.0},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 86.0, "motorSpeed" : 5000},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0},
     {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
-    {"type" : "Programmed", "value" : "reverseDriveSystem"},
-    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 2.0, "motorSpeed" : 0.5},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270},
-    {"type" : "Programmed", "value" : "reverseDriveSystem"},
-    {"type" : "Programmed", "value" : "DriveUntilBeacon", "distanceFromWall" : 20, "motorSpeed" : 0.3, "BeaconId" : 1},
-    {"type" : "Programmed", "value" : "reverseDriveSystem"},
-    {"type" : "Programmed", "value" : "claimAbeacon", "BeaconId" : 1},
-    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 20.0, "motorSpeed" : 0.5},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 255},
-    {"type" : "Programmed", "value" : "startPartAcc", "motorSpeed" : 1.0},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 2000},
-    {"type" : "Programmed", "value" : "releaseParticles"},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 10000},
-    {"type" : "Programmed", "value" : "stopPartAcc"}
-  ],
+    {"type" : "Programmed", "value" : "verifyBeaconColor"},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 90}
+    ],
   "Beacon1AndShootRed_Peekskill" : [
     {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -10.0, "motorSpeed" : 0.7},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 315.0},

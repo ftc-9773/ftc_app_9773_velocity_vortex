@@ -192,6 +192,23 @@ public class BeaconClaim implements Attachment {
         curOpMode.sleep(100);
     }
 
+    public void claimABeaconV2(int beaconId) {
+        // Do different actions based on whether the beacon button has to be pressed once or twice.
+        DbgLog.msg("beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
+        if (numPressesNeeded[beaconId-1] == 1) {
+            activateButtonServo();
+            deactivateButtonServo();
+        } else if (numPressesNeeded[beaconId-1] == 2) {
+            robot.driveSystem.reverse();
+            robot.driveSystem.driveToDistance(1.0f, 13.5);
+            robot.driveSystem.reverse();
+            robot.navigation.navxMicro.setRobotOrientation(90, 0.3);
+            activateButtonServo();
+            deactivateButtonServo();
+        }
+        curOpMode.sleep(100);
+    }
+
     public void verifyBeaconColor(){
 //       if (robot.autonomousActions.allianceColor.equals("red")) {
 //           colorSensor1.red();
