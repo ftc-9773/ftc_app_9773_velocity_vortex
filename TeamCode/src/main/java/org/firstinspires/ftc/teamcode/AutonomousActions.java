@@ -117,7 +117,7 @@ public class AutonomousActions {
             }catch (JSONException e) {
                 e.printStackTrace();
             }
-            robot.beaconClaimObj.claimABeacon(beaconId);
+            robot.beaconClaimObj.claimABeaconV2(beaconId);
         }
         else if(methodName.equalsIgnoreCase("verifyBeaconColor")){
             robot.beaconClaimObj.verifyBeaconColor();
@@ -212,6 +212,41 @@ public class AutonomousActions {
             curOpMode.sleep(milliseconds);
         }
         else if(methodName.equalsIgnoreCase("DriveUntilBeacon")){
+            double distFromWall = 0.0;
+            double speed = 0.0;
+            int beaconId=1;
+            int numBlueDetected=0, numRedDetected=0;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distanceFromWall");
+                distFromWall = actionObj.getInt(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                speed = actionObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
+                beaconId = actionObj.getInt(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            DbgLog.msg("DistanceFromWall = %f, speed = %f", distFromWall, speed);
+
+            driveSystem.setMaxSpeed((float)speed);
+            while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
+                driveSystem.drive(1.0f, 0);
+                if (robot.beaconClaimObj.isBeaconBlue()){
+                    numBlueDetected++;
+                }
+                else if(robot.beaconClaimObj.isBeaconRed()){
+                    numRedDetected++;
+                }
+            }
+            driveSystem.stop();
+            driveSystem.resumeMaxSpeed();
+            DbgLog.msg("numBlueDetected = %d, numRedDetected = %d", numBlueDetected, numRedDetected);
+            robot.beaconClaimObj.verifyBeaconColor();
+            robot.beaconClaimObj.setBeaconStatus(beaconId, robot.autonomousActions.allianceColor,
+                    numBlueDetected, numRedDetected);
+            DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
+        }
+        else if(methodName.equalsIgnoreCase("DriveUntilBeaconV2")){
             double distFromWall = 0.0;
             double speed = 0.0;
             int beaconId=1;
