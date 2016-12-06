@@ -272,6 +272,7 @@ public class AutonomousActions {
             DbgLog.msg("DistanceFromWall = %f, speed = %f, distance1 = %f, distance2 = %f", distFromWall, speed, distance1, distance2);
 
             driveSystem.setMaxSpeed((float)speed);
+            driveSystem.reverse();
             if (robot.beaconClaimObj.numPressesNeeded[beaconId-1] == 1){
                 driveSystem.driveToDistance(1.0f, distance1);
             }
@@ -279,6 +280,7 @@ public class AutonomousActions {
                 driveSystem.driveToDistance(1.0f, distance2);
             }
 
+            driveSystem.reverse();
             robot.navigation.navxMicro.setRobotOrientation(90.0, 0.3);
 
             while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
