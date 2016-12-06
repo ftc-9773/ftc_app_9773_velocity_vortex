@@ -271,12 +271,8 @@ public class BeaconClaim implements Attachment {
         } else if (this.isBeaconRed()) {
             beaconColor[beaconId-1] = "red";
         }
+        numPressesNeeded[beaconId-1] = beaconColor[beaconId-1].equalsIgnoreCase(allianceColor) ? 1 : 2;
 
-        if (beaconColor[beaconId-1].equalsIgnoreCase(allianceColor)) {
-            numPressesNeeded[beaconId-1] = 1;
-        } else {
-            numPressesNeeded[beaconId-1] = 2;
-        }
         DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
     }
 }
