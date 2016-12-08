@@ -22,25 +22,57 @@ public class NavxMicro {
     private AHRS navx_device;
     private double angleTolerance = 0.0;
     private double driveSysInitialPower = 0.0;
-    private double driveSysTargetPower = 0.0;
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
+    navXPIDController yawPIDController=null;
+    navXPIDController.PIDResult yawPIDResult=null;
+    private double drive_speed=0.0;
+    public double straightPID_kp=0.005, turnPID_kp=0.005;
+    private double pid_minSpeed=-1.0, pid_maxSpeed=1.0;
+    private DcMotor.ZeroPowerBehavior prev_zp=null;
 
     public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, String dimName, int portNum,
-                     double driveSysInitialPower, double driveSysTargetPower, double angleTolerance) {
+                     double driveSysInitialPower, double angleTolerance, double straightPID_kp,
+                     double turnPID_kp, double pid_minSpeed, double pid_maxSpeed) {
         this.curOpMode = curOpMode;
         this.robot = robot;
         this.driveSysInitialPower = driveSysInitialPower;
-        this.driveSysTargetPower = driveSysTargetPower;
         this.angleTolerance = angleTolerance;
 
+        DbgLog.msg("dimName=%s, portNum=%d", dimName, portNum);
         navx_device = AHRS.getInstance(curOpMode.hardwareMap.deviceInterfaceModule.get(dimName),
                 portNum, AHRS.DeviceDataType.kProcessedData);
 
         // Set the yaw to zero
-//        while (navx_device.isCalibrating()) {
-//            curOpMode.idle();
-//        }
+        if (navx_device.isConnected()) {
+            curOpMode.telemetry.addData("navx: ", "navx is connected");
+        } else {
+            curOpMode.telemetry.addData("navx: ", "navx is not connected");
+        }
+        if (navx_device.isCalibrating()) {
+            // sleep for 20 milli seconds
+            DbgLog.msg("still calibating navx....");
+            curOpMode.telemetry.addData("navx: ", "calibrating %s", "navx");
+//            curOpMode.sleep(20);
+        } else {
+            DbgLog.msg("Done with calibrating navx");
+            curOpMode.telemetry.addData("navx: ", "Done with calibrating %s", "navx");
+        }
+
         // ToDo:  The should be done only in the autonomous mode.
         navx_device.zeroYaw();
+        DbgLog.msg("Current yaw = %f", getModifiedYaw());
+
+        /* Configure the PID controller */
+        this.pid_minSpeed = pid_minSpeed;
+        this.pid_maxSpeed = pid_maxSpeed;
+        /* Drive straight forward at 3/4 of full drive speed */
+        this.drive_speed = pid_maxSpeed * 0.75;
+        this.straightPID_kp = straightPID_kp;
+        this.turnPID_kp = turnPID_kp;
+        curOpMode.telemetry.addData("navx: ", "minSpeed=%f, maxSpeed=%f, driveSpeed=%f",
+                pid_minSpeed, pid_maxSpeed, drive_speed);
+        curOpMode.telemetry.addData("navx: ", "straightKp=%f, turnKp=%f", straightPID_kp, turnPID_kp);
+        curOpMode.telemetry.update();
     }
 
     public void setRobotOrientation(double targetAngle, double speed) {
@@ -64,6 +96,18 @@ public class NavxMicro {
             newYaw = curYaw;
         }
         return (newYaw);
+    }
+
+    public double convertToNavxYaw(double modifiedYaw) {
+        // This method does the inverse of getModifiedYaw()
+        double navxYaw = 0.0;
+
+        if (modifiedYaw > 180) {
+            navxYaw = modifiedYaw - 360;
+        } else {
+            navxYaw = modifiedYaw;
+        }
+        return (navxYaw);
     }
 
     public double distanceBetweenAngles(double angle1, double angle2) {
@@ -122,7 +166,131 @@ public class NavxMicro {
         this.robot.driveSystem.resumeMaxSpeed();
     }
 
-    public void goStraight(int degrees){
+    public void setYawPIDController(double degrees, double Kp, double Ki, double Kd) {
 
+        degrees = convertToNavxYaw(degrees);
+
+        /* Create a PID Controller which uses the Yaw Angle as input. */
+        yawPIDController = new navXPIDController(navx_device,
+                navXPIDController.navXTimestampedDataSource.YAW);
+
+        /* Configure the PID controller */
+        yawPIDController.setSetpoint(degrees);
+        yawPIDController.setContinuous(true);
+        yawPIDController.setOutputRange(pid_minSpeed, pid_maxSpeed);
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, angleTolerance);
+        yawPIDController.setPID(Kp, Ki, Kd);
+        yawPIDController.enable(true);
+
+        yawPIDResult = new navXPIDController.PIDResult();
+
+
+        prev_zp = robot.driveSystem.getZeroPowerBehavior();
+        robot.driveSystem.setZeroPowerMode(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
+    public void resetYawPIDController() {
+        yawPIDController = null;
+        yawPIDResult = null;
+        robot.driveSystem.setZeroPowerMode(prev_zp);
+    }
+
+    public void setRobotOrientationPIDOld() {
+        int DEVICE_TIMEOUT_MS = 1000;
+        while (curOpMode.opModeIsActive()) {
+            try {
+                if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
+                    if (yawPIDResult.isOnTarget()) {
+                        robot.driveSystem.stop();
+                        break;
+                    } else {
+                        double output = yawPIDResult.getOutput();
+                        robot.driveSystem.turnOrSpin(output, -output);
+//                        if (output < 0) {
+//                            // Spin counterclockwise
+//                            robot.driveSystem.turnOrSpin(-output, output);
+//                        } else {
+//                            // Spin clockwise
+//                            robot.driveSystem.turnOrSpin(output, -output);
+//                        }
+                    }
+                } else {
+                    DbgLog.msg("Timeout occurred in navx.setRobotOrientation()");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void MygoStraightPID(boolean driveBackwards, double degrees) {
+        // degrees specified robot orientation
+        double error=0.0, correction=0.0;
+        double leftSpeed, rightSpeed;
+        error = getModifiedYaw() - degrees;
+        if (error > 180) {
+            error = error - 360;
+        } else if (error < -180) {
+            error = error + 360;
+        }
+        correction = this.straightPID_kp * error / 2;
+        leftSpeed = drive_speed - correction;
+        rightSpeed = drive_speed + correction;
+        DbgLog.msg("error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
+        if (!driveBackwards) {
+            robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);
+        } else {
+            robot.driveSystem.turnOrSpin(-rightSpeed, -leftSpeed);
+        }
+    }
+
+    public void goStraightPIDOld_ToBeRemoved(boolean driveBackwards){
+        int DEVICE_TIMEOUT_MS = 1000;
+        DbgLog.msg("In goStraightPID()");
+        try {
+            if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
+                if (yawPIDResult.isOnTarget()) {
+                    DbgLog.msg("gostraight: on target");
+                    if (!driveBackwards) {
+                        robot.driveSystem.drive((float) drive_speed, 0);
+                    } else {
+                        robot.driveSystem.drive(-1 * (float) drive_speed, 0);
+                    }
+                } else {
+                    double output = yawPIDResult.getOutput();
+                    DbgLog.msg("gostraight: output = %f", output);
+                    if (!driveBackwards) {
+                        robot.driveSystem.turnOrSpin(drive_speed + output, drive_speed - output);
+                    } else {
+                        robot.driveSystem.turnOrSpin(-(drive_speed - output), -(drive_speed + output));
+                    }
+//                    if (output < 0) {
+//                        /* Rotate Left */
+//                        robot.driveSystem.turnOrSpin(drive_speed - output, drive_speed + output);
+//                    } else {
+//                        /* Rotate Right */
+//                        robot.driveSystem.turnOrSpin(drive_speed + output, drive_speed - output);
+//                    }
+                }
+            } else {
+                DbgLog.msg("Timeout occurred in navx.goStraight()");
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testNavxCalibrateConnection() {
+        if (this.navx_device.isCalibrating()) {
+            DbgLog.msg("Navx device is calibrating");
+        } else {
+            DbgLog.msg("Navx device is done with calibration");
+        }
+
+        if (this.navx_device.isConnected()) {
+            DbgLog.msg("Navx device is connected");
+        } else {
+            DbgLog.msg("Navx device is not connected");
+        }
     }
 }

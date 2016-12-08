@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
@@ -43,7 +45,10 @@ public class Navigation {
 
         if (navOption.imuExists()) {
             this.navxMicro = new NavxMicro(curOpMode, robot, navOption.getIMUDIMname(),
-                    navOption.getIMUportNum(), navOption.getIMUdriveSysInitialPower(), navOption.getIMUdriveSysTargetPower(), navOption.getIMUAngleTolerance());
+                    navOption.getIMUportNum(), navOption.getIMUVariableDouble("driveSysInitialPower"),
+                    navOption.getIMUVariableDouble("angleTolerance"), navOption.getIMUVariableDouble("straightPID_kp"),
+                    navOption.getIMUVariableDouble("turnPID_kp"), navOption.getIMUVariableDouble("PID_minSpeed"),
+                    navOption.getIMUVariableDouble("PID_maxSpeed"));
         }
         else {
             this.navxMicro = null;
@@ -62,5 +67,9 @@ public class Navigation {
             this.turnMaxSpeed = navOption.getTurningMaxSpeed();
             this.driveSysTeleopMaxSpeed = navOption.getDoubleDriveSysEncVar("DriveSysTeleOpMaxSpeed");
         }
+    }
+
+    public void printRangeSensorValue() {
+        DbgLog.msg("range sensor distance in cm = %f", rangeSensor.getDistance(DistanceUnit.CM));
     }
 }

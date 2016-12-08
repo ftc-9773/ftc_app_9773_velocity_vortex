@@ -145,4 +145,8 @@ public class LineFollow{
 //        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
 //                error, correction, leftPower, rightPower);
     }
+
+    public boolean onWhiteLine() {
+        return (lightSensor.getLightDetected() >= this.mid);
+    }
 }
