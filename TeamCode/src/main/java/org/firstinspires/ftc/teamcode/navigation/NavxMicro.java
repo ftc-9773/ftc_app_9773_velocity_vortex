@@ -124,7 +124,7 @@ public class NavxMicro {
 
     public void turnRobot(double angle, double speed) {
         double leftPower=0.0, rightPower=0.0;
-        double startingYaw, targetYaw;
+        double startingYaw, targetYaw, yawDiff, prevYawDiff;
         boolean spinClockwise = false;
         if (angle > 0 && angle < 360) {
             // Spin clockwise
@@ -154,73 +154,25 @@ public class NavxMicro {
         DbgLog.msg("initial power left = %f, right = %f",leftPower, rightPower);
             DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                     navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
+        yawDiff = prevYawDiff = distanceBetweenAngles(startingYaw, targetYaw);
         this.robot.driveSystem.setMaxSpeed((float) speed);
         while (curOpMode.opModeIsActive()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
 //            DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
 //                    navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
-            if (distanceBetweenAngles(getModifiedYaw(), targetYaw) < this.angleTolerance)
+            /* ToDo:  we may miss the small window of time when the robot is within the angleTolerance.
+               In this case, the robot keeps spinning until it comes within the angleTolerance again.
+               To avoid this scenario, keep track of whether the robot is getting closer to targetYaw
+               or getting farther away from targetYaw.  If it is getting farther away, stop immediately.
+             */
+            yawDiff = distanceBetweenAngles(getModifiedYaw(), targetYaw);
+//            if ((yawDiff < this.angleTolerance) || ((yawDiff - prevYawDiff) > 0))
+            if (yawDiff < this.angleTolerance)
                 break;
+            prevYawDiff = yawDiff;
         }
         this.robot.driveSystem.stop();
         this.robot.driveSystem.resumeMaxSpeed();
-    }
-
-    public void setYawPIDController(double degrees, double Kp, double Ki, double Kd) {
-
-        degrees = convertToNavxYaw(degrees);
-
-        /* Create a PID Controller which uses the Yaw Angle as input. */
-        yawPIDController = new navXPIDController(navx_device,
-                navXPIDController.navXTimestampedDataSource.YAW);
-
-        /* Configure the PID controller */
-        yawPIDController.setSetpoint(degrees);
-        yawPIDController.setContinuous(true);
-        yawPIDController.setOutputRange(pid_minSpeed, pid_maxSpeed);
-        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, angleTolerance);
-        yawPIDController.setPID(Kp, Ki, Kd);
-        yawPIDController.enable(true);
-
-        yawPIDResult = new navXPIDController.PIDResult();
-
-
-        prev_zp = robot.driveSystem.getZeroPowerBehavior();
-        robot.driveSystem.setZeroPowerMode(DcMotor.ZeroPowerBehavior.FLOAT);
-    }
-
-    public void resetYawPIDController() {
-        yawPIDController = null;
-        yawPIDResult = null;
-        robot.driveSystem.setZeroPowerMode(prev_zp);
-    }
-
-    public void setRobotOrientationPIDOld() {
-        int DEVICE_TIMEOUT_MS = 1000;
-        while (curOpMode.opModeIsActive()) {
-            try {
-                if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
-                    if (yawPIDResult.isOnTarget()) {
-                        robot.driveSystem.stop();
-                        break;
-                    } else {
-                        double output = yawPIDResult.getOutput();
-                        robot.driveSystem.turnOrSpin(output, -output);
-//                        if (output < 0) {
-//                            // Spin counterclockwise
-//                            robot.driveSystem.turnOrSpin(-output, output);
-//                        } else {
-//                            // Spin clockwise
-//                            robot.driveSystem.turnOrSpin(output, -output);
-//                        }
-                    }
-                } else {
-                    DbgLog.msg("Timeout occurred in navx.setRobotOrientation()");
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void MygoStraightPID(boolean driveBackwards, double degrees) {
@@ -241,42 +193,6 @@ public class NavxMicro {
             robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);
         } else {
             robot.driveSystem.turnOrSpin(-rightSpeed, -leftSpeed);
-        }
-    }
-
-    public void goStraightPIDOld_ToBeRemoved(boolean driveBackwards){
-        int DEVICE_TIMEOUT_MS = 1000;
-        DbgLog.msg("In goStraightPID()");
-        try {
-            if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
-                if (yawPIDResult.isOnTarget()) {
-                    DbgLog.msg("gostraight: on target");
-                    if (!driveBackwards) {
-                        robot.driveSystem.drive((float) drive_speed, 0);
-                    } else {
-                        robot.driveSystem.drive(-1 * (float) drive_speed, 0);
-                    }
-                } else {
-                    double output = yawPIDResult.getOutput();
-                    DbgLog.msg("gostraight: output = %f", output);
-                    if (!driveBackwards) {
-                        robot.driveSystem.turnOrSpin(drive_speed + output, drive_speed - output);
-                    } else {
-                        robot.driveSystem.turnOrSpin(-(drive_speed - output), -(drive_speed + output));
-                    }
-//                    if (output < 0) {
-//                        /* Rotate Left */
-//                        robot.driveSystem.turnOrSpin(drive_speed - output, drive_speed + output);
-//                    } else {
-//                        /* Rotate Right */
-//                        robot.driveSystem.turnOrSpin(drive_speed + output, drive_speed - output);
-//                    }
-                }
-            } else {
-                DbgLog.msg("Timeout occurred in navx.goStraight()");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
