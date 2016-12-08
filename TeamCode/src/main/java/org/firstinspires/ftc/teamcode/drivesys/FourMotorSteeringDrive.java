@@ -20,6 +20,14 @@ public class FourMotorSteeringDrive extends DriveSystem {
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
     boolean driveSysIsReversed = false;
 
+    class EncoderTracker {
+        double encoderCountL1;
+        double encoderCountL2;
+        double encoderCountR1;
+        double encoderCountR2;
+    }
+    EncoderTracker encoderTracker=null;
+
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   double maxSpeed, double minSpeed, double frictionCoefficient,
                                   Wheel wheel, int motorCPR){
@@ -32,10 +40,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorR1.setDirection(DcMotorSimple.Direction.FORWARD);
         this.motorR2.setDirection(DcMotorSimple.Direction.FORWARD);
         this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.setZeroPowerMode(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
@@ -74,6 +79,19 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorL2.setPower(0.0);
         motorR1.setPower(0.0);
         motorR2.setPower(0.0);
+    }
+
+    @Override
+    public void setZeroPowerMode(DcMotor.ZeroPowerBehavior zp_behavior) {
+        this.motorL1.setZeroPowerBehavior(zp_behavior);
+        this.motorL2.setZeroPowerBehavior(zp_behavior);
+        this.motorR1.setZeroPowerBehavior(zp_behavior);
+        this.motorR2.setZeroPowerBehavior(zp_behavior);
+    }
+
+    @Override
+    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior() {
+        return (motorL1.getZeroPowerBehavior());
     }
 
     @Override
@@ -148,6 +166,29 @@ public class FourMotorSteeringDrive extends DriveSystem {
             motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
             driveSysIsReversed = true;
         }
+    }
+
+    @Override
+    public void resetDistanceTravelled() {
+        encoderTracker = new EncoderTracker();
+        encoderTracker.encoderCountL1 = motorL1.getCurrentPosition();
+        encoderTracker.encoderCountL2 = motorL2.getCurrentPosition();
+        encoderTracker.encoderCountR1 = motorR1.getCurrentPosition();
+        encoderTracker.encoderCountR2 = motorR2.getCurrentPosition();
+    }
+
+    @Override
+    public double getDistanceTravelledInInches() {
+        double avgEncoderCounts = 0.0;
+        double distanceTravelled = 0.0;
+
+        avgEncoderCounts = (Math.abs(motorL1.getCurrentPosition() - encoderTracker.encoderCountL1) +
+                Math.abs(motorL2.getCurrentPosition() - encoderTracker.encoderCountL2) +
+                Math.abs(motorR1.getCurrentPosition() - encoderTracker.encoderCountR1) +
+                Math.abs(motorR2.getCurrentPosition() - encoderTracker.encoderCountR2)) / 4;
+
+        distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
+        return (distanceTravelled);
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){

@@ -281,15 +281,15 @@ public class AutonomousActions {
             }
 
             driveSystem.reverse();
-            robot.navigation.navxMicro.setRobotOrientation(90.0, 0.3);
+//            robot.navigation.navxMicro.setRobotOrientation(90.0, 0.3);
 
-            while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
-                driveSystem.drive(1.0f, 0);
-            }
+//            while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
+//                driveSystem.drive(1.0f, 0);
+//            }
             driveSystem.stop();
             driveSystem.resumeMaxSpeed();
-            robot.beaconClaimObj.verifyBeaconColor();
-            DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
+//            robot.beaconClaimObj.verifyBeaconColor();
+//            DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
         }
         else if (methodName.equalsIgnoreCase("setBeaconStatusV2")){
             int beaconId=1;
@@ -314,8 +314,63 @@ public class AutonomousActions {
         else if (methodName.equalsIgnoreCase("releaseParticles")) {
             robot.particleObj.releaseParticles();
         }
-        else if (methodName.equalsIgnoreCase("keepParticles")){
-            robot.particleObj.keepParticles();
+        else if (methodName.equalsIgnoreCase("navxGoStraightPID")) {
+            double Kp=0.005, degrees=0;
+            String termCondition=null;
+            double inches=0.0;
+            boolean driveUntilWhiteLine = false;
+            boolean driveBackwards = false;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                degrees = actionObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "endingCondition");
+                termCondition = actionObj.getString(key);
+                if (termCondition.equalsIgnoreCase("driveToDistance")) {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "inches");
+                    inches = actionObj.getDouble(key);
+                } else if (termCondition.equalsIgnoreCase("driveUntilWhiteLine")) {
+                    driveUntilWhiteLine = true;
+                }
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
+                driveBackwards = actionObj.getBoolean(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Kp = robot.navigation.navxMicro.straightPID_kp;
+            DbgLog.msg("degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
+//            robot.navigation.navxMicro.setYawPIDController(degrees, Kp, 0.0, 0.0);
+            if (driveUntilWhiteLine) {
+                while((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
+                    robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
+                }
+                driveSystem.stop();
+            } else {
+                // drive to distance using navx go straight pid controller
+                driveSystem.resetDistanceTravelled();
+                while ((driveSystem.getDistanceTravelledInInches() < inches) &&
+                        robot.curOpMode.opModeIsActive()) {
+                    robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
+                }
+                driveSystem.stop();
+                driveSystem.resetDistanceTravelled();
+            }
+//            robot.navigation.navxMicro.resetYawPIDController();
+        }
+        else if (methodName.equalsIgnoreCase("navxTurnPID")) {
+            double motorSpeedMin=-1.0, motorSpeedMax=1.0, Kp=0.005, degrees=0;
+            try {
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                degrees = actionObj.getDouble(key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Kp = robot.navigation.navxMicro.turnPID_kp;
+            DbgLog.msg("navxTurnPID: degrees=%f, speedmin = %f, speedmax=%f, kp=%f",
+                    degrees, motorSpeedMin, motorSpeedMax, Kp);
+            robot.navigation.navxMicro.setYawPIDController(degrees, Kp, 0.0, 0.0);
+            robot.navigation.navxMicro.setRobotOrientationPIDOld();
+            robot.navigation.navxMicro.resetYawPIDController();
+
         }
     }
 

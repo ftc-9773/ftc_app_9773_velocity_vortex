@@ -68,6 +68,8 @@ public class FTCRobot {
         } else{
             navigation = null;
         }
+
+        DbgLog.msg("Done with robot initialization.  Current Voltage = %f", getVoltage());
     }
 
     private void createAttachments(String[] attachments) {
