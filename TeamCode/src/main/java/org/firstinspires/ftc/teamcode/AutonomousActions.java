@@ -338,7 +338,6 @@ public class AutonomousActions {
             }
             Kp = robot.navigation.navxMicro.straightPID_kp;
             DbgLog.msg("degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
-//            robot.navigation.navxMicro.setYawPIDController(degrees, Kp, 0.0, 0.0);
             if (driveUntilWhiteLine) {
                 while((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
                     robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
@@ -354,23 +353,6 @@ public class AutonomousActions {
                 driveSystem.stop();
                 driveSystem.resetDistanceTravelled();
             }
-//            robot.navigation.navxMicro.resetYawPIDController();
-        }
-        else if (methodName.equalsIgnoreCase("navxTurnPID")) {
-            double motorSpeedMin=-1.0, motorSpeedMax=1.0, Kp=0.005, degrees=0;
-            try {
-                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
-                degrees = actionObj.getDouble(key);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Kp = robot.navigation.navxMicro.turnPID_kp;
-            DbgLog.msg("navxTurnPID: degrees=%f, speedmin = %f, speedmax=%f, kp=%f",
-                    degrees, motorSpeedMin, motorSpeedMax, Kp);
-            robot.navigation.navxMicro.setYawPIDController(degrees, Kp, 0.0, 0.0);
-            robot.navigation.navxMicro.setRobotOrientationPIDOld();
-            robot.navigation.navxMicro.resetYawPIDController();
-
         }
     }
 
