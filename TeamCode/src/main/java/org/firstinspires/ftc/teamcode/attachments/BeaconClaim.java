@@ -215,25 +215,27 @@ public class BeaconClaim implements Attachment {
     }
 
     public boolean isBeaconRed() {
-        if (colorSensor1.red() > colorSensor1.blue()) {
-//            DbgLog.msg("Red");
-            return (true);
-        }
-        else {
-//            DbgLog.msg("Not red");
-            return (false);
-        }
+//        if (colorSensor1.red() > colorSensor1.blue()) {
+////            DbgLog.msg("Red");
+//            return (true);
+//        }
+//        else {
+////            DbgLog.msg("Not red");
+//            return (false);
+//        }
+        return colorSensor1.red() > colorSensor1.blue();
     }
 
     public boolean isBeaconBlue() {
-        if (colorSensor1.blue() > colorSensor1.red()) {
-//            DbgLog.msg("Blue");
-            return (true);
-        }
-        else {
-//            DbgLog.msg("Not blue");
-            return (false);
-        }
+//        if (colorSensor1.blue() > colorSensor1.red()) {
+////            DbgLog.msg("Blue");
+//            return (true);
+//        }
+//        else {
+////            DbgLog.msg("Not blue");
+//            return (false);
+//        }
+        return colorSensor1.blue() < colorSensor1.red();
     }
 
     public String checkBeaconColor() {
