@@ -3,16 +3,13 @@ package org.firstinspires.ftc.teamcode.attachments;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.InstantRunDexHelper;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
-import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -274,7 +271,14 @@ public class BeaconClaim implements Attachment {
         } else if (this.isBeaconRed()) {
             beaconColor[beaconId-1] = "red";
         }
-        numPressesNeeded[beaconId-1] = beaconColor[beaconId-1].equalsIgnoreCase(allianceColor) ? 1 : 2;
+        //numPressesNeeded[beaconId-1] = beaconColor[beaconId-1].equalsIgnoreCase(allianceColor) ? 1 : 2;
+        if (beaconColor[beaconId - 1].equalsIgnoreCase(allianceColor)) {
+
+            numPressesNeeded[beaconId - 1] = 1;
+        }
+        else if (!beaconColor[beaconId - 1].equalsIgnoreCase("unknown")){
+            numPressesNeeded[beaconId - 1] = 2;
+        }
 
         DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
     }
