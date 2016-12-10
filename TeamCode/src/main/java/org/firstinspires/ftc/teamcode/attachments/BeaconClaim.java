@@ -145,15 +145,16 @@ public class BeaconClaim implements Attachment {
     // This method should be called in the while(opModeIsActive) loop
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad2.x) {
-            buttonServo.setPower(-1.0);
-        }
-        else if (curOpMode.gamepad2.b) {
-            buttonServo.setPower(1.0);
-        }
-        else {
-            buttonServo.setPower(0.0);
-        }
+//        if (curOpMode.gamepad2.x) {
+//            buttonServo.setPower(-1.0);
+//        }
+//        else if (curOpMode.gamepad2.b) {
+//            buttonServo.setPower(1.0);
+//        }
+//        else {
+//            buttonServo.setPower(0.0);
+//        }
+        buttonServo.setPower(curOpMode.gamepad2.x ? -1.0 : curOpMode.gamepad2.b ? 1.0 : 0.0);
     }
 
     public void activateButtonServo() {
