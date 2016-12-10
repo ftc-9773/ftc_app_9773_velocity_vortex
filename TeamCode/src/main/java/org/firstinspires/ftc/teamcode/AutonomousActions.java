@@ -198,6 +198,24 @@ public class AutonomousActions {
                 }
                 robot.navigation.navxMicro.setRobotOrientation(orientation, speed);
                 break;
+            case "SetRobotOrientationForBeacon":
+                orientation = 0.0;
+                speed = robot.navigation.turnMaxSpeed;
+                beaconId = 0;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                    orientation = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    speed = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "beaconId");
+                    beaconId = actionObj.getInt(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(robot.beaconClaimObj.numPressesNeeded[beaconId - 1] != 0) {
+                    robot.navigation.navxMicro.setRobotOrientation(orientation, speed);
+                }
+                break;
             case "printMinMaxLightDetected":
                 robot.navigation.lf.printMinMaxLightDetected();
                 break;
@@ -351,6 +369,52 @@ public class AutonomousActions {
                     }
                     driveSystem.stop();
                     driveSystem.resetDistanceTravelled();
+                }
+                break;
+            case "navxGoStraightPIDForBeacon":
+                Kp = 0.005;
+                degrees = 0;
+                termCondition = null;
+                inches = 0.0;
+                driveUntilWhiteLine = false;
+                driveBackwards = false;
+                beaconId = 0;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                    degrees = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "endingCondition");
+                    termCondition = actionObj.getString(key);
+                    if (termCondition.equalsIgnoreCase("driveToDistance")) {
+                        key = JsonReader.getRealKeyIgnoreCase(actionObj, "inches");
+                        inches = actionObj.getDouble(key);
+                    } else if (termCondition.equalsIgnoreCase("driveUntilWhiteLine")) {
+                        driveUntilWhiteLine = true;
+                    }
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
+                    driveBackwards = actionObj.getBoolean(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "beaconId");
+                    beaconId = actionObj.getInt(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (robot.beaconClaimObj.numPressesNeeded[beaconId - 1] != 0) {
+                    Kp = robot.navigation.navxMicro.straightPID_kp;
+                    DbgLog.msg("degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
+                    if (driveUntilWhiteLine) {
+                        while ((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
+                            robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
+                        }
+                        driveSystem.stop();
+                    } else {
+                        // drive to distance using navx go straight pid controller
+                        driveSystem.resetDistanceTravelled();
+                        while ((driveSystem.getDistanceTravelledInInches() < inches) &&
+                                robot.curOpMode.opModeIsActive()) {
+                            robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
+                        }
+                        driveSystem.stop();
+                        driveSystem.resetDistanceTravelled();
+                    }
                 }
                 break;
             case "shiftRobot":
