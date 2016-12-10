@@ -169,6 +169,7 @@ public class NavxMicro {
 //            if ((yawDiff < this.angleTolerance) || ((yawDiff - prevYawDiff) > 0))
             if (yawDiff < this.angleTolerance)
                 break;
+            DbgLog.msg("yawDiff=%f", yawDiff);
             prevYawDiff = yawDiff;
         }
         this.robot.driveSystem.stop();
