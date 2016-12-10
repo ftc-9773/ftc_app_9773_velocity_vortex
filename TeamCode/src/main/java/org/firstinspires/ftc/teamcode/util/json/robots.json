@@ -30,7 +30,7 @@
   },
   "2016_12_10_Brooklyn_Robot" : {
     "driveSystem": "4Motor6WDSteering",
-    "attachments": ["BeaconClaim", "ParticleRelease", "ParticleAccelerator"],
+    "attachments": ["CapBallLift", "BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator"],
     "navigation": "LineFollow_IMU_DriveSysEncoders",
     "distanceBetweenLeftAndODS":11,
     "distanceBetweenRightAndODS":4
