@@ -145,15 +145,16 @@ public class BeaconClaim implements Attachment {
     // This method should be called in the while(opModeIsActive) loop
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad2.x) {
-            buttonServo.setPower(-1.0);
-        }
-        else if (curOpMode.gamepad2.b) {
-            buttonServo.setPower(1.0);
-        }
-        else {
-            buttonServo.setPower(0.0);
-        }
+//        if (curOpMode.gamepad2.x) {
+//            buttonServo.setPower(-1.0);
+//        }
+//        else if (curOpMode.gamepad2.b) {
+//            buttonServo.setPower(1.0);
+//        }
+//        else {
+//            buttonServo.setPower(0.0);
+//        }
+        buttonServo.setPower(curOpMode.gamepad2.x ? -1.0 : curOpMode.gamepad2.b ? 1.0 : 0.0);
     }
 
     public void activateButtonServo() {
@@ -215,25 +216,27 @@ public class BeaconClaim implements Attachment {
     }
 
     public boolean isBeaconRed() {
-        if (colorSensor1.red() > colorSensor1.blue()) {
-//            DbgLog.msg("Red");
-            return (true);
-        }
-        else {
-//            DbgLog.msg("Not red");
-            return (false);
-        }
+//        if (colorSensor1.red() > colorSensor1.blue()) {
+////            DbgLog.msg("Red");
+//            return (true);
+//        }
+//        else {
+////            DbgLog.msg("Not red");
+//            return (false);
+//        }
+        return colorSensor1.red() > colorSensor1.blue();
     }
 
     public boolean isBeaconBlue() {
-        if (colorSensor1.blue() > colorSensor1.red()) {
-//            DbgLog.msg("Blue");
-            return (true);
-        }
-        else {
-//            DbgLog.msg("Not blue");
-            return (false);
-        }
+//        if (colorSensor1.blue() > colorSensor1.red()) {
+////            DbgLog.msg("Blue");
+//            return (true);
+//        }
+//        else {
+////            DbgLog.msg("Not blue");
+//            return (false);
+//        }
+        return colorSensor1.blue() < colorSensor1.red();
     }
 
     public String checkBeaconColor() {
