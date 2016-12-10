@@ -210,4 +210,26 @@ public class NavxMicro {
             DbgLog.msg("Navx device is not connected");
         }
     }
+
+    public void shiftRobot(double distance, boolean isForward){
+        double moveDistance = Math.sqrt(100 + Math.pow(Math.abs(distance), 2));
+        double angle = 90 - Math.toDegrees(Math.asin(10/moveDistance));
+
+        if (isForward){
+            if (distance < 0) {
+                angle *= -1;
+            }
+            this.turnRobot(angle, this.driveSysInitialPower);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, moveDistance);
+            this.turnRobot(-angle, this.driveSysInitialPower);
+        }
+        else{
+            if (distance > 0){
+                angle *= -1;
+            }
+            this.turnRobot(angle, this.driveSysInitialPower);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, -moveDistance);
+            this.turnRobot(-angle, this.driveSysInitialPower);
+        }
+    }
 }
