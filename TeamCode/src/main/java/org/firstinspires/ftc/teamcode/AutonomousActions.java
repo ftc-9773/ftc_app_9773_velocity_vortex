@@ -205,10 +205,10 @@ public class AutonomousActions {
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     orientation = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
-                    speed = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "beaconId");
                     beaconId = actionObj.getInt(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    speed = actionObj.getDouble(key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -289,14 +289,18 @@ public class AutonomousActions {
                 DbgLog.msg("DistanceFromWall = %f, speed = %f, distance1 = %f, distance2 = %f", distFromWall, speed, distance1, distance2);
 
                 driveSystem.setMaxSpeed((float) speed);
-                driveSystem.reverse();
+                if(allianceColor.equalsIgnoreCase("red")) {
+                    driveSystem.reverse();
+                }
                 if (robot.beaconClaimObj.numPressesNeeded[beaconId - 1] == 1) {
                     driveSystem.driveToDistance(1.0f, distance1);
                 } else if (robot.beaconClaimObj.numPressesNeeded[beaconId - 1] == 2) {
                     driveSystem.driveToDistance(1.0f, distance2);
                 }
 
-                driveSystem.reverse();
+                if(allianceColor.equalsIgnoreCase("red")) {
+                    driveSystem.reverse();
+                }
 //            robot.navigation.navxMicro.setRobotOrientation(90.0, 0.3);
 
 //            while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
@@ -329,6 +333,9 @@ public class AutonomousActions {
                 break;
             case "releaseParticles":
                 robot.particleObj.releaseParticles();
+                break;
+            case "keepParticles":
+                robot.particleObj.keepParticles();
                 break;
             case "navxGoStraightPID":
                 double Kp = 0.005;
