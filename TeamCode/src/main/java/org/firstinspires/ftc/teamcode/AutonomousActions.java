@@ -353,6 +353,8 @@ public class AutonomousActions {
                 driveSystem.stop();
                 driveSystem.resetDistanceTravelled();
             }
+        else if (methodName.equalsIgnoreCase("keepParticles")){
+            robot.particleObj.keepParticles();
         }
     }
 
