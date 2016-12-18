@@ -119,6 +119,9 @@ public class AutonomousActions {
             }
             robot.beaconClaimObj.claimABeacon(beaconId);
         }
+        else if(methodName.equalsIgnoreCase("claimAbeaconV2")){
+            robot.beaconClaimObj.claimABeaconV2();
+        }
         else if(methodName.equalsIgnoreCase("verifyBeaconColor")){
             robot.beaconClaimObj.verifyBeaconColor();
         }
@@ -246,6 +249,62 @@ public class AutonomousActions {
                     numBlueDetected, numRedDetected);
             DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
         }
+        else if(methodName.equalsIgnoreCase("DriveUntilBeaconV2")){
+            double distFromWall = 0.0;
+            double speed = 0.0;
+            int beaconId=1;
+            double distance1 = 0.0;
+            double distance2 = 0.0;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distanceFromWall");
+                distFromWall = actionObj.getInt(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                speed = actionObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
+                beaconId = actionObj.getInt(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance1");
+                distance1 = actionObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance2");
+                distance2 = actionObj.getDouble(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            DbgLog.msg("DistanceFromWall = %f, speed = %f, distance1 = %f, distance2 = %f", distFromWall, speed, distance1, distance2);
+
+            driveSystem.setMaxSpeed((float)speed);
+            driveSystem.reverse();
+            if (robot.beaconClaimObj.numPressesNeeded[beaconId-1] == 1){
+                driveSystem.driveToDistance(1.0f, distance1);
+            }
+            else if (robot.beaconClaimObj.numPressesNeeded[beaconId-1] == 2){
+                driveSystem.driveToDistance(1.0f, distance2);
+            }
+
+            driveSystem.reverse();
+//            robot.navigation.navxMicro.setRobotOrientation(90.0, 0.3);
+
+//            while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
+//                driveSystem.drive(1.0f, 0);
+//            }
+            driveSystem.stop();
+            driveSystem.resumeMaxSpeed();
+//            robot.beaconClaimObj.verifyBeaconColor();
+//            DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
+        }
+        else if (methodName.equalsIgnoreCase("setBeaconStatusV2")){
+            int beaconId=1;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
+                beaconId = actionObj.getInt(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            robot.beaconClaimObj.setBeaconStatusV2(beaconId, allianceColor);
+        }
+        else if (methodName.equalsIgnoreCase("driveUntilBeacon")){
+
+        }
         else if (methodName.equalsIgnoreCase("startPartAcc")) {
             robot.partAccObj.activateParticleAccelerator();
         }
@@ -255,6 +314,45 @@ public class AutonomousActions {
         else if (methodName.equalsIgnoreCase("releaseParticles")) {
             robot.particleObj.releaseParticles();
         }
+        else if (methodName.equalsIgnoreCase("navxGoStraightPID")) {
+            double Kp=0.005, degrees=0;
+            String termCondition=null;
+            double inches=0.0;
+            boolean driveUntilWhiteLine = false;
+            boolean driveBackwards = false;
+            try{
+                String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                degrees = actionObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "endingCondition");
+                termCondition = actionObj.getString(key);
+                if (termCondition.equalsIgnoreCase("driveToDistance")) {
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "inches");
+                    inches = actionObj.getDouble(key);
+                } else if (termCondition.equalsIgnoreCase("driveUntilWhiteLine")) {
+                    driveUntilWhiteLine = true;
+                }
+                key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
+                driveBackwards = actionObj.getBoolean(key);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Kp = robot.navigation.navxMicro.straightPID_kp;
+            DbgLog.msg("degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
+            if (driveUntilWhiteLine) {
+                while((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
+                    robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
+                }
+                driveSystem.stop();
+            } else {
+                // drive to distance using navx go straight pid controller
+                driveSystem.resetDistanceTravelled();
+                while ((driveSystem.getDistanceTravelledInInches() < inches) &&
+                        robot.curOpMode.opModeIsActive()) {
+                    robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
+                }
+                driveSystem.stop();
+                driveSystem.resetDistanceTravelled();
+            }
         else if (methodName.equalsIgnoreCase("keepParticles")){
             robot.particleObj.keepParticles();
         }
@@ -289,4 +387,6 @@ public class AutonomousActions {
             }
         }
     }
+
+
 }

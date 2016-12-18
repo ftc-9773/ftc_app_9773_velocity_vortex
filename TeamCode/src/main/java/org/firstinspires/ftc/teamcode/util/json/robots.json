@@ -27,5 +27,12 @@
     "navigation": "LineFollow_IMU_DriveSysEncoders",
     "distanceBetweenLeftAndODS":11,
     "distanceBetweenRightAndODS":4
+  },
+  "2016_12_10_Brooklyn_Robot" : {
+    "driveSystem": "4Motor6WDSteering",
+    "attachments": ["BeaconClaim", "ParticleRelease", "ParticleAccelerator"],
+    "navigation": "LineFollow_IMU_DriveSysEncoders",
+    "distanceBetweenLeftAndODS":11,
+    "distanceBetweenRightAndODS":4
   }
 }
