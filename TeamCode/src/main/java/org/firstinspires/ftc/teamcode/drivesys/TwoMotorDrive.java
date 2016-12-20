@@ -14,6 +14,12 @@ public class TwoMotorDrive extends DriveSystem{
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
     boolean driveSysIsReversed = false;
 
+    class EncoderTracker {
+        double encoderCountL;
+        double encoderCountR;
+    }
+    EncoderTracker encoderTracker=null;
+
     public TwoMotorDrive(DcMotor motorL, DcMotor motorR, double maxSpeed, double minSpeed,
                          double frictionCoefficient, Wheel wheel, int motorCPR){
         this.motorL = motorL;
@@ -34,6 +40,17 @@ public class TwoMotorDrive extends DriveSystem{
 
         motorL.setPower(left);
         motorR.setPower(right);
+    }
+
+    @Override
+    public void setZeroPowerMode(DcMotor.ZeroPowerBehavior zp_behavior) {
+        motorL.setZeroPowerBehavior(zp_behavior);
+        motorR.setZeroPowerBehavior(zp_behavior);
+    }
+
+    @Override
+    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior() {
+        return (motorL.getZeroPowerBehavior());
     }
 
     @Override
@@ -90,5 +107,23 @@ public class TwoMotorDrive extends DriveSystem{
             motorR.setDirection(DcMotorSimple.Direction.FORWARD);
             driveSysIsReversed = true;
         }
+    }
+
+    @Override
+    public void resetDistanceTravelled() {
+        encoderTracker = new EncoderTracker();
+        encoderTracker.encoderCountL = motorL.getCurrentPosition();
+        encoderTracker.encoderCountR = motorR.getCurrentPosition();
+    }
+
+    @Override
+    public double getDistanceTravelledInInches() {
+        double avgEncoderCounts = 0.0;
+        double distanceTravelled = 0.0;
+
+        avgEncoderCounts = (Math.abs(motorL.getCurrentPosition() - encoderTracker.encoderCountL) +
+                Math.abs(motorR.getCurrentPosition() - encoderTracker.encoderCountR)) / 2;
+        distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
+        return (distanceTravelled);
     }
 }

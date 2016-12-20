@@ -3,16 +3,13 @@ package org.firstinspires.ftc.teamcode.attachments;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.InstantRunDexHelper;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
-import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,7 +96,7 @@ public class BeaconClaim implements Attachment {
                     buttonServo.setDirection(CRServo.Direction.REVERSE);
                 }
                 // CR Servo should be set to 0 to stop moving
-                deactivateButtonServo();
+//                deactivateButtonServo();
 //                buttonServo.scaleRange(buttonServoObj.getDouble("scaleRangeMin"),
 //                        buttonServoObj.getDouble("scaleRangeMax"));
 //                if (buttonServoObj.getBoolean("needReverse")) {
@@ -145,21 +142,22 @@ public class BeaconClaim implements Attachment {
     // This method should be called in the while(opModeIsActive) loop
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad2.x) {
-            buttonServo.setPower(-1.0);
-        }
-        else if (curOpMode.gamepad2.b) {
-            buttonServo.setPower(1.0);
-        }
-        else {
-            buttonServo.setPower(0.0);
-        }
+//        if (curOpMode.gamepad2.x) {
+//            buttonServo.setPower(-1.0);
+//        }
+//        else if (curOpMode.gamepad2.b) {
+//            buttonServo.setPower(1.0);
+//        }
+//        else {
+//            buttonServo.setPower(0.0);
+//        }
+        buttonServo.setPower(curOpMode.gamepad2.x ? -1.0 : curOpMode.gamepad2.b ? 1.0 : 0.0);
     }
 
     public void activateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 2000) {
+        while (elapsedTime.milliseconds() < 1000) {
             buttonServo.setPower(1.0);
         }
 //        curOpMode.sleep(500);
@@ -169,7 +167,7 @@ public class BeaconClaim implements Attachment {
     public void deactivateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 2000) {
+        while (elapsedTime.milliseconds() < 1000) {
             buttonServo.setPower(-1.0);
         }
 //        curOpMode.sleep(500);
@@ -192,6 +190,11 @@ public class BeaconClaim implements Attachment {
         curOpMode.sleep(100);
     }
 
+    public void claimABeaconV2() {
+        activateButtonServo();
+        deactivateButtonServo();
+    }
+
     public void verifyBeaconColor(){
 //       if (robot.autonomousActions.allianceColor.equals("red")) {
 //           colorSensor1.red();
@@ -210,25 +213,27 @@ public class BeaconClaim implements Attachment {
     }
 
     public boolean isBeaconRed() {
-        if (colorSensor1.red() > colorSensor1.blue()) {
-//            DbgLog.msg("Red");
-            return (true);
-        }
-        else {
-//            DbgLog.msg("Not red");
-            return (false);
-        }
+//        if (colorSensor1.red() > colorSensor1.blue()) {
+////            DbgLog.msg("Red");
+//            return (true);
+//        }
+//        else {
+////            DbgLog.msg("Not red");
+//            return (false);
+//        }
+        return colorSensor1.red() > colorSensor1.blue();
     }
 
     public boolean isBeaconBlue() {
-        if (colorSensor1.blue() > colorSensor1.red()) {
-//            DbgLog.msg("Blue");
-            return (true);
-        }
-        else {
-//            DbgLog.msg("Not blue");
-            return (false);
-        }
+//        if (colorSensor1.blue() > colorSensor1.red()) {
+////            DbgLog.msg("Blue");
+//            return (true);
+//        }
+//        else {
+////            DbgLog.msg("Not blue");
+//            return (false);
+//        }
+        return colorSensor1.blue() < colorSensor1.red();
     }
 
     public String checkBeaconColor() {
@@ -240,7 +245,7 @@ public class BeaconClaim implements Attachment {
     public void setBeaconStatus(int beaconId, String allianceColor, int numBlues, int numReds) {
         DbgLog.msg("setBeaconStatus: beaconID=%d, allianceColor=%s, numBlues=%d, numReds=%d",
                 beaconId, allianceColor, numBlues, numReds);
-        numRedDetected[beaconId-1] = numBlues;
+        numBlueDetected[beaconId-1] = numBlues;
         numRedDetected[beaconId-1] = numReds;
         // If numBlues >>>>> numReds
         if ((numBlues - numReds > 100) || (this.isBeaconBlue())) {
@@ -254,6 +259,27 @@ public class BeaconClaim implements Attachment {
         } else {
             numPressesNeeded[beaconId-1] = 2;
         }
+        DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
+    }
+
+    public void setBeaconStatusV2(int beaconId, String allianceColor) {
+        DbgLog.msg("setBeaconStatus: beaconID=%d, allianceColor=%s",
+                beaconId, allianceColor);
+
+        if (this.isBeaconBlue()) {
+            beaconColor[beaconId-1] = "blue";
+        } else if (this.isBeaconRed()) {
+            beaconColor[beaconId-1] = "red";
+        }
+        //numPressesNeeded[beaconId-1] = beaconColor[beaconId-1].equalsIgnoreCase(allianceColor) ? 1 : 2;
+        if (beaconColor[beaconId - 1].equalsIgnoreCase(allianceColor)) {
+
+            numPressesNeeded[beaconId - 1] = 1;
+        }
+        else if (!beaconColor[beaconId - 1].equalsIgnoreCase("unknown")){
+            numPressesNeeded[beaconId - 1] = 2;
+        }
+
         DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
     }
 }
