@@ -439,6 +439,13 @@ public class AutonomousActions {
                 break;
             }
         }
+        else if (methodName.equalsIgnoreCase("releaseParticles")) {
+            robot.particleObj.releaseParticles();
+        }
+        else if (methodName.equalsIgnoreCase("keepParticles")){
+            robot.particleObj.keepParticles();
+        }
+    }
 
     public void doActions() throws InterruptedException {
         int len = autoCfg.actions.length();
