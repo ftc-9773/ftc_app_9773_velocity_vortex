@@ -437,8 +437,8 @@ public class AutonomousActions {
                 }
                 robot.navigation.navxMicro.shiftRobot(distance, isForward);
                 break;
-            }
         }
+    }
 
     public void doActions() throws InterruptedException {
         int len = autoCfg.actions.length();
