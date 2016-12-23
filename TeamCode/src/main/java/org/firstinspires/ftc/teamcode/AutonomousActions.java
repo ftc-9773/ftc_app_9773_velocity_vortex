@@ -437,13 +437,6 @@ public class AutonomousActions {
                 }
                 robot.navigation.navxMicro.shiftRobot(distance, isForward);
                 break;
-            }
-        }
-        else if (methodName.equalsIgnoreCase("releaseParticles")) {
-            robot.particleObj.releaseParticles();
-        }
-        else if (methodName.equalsIgnoreCase("keepParticles")){
-            robot.particleObj.keepParticles();
         }
     }
 
