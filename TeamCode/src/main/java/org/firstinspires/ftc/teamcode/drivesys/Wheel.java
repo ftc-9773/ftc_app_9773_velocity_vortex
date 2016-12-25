@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.drivesys;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class Wheel {
 
     String type;

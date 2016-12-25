@@ -11,6 +11,11 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 /**
  * Created by Luke on 10/15/2016.
  */
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class LineFollow{
 
     OpticalDistanceSensor lightSensor;

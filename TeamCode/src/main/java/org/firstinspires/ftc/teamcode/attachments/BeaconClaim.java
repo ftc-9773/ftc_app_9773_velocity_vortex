@@ -15,6 +15,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class BeaconClaim implements Attachment {
     private FTCRobot robot;
     private LinearOpMode curOpMode;

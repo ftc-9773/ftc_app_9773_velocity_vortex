@@ -4,6 +4,10 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorL1 = null;
     DcMotor motorL2 = null;

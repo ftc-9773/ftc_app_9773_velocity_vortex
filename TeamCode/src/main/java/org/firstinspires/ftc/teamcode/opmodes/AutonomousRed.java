@@ -8,6 +8,10 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 @Autonomous(name = "AutonomousRed", group = "Autonomous")
 public class AutonomousRed extends LinearOpMode {
 

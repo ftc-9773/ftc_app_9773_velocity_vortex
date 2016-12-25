@@ -23,6 +23,10 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Thread.sleep;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;

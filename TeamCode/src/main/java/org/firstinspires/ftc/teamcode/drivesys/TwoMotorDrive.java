@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode.drivesys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class TwoMotorDrive extends DriveSystem{
     DcMotor motorL = null;
     DcMotor motorR = null;

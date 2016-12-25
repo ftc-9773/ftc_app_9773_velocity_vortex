@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<!--
+  ~ Copyright (c) 2016 Robocracy 9773
+  -->
+
 <Robot type="FirstInspires-FTC">
     <DeviceInterfaceModule name="dim" serialNumber="AL00XKYB">
         <I2cDevice name="navx" port="0" />

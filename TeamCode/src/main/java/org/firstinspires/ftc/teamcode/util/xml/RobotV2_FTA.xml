@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<!--
+  ~ Copyright (c) 2016 Robocracy 9773
+  -->
+
 <Robot type="FirstInspires-FTC">
     <MotorController name="Right Motor Controller" serialNumber="AL00VSAM">
         <Motor name="fMotorR" port="1" />

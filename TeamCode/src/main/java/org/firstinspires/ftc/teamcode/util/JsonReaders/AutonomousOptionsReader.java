@@ -5,6 +5,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class AutonomousOptionsReader extends JsonReader {
     public JSONArray actions;
     public AutonomousOptionsReader(String filePath, String autonomousOption) {

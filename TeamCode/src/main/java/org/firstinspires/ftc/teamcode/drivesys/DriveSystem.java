@@ -11,6 +11,10 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.MotorSpecsReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.WheelSpecsReader;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public abstract class DriveSystem {
     LinearOpMode curOpMode;
     FTCRobot robot;

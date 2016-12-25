@@ -13,6 +13,10 @@ import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class AutonomousActions {
     FTCRobot robot;
     LinearOpMode curOpMode;

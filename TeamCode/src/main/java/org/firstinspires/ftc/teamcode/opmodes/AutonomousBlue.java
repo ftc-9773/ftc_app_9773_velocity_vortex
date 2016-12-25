@@ -11,6 +11,10 @@ import org.firstinspires.ftc.teamcode.navigation.LineFollow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 @Autonomous(name = "AutonomousBlue", group = "Autonomous")
 public class AutonomousBlue extends LinearOpMode {
 

@@ -8,6 +8,10 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 @Autonomous(name = "AutonomousBlueRecord", group = "TeleOp")
 public class AutonomousBlueRecord extends LinearOpMode {
     @Override

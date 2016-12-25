@@ -15,6 +15,10 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class NavxMicro {
     LinearOpMode curOpMode;
     FTCRobot robot;
