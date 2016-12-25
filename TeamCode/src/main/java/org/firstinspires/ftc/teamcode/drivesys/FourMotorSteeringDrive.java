@@ -13,6 +13,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorL2 = null;
     DcMotor motorR1 = null;
     DcMotor motorR2 = null;
+    double prevPowerL1, prevPowerL2, prevPowerR1, prevPowerR2;
     int motorL1MaxSpeed = 0;
     int motorL2MaxSpeed = 0;
     int motorR1MaxSpeed = 0;
@@ -23,6 +24,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
     boolean driveSysIsReversed = false;
+    double distBetweenWheels;
 
     class EncoderTracker {
         double encoderCountL1;
@@ -56,6 +58,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
                 motorR1MaxSpeed, motorR2MaxSpeed);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
+        this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
+        this.distBetweenWheels = 15.0;
     }
 
     @Override
@@ -63,18 +67,44 @@ public class FourMotorSteeringDrive extends DriveSystem {
         double left = (speed + direction) * frictionCoefficient;
         double right = (speed - direction) * frictionCoefficient;
 
-        motorL1.setPower(left);
-        motorL2.setPower(left);
-        motorR1.setPower(right);
-        motorR2.setPower(right);
+        if(prevPowerL1 != left){
+            motorL1.setPower(left);
+            prevPowerL1 = left;
+        }
+        if(prevPowerL2 != left){
+            motorL2.setPower(left);
+            prevPowerL2 = left;
+        }
+        if(prevPowerR1 != right){
+            motorR1.setPower(right);
+            prevPowerR1 = right;
+        }
+
+        if(prevPowerR2 != right){
+            motorR2.setPower(right);
+            prevPowerR2 = right;
+        }
     }
 
     @Override
-    public void turnOrSpin(double leftSpeed, double rightSpeed) {
-        motorL1.setPower(leftSpeed);
-        motorL2.setPower(leftSpeed);
-        motorR1.setPower(rightSpeed);
-        motorR2.setPower(rightSpeed);
+    public void turnOrSpin(double left, double right) {
+        if(prevPowerL1 != left){
+            motorL1.setPower(left);
+            prevPowerL1 = left;
+        }
+        if(prevPowerL2 != left){
+            motorL2.setPower(left);
+            prevPowerL2 = left;
+        }
+        if(prevPowerR1 != right){
+            motorR1.setPower(right);
+            prevPowerR1 = right;
+        }
+
+        if(prevPowerR2 != right){
+            motorR2.setPower(right);
+            prevPowerR2 = right;
+        }
     }
 
     @Override
@@ -83,6 +113,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorL2.setPower(0.0);
         motorR1.setPower(0.0);
         motorR2.setPower(0.0);
+        prevPowerL1 = prevPowerL2 = prevPowerR1 = prevPowerR2 = 0.0;
     }
 
     @Override
@@ -113,10 +144,36 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        motorL1.setPower(speed * frictionCoefficient);
-        motorL2.setPower(speed * frictionCoefficient);
-        motorR1.setPower(speed * frictionCoefficient);
-        motorR2.setPower(speed * frictionCoefficient);
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
+
+        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()){
+            curOpMode.idle();
+        }
+
+        this.stop();
+        this.resumeMaxSpeed();
+
+        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Override
+    public void turnDegrees(double degrees, float speed){
+        this.setMaxSpeed(speed);
+
+        double distInInches = (degrees / 360) * Math.PI * this.distBetweenWheels;
+        double countsPerInch = motorCPR / wheel.getCircumference();
+        double targetCounts = countsPerInch * distInInches;
+
+        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
+        motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
+        motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
+        motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
+        motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
 
         while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()){
             curOpMode.idle();

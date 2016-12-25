@@ -69,7 +69,12 @@ public class TwoMotorDrive extends DriveSystem{
         motorR.setPower(0.0);
     }
 
-//    public void driveToDistance(float speed, float direction, double distance){
+    @Override
+    public void turnDegrees(double degrees, float speed) {
+
+    }
+
+    //    public void driveToDistance(float speed, float direction, double distance){
 //        double startingPositionL = motorL.getCurrentPosition();
 //        double startingPositionR = motorR.getCurrentPosition();
 //
