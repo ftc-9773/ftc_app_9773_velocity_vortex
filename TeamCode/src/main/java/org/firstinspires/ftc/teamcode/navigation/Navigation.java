@@ -73,6 +73,19 @@ public class Navigation {
         }
     }
 
+    /**
+     * Initialize the navigation system just after pressing the play button.
+     */
+    public void initForPlay() {
+        navxMicro.setNavxStatus();
+
+    }
+
+    public void setRobotOrientation(double targetYaw, double motorSpeed) {
+        // First, do the encoder based turning.
+
+    }
+
     public void printRangeSensorValue() {
         DbgLog.msg("range sensor distance in cm = %f", rangeSensor.getDistance(DistanceUnit.CM));
     }
