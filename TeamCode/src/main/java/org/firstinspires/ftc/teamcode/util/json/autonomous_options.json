@@ -1,7 +1,7 @@
 {
   "testing1" : [
-    {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,
-      "endingCondition" : "driveToDistance", "inches" : 5.0, "driveBackwards" : false},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 5.0, "driveBackwards" : false},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0},
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 320,
       "endingCondition" : "driveToDistance", "inches" : 45.0, "driveBackwards" : false},

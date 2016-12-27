@@ -4,6 +4,8 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.navigation.NavigationException;
+
 /*
  * Copyright (c) 2016 Robocracy 9773
  */
@@ -157,25 +159,44 @@ public class FourMotorSteeringDrive extends DriveSystem {
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public boolean isBusy() {
+        if (motorL1.isBusy()|| motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy()) {
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
     @Override
-    public void turnDegrees(double degrees, float speed){
+    public void turnDegrees(double degrees, float speed, NavigationException navExc){
         this.setMaxSpeed(speed);
 
-        double distInInches = (degrees / 360) * Math.PI * this.distBetweenWheels;
+        double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
         double countsPerInch = motorCPR / wheel.getCircumference();
         double targetCounts = countsPerInch * distInInches;
+        double L1targetCounts, L2targetCounts, R1targetCounts, R2targetCounts;
 
+        if (degrees < 0) {
+            // Spin counterclockwise => left motors backward, right motors forward
+            motorL1.setTargetPosition(motorL1.getCurrentPosition() - (int) targetCounts);
+            motorL2.setTargetPosition(motorL2.getCurrentPosition() - (int) targetCounts);
+            motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
+            motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
+        } else {
+            // Spin clockwise => left motors forward, right motors backward
+            motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
+            motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
+            motorR1.setTargetPosition(motorR1.getCurrentPosition() - (int) targetCounts);
+            motorR2.setTargetPosition(motorR2.getCurrentPosition() - (int) targetCounts);
+        }
         DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
-        motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
-        motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
-        motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
-        motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
 
         setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         this.drive((float) (speed * frictionCoefficient), 0.0f);
 
-        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()){
+        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()
+                && !navExc.checkExceptions()){
             curOpMode.idle();
         }
 

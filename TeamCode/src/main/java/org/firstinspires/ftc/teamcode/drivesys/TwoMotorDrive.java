@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.drivesys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.navigation.NavigationException;
+
 /*
  * Copyright (c) 2016 Robocracy 9773
  */
@@ -70,7 +72,7 @@ public class TwoMotorDrive extends DriveSystem{
     }
 
     @Override
-    public void turnDegrees(double degrees, float speed) {
+    public void turnDegrees(double degrees, float speed, NavigationException navExc) {
         return;
     }
 

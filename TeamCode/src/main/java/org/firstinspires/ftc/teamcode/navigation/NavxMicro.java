@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class NavxMicro {
     LinearOpMode curOpMode;
     FTCRobot robot;
+    Navigation navigation;
 
     private enum NAVX_Status {STATUS_NOT_SET, WORKING, NOT_WORKING}
     private AHRS navx_device;
@@ -37,11 +38,12 @@ public class NavxMicro {
     private NAVX_Status navxStatus;
 
 
-    public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, String dimName, int portNum,
+    public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, Navigation navigation, String dimName, int portNum,
                      double driveSysInitialPower, double angleTolerance, double straightPID_kp,
                      double turnPID_kp, double pid_minSpeed, double pid_maxSpeed) {
         this.curOpMode = curOpMode;
         this.robot = robot;
+        this.navigation = navigation;
         this.driveSysInitialPower = driveSysInitialPower;
         this.angleTolerance = angleTolerance;
 
@@ -160,17 +162,6 @@ public class NavxMicro {
         return (navxYaw);
     }
 
-    public double distanceBetweenAngles(double angle1, double angle2) {
-        // Both angle1 and angle2 are assumed to be positive numbers between 0 and 360
-        // The returnValue is between 0 and 180.
-        double angleDistance= Math.abs(angle1 - angle2);
-
-        if (angleDistance > 180) {
-            angleDistance = 360 - angleDistance;
-        }
-
-        return (angleDistance);
-    }
 
     public void turnRobot(double angle, double speed) {
         double leftPower=0.0, rightPower=0.0;
@@ -207,7 +198,7 @@ public class NavxMicro {
         this.robot.driveSystem.setMaxSpeed((float) speed);
         while (curOpMode.opModeIsActive()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
-            yawDiff = distanceBetweenAngles(getModifiedYaw(), targetYaw);
+            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff < this.angleTolerance)
                 break;
             DbgLog.msg("yawDiff=%f", yawDiff);

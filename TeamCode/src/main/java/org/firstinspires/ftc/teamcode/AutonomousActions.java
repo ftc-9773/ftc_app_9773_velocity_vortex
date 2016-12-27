@@ -83,7 +83,7 @@ public class AutonomousActions {
 
     public void invokeMethod(String methodName, JSONObject actionObj) {
         switch (methodName) {
-            case "searchForWhiteLine":
+            case "searchForWhiteLine": {
                 try {
                     robot.navigation.lf.searchForWhiteLine();
                 } catch (NullPointerException exc) {
@@ -91,7 +91,8 @@ public class AutonomousActions {
                     DbgLog.error("Navigation or Line follow object is null");
                 }
                 break;
-            case "lineFollowProportional":
+            }
+            case "lineFollowProportional": {
                 boolean stopLineFollow = false;
                 DbgLog.msg("minDistance=%f", robot.navigation.minDistance);
 
@@ -112,7 +113,8 @@ public class AutonomousActions {
                 driveSystem.stop();
                 driveSystem.resumeMaxSpeed();
                 break;
-            case "claimAbeacon":
+            }
+            case "claimAbeacon": {
                 int beaconId = 1;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
@@ -122,19 +124,24 @@ public class AutonomousActions {
                 }
                 robot.beaconClaimObj.claimABeacon(beaconId);
                 break;
-            case "claimAbeaconV2":
+            }
+            case "claimAbeaconV2": {
                 robot.beaconClaimObj.claimABeaconV2();
                 break;
-            case "verifyBeaconColor":
+            }
+            case "verifyBeaconColor": {
                 robot.beaconClaimObj.verifyBeaconColor();
                 break;
-            case "verifyBeaconServo":
+            }
+            case "verifyBeaconServo": {
                 robot.beaconClaimObj.verifyBeaconServo();
                 break;
-            case"checkBeaconColor":
+            }
+            case"checkBeaconColor": {
                 robot.beaconClaimObj.checkBeaconColor();
                 break;
-            case "TurnDegrees":
+            }
+            case "TurnDegrees": {
                 DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
                 double degrees = 0.0;
                 double speed = robot.navigation.turnMaxSpeed;
@@ -149,12 +156,14 @@ public class AutonomousActions {
                 robot.navigation.navxMicro.turnRobot(degrees, speed);
                 DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
                 break;
-            case "TurnUntilWhiteLine":
+            }
+            case "TurnUntilWhiteLine": {
                 robot.navigation.lf.turnUntilWhiteLine(false);
                 break;
-            case "DriveToDistance":
+            }
+            case "DriveToDistance": {
                 double distance = 0.0;
-                speed = robot.navigation.straightDrMaxSpeed;
+                double speed = robot.navigation.straightDrMaxSpeed;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "inches");
                     distance = actionObj.getDouble(key);
@@ -165,8 +174,9 @@ public class AutonomousActions {
                 }
                 robot.driveSystem.driveToDistance((float) speed, distance);
                 break;
-            case "DriveUntilWhiteLine":
-                speed = robot.navigation.straightDrMaxSpeed;
+            }
+            case "DriveUntilWhiteLine": {
+                double speed = robot.navigation.straightDrMaxSpeed;
                 long timeoutMillis = 5000;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
@@ -179,8 +189,9 @@ public class AutonomousActions {
                 DbgLog.msg("motorSpeed=%f, timeoutMillis=%d", speed, timeoutMillis);
                 robot.navigation.lf.driveUntilWhiteLine(speed, timeoutMillis);
                 break;
-            case "DrivePastWhiteLine":
-                speed = robot.navigation.straightDrMaxSpeed;
+            }
+            case "DrivePastWhiteLine": {
+                double speed = robot.navigation.straightDrMaxSpeed;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     speed = actionObj.getDouble(key);
@@ -189,9 +200,24 @@ public class AutonomousActions {
                 }
                 robot.navigation.lf.drivePastWhiteLine(speed);
                 break;
-            case "SetRobotOrientation":
+            }
+            case "SetRobotOrientation": {
                 double orientation = 0.0;
-                speed = robot.navigation.turnMaxSpeed;
+                double speed = robot.navigation.turnMaxSpeed;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                    orientation = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    speed = actionObj.getDouble(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                robot.navigation.setRobotOrientation(orientation, speed);
+                break;
+            }
+            case "NavxSetRobotOrientation": {
+                double orientation = 0.0;
+                double speed = robot.navigation.turnMaxSpeed;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     orientation = actionObj.getDouble(key);
@@ -202,10 +228,11 @@ public class AutonomousActions {
                 }
                 robot.navigation.navxMicro.setRobotOrientation(orientation, speed);
                 break;
-            case "SetRobotOrientationForBeacon":
-                orientation = 0.0;
-                speed = robot.navigation.turnMaxSpeed;
-                beaconId = 0;
+            }
+            case "SetRobotOrientationForBeacon": {
+                double orientation = 0.0;
+                double speed = robot.navigation.turnMaxSpeed;
+                int beaconId = 0;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     orientation = actionObj.getDouble(key);
@@ -216,17 +243,20 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if(robot.beaconClaimObj.numPressesNeeded[beaconId - 1] != 0) {
+                if (robot.beaconClaimObj.numPressesNeeded[beaconId - 1] != 0) {
                     robot.navigation.navxMicro.setRobotOrientation(orientation, speed);
                 }
                 break;
-            case "printMinMaxLightDetected":
+            }
+            case "printMinMaxLightDetected": {
                 robot.navigation.lf.printMinMaxLightDetected();
                 break;
-            case "reverseDriveSystem":
+            }
+            case "reverseDriveSystem": {
                 driveSystem.reverse();
                 break;
-            case "Sleep":
+            }
+            case "Sleep": {
                 int milliseconds = 0;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "milliSeconds");
@@ -236,10 +266,11 @@ public class AutonomousActions {
                 }
                 curOpMode.sleep(milliseconds);
                 break;
-            case "DriveUntilBeacon":
+            }
+            case "DriveUntilBeacon": {
                 double distFromWall = 0.0;
-                speed = 0.0;
-                beaconId = 1;
+                double speed = 0.0;
+                int beaconId = 1;
                 int numBlueDetected = 0, numRedDetected = 0;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distanceFromWall");
@@ -270,65 +301,7 @@ public class AutonomousActions {
                         numBlueDetected, numRedDetected);
                 DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
                 break;
-            case "DriveUntilBeaconV2":
-                distFromWall = 0.0;
-                speed = 0.0;
-                beaconId = 1;
-                double distance1 = 0.0;
-                double distance2 = 0.0;
-                try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distanceFromWall");
-                    distFromWall = actionObj.getInt(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
-                    speed = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
-                    beaconId = actionObj.getInt(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance1");
-                    distance1 = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance2");
-                    distance2 = actionObj.getDouble(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                DbgLog.msg("DistanceFromWall = %f, speed = %f, distance1 = %f, distance2 = %f", distFromWall, speed, distance1, distance2);
-
-                driveSystem.setMaxSpeed((float) speed);
-                if(allianceColor.equalsIgnoreCase("red")) {
-                    driveSystem.reverse();
-                }
-                if (robot.beaconClaimObj.numPressesNeeded[beaconId - 1] == 1) {
-                    driveSystem.driveToDistance(1.0f, distance1);
-                } else if (robot.beaconClaimObj.numPressesNeeded[beaconId - 1] == 2) {
-                    driveSystem.driveToDistance(1.0f, distance2);
-                }
-
-                if(allianceColor.equalsIgnoreCase("red")) {
-                    driveSystem.reverse();
-                }
-//            robot.navigation.navxMicro.setRobotOrientation(90.0, 0.3);
-
-//            while ((robot.navigation.rangeSensor.getDistance(DistanceUnit.CM) > distFromWall) && curOpMode.opModeIsActive()){
-//                driveSystem.drive(1.0f, 0);
-//            }
-                driveSystem.stop();
-                driveSystem.resumeMaxSpeed();
-//            robot.beaconClaimObj.verifyBeaconColor();
-//            DbgLog.msg("rangeSensor value = %f", robot.navigation.rangeSensor.getDistance(DistanceUnit.CM));
-                break;
-            case "setBeaconStatusV2":
-                beaconId = 1;
-                try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
-                    beaconId = actionObj.getInt(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                robot.beaconClaimObj.setBeaconStatusV2(beaconId, allianceColor);
-                break;
-            case "driveUntilBeacon":
-
-                break;
+            }
             case "startPartAcc":
                 robot.partAccObj.activateParticleAccelerator();
                 break;
@@ -341,9 +314,29 @@ public class AutonomousActions {
             case "keepParticles":
                 robot.particleObj.keepParticles();
                 break;
-            case "navxGoStraightPID":
+            case "GoStraightToDistance": {
+                double inches = 0.0;
+                double motorSpeed = 0.0;
+                double degrees=0.0;
+                boolean driveBackwards = false;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                    degrees = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "inches");
+                    inches = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    motorSpeed = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
+                    driveBackwards = actionObj.getBoolean(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                robot.navigation.goStraightToDistance(inches, degrees, (float) motorSpeed, driveBackwards);
+                break;
+            }
+            case "navxGoStraightPID": {
                 double Kp = 0.005;
-                degrees = 0;
+                double degrees = 0;
                 String termCondition = null;
                 double inches = 0.0;
                 boolean driveUntilWhiteLine = false;
@@ -382,14 +375,15 @@ public class AutonomousActions {
                     driveSystem.resetDistanceTravelled();
                 }
                 break;
-            case "navxGoStraightPIDForBeacon":
-                Kp = 0.005;
-                degrees = 0;
-                termCondition = null;
-                inches = 0.0;
-                driveUntilWhiteLine = false;
-                driveBackwards = false;
-                beaconId = 0;
+            }
+            case "navxGoStraightPIDForBeacon": {
+                double Kp = 0.005;
+                double degrees = 0;
+                String termCondition = null;
+                double inches = 0.0;
+                boolean driveUntilWhiteLine = false;
+                boolean driveBackwards = false;
+                int beaconId = 0;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     degrees = actionObj.getDouble(key);
@@ -428,8 +422,9 @@ public class AutonomousActions {
                     }
                 }
                 break;
-            case "shiftRobot":
-                distance = 0.0;
+            }
+            case "shiftRobot": {
+                double distance = 0.0;
                 boolean isForward = false;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance");
@@ -441,6 +436,7 @@ public class AutonomousActions {
                 }
                 robot.navigation.navxMicro.shiftRobot(distance, isForward);
                 break;
+            }
         }
     }
 
