@@ -4,7 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.navigation.NavigationException;
+import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -28,13 +28,50 @@ public class FourMotorSteeringDrive extends DriveSystem {
     boolean driveSysIsReversed = false;
     double distBetweenWheels;
 
-    class EncoderTracker {
+    public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
         double encoderCountL1;
         double encoderCountL2;
         double encoderCountR1;
         double encoderCountR2;
+
+        public ElapsedEncoderCounts() {
+            encoderCountL1 = encoderCountL2 = encoderCountR1 = encoderCountR2 = 0;
+        }
+
+        public void reset() {
+            encoderCountL1 = motorL1.getCurrentPosition();
+            encoderCountL2 = motorL2.getCurrentPosition();
+            encoderCountR1 = motorR1.getCurrentPosition();
+            encoderCountR2 = motorR2.getCurrentPosition();
+        }
+
+        public double getDistanceTravelledInInches() {
+            double avgEncoderCounts = 0.0;
+            double distanceTravelled = 0.0;
+
+            avgEncoderCounts = (Math.abs(motorL1.getCurrentPosition() - encoderCountL1) +
+                    Math.abs(motorL2.getCurrentPosition() - encoderCountL2) +
+                    Math.abs(motorR1.getCurrentPosition() - encoderCountR1) +
+                    Math.abs(motorR2.getCurrentPosition() - encoderCountR2)) / 4;
+
+            distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
+            return (distanceTravelled);
+        }
+
+        public double getDegreesTurned() {
+            double distanceTravelledInInches, degreesTurned;
+            double leftDegreesTurned;
+
+            distanceTravelledInInches = this.getDistanceTravelledInInches();
+            degreesTurned = 360 * distanceTravelledInInches / (Math.PI * distBetweenWheels);
+            leftDegreesTurned = ((motorL1.getCurrentPosition() - encoderCountL1) +
+                    (motorL2.getCurrentPosition() - encoderCountL2)) / 2;
+            if (leftDegreesTurned < 0) {
+                degreesTurned *= -1; // Negate the number to indicate counterclockwise spin
+            }
+            return (degreesTurned);
+        }
     }
-    EncoderTracker encoderTracker=null;
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   double maxSpeed, double minSpeed, double frictionCoefficient,
@@ -168,7 +205,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     @Override
-    public void turnDegrees(double degrees, float speed, NavigationException navExc){
+    public void turnDegrees(double degrees, float speed, NavigationChecks navExc){
         this.setMaxSpeed(speed);
 
         double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
@@ -250,27 +287,9 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
     }
 
-    @Override
-    public void resetDistanceTravelled() {
-        encoderTracker = new EncoderTracker();
-        encoderTracker.encoderCountL1 = motorL1.getCurrentPosition();
-        encoderTracker.encoderCountL2 = motorL2.getCurrentPosition();
-        encoderTracker.encoderCountR1 = motorR1.getCurrentPosition();
-        encoderTracker.encoderCountR2 = motorR2.getCurrentPosition();
-    }
-
-    @Override
-    public double getDistanceTravelledInInches() {
-        double avgEncoderCounts = 0.0;
-        double distanceTravelled = 0.0;
-
-        avgEncoderCounts = (Math.abs(motorL1.getCurrentPosition() - encoderTracker.encoderCountL1) +
-                Math.abs(motorL2.getCurrentPosition() - encoderTracker.encoderCountL2) +
-                Math.abs(motorR1.getCurrentPosition() - encoderTracker.encoderCountR1) +
-                Math.abs(motorR2.getCurrentPosition() - encoderTracker.encoderCountR2)) / 4;
-
-        distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
-        return (distanceTravelled);
+    public ElapsedEncoderCounts getNewElapsedCountsObj() {
+        ElapsedEncoderCounts encoderCountsObj = new ElapsedEncoderCounts();
+        return (encoderCountsObj);
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){

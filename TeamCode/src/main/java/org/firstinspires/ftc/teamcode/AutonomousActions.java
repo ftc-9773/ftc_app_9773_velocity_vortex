@@ -366,13 +366,14 @@ public class AutonomousActions {
                     driveSystem.stop();
                 } else {
                     // drive to distance using navx go straight pid controller
-                    driveSystem.resetDistanceTravelled();
-                    while ((driveSystem.getDistanceTravelledInInches() < inches) &&
+                    DriveSystem.ElapsedEncoderCounts elapsedCounts =
+                            driveSystem.getNewElapsedCountsObj();
+                    elapsedCounts.reset();
+                    while ((elapsedCounts.getDistanceTravelledInInches() < inches) &&
                             robot.curOpMode.opModeIsActive()) {
                         robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
                     }
                     driveSystem.stop();
-                    driveSystem.resetDistanceTravelled();
                 }
                 break;
             }
@@ -412,13 +413,14 @@ public class AutonomousActions {
                         driveSystem.stop();
                     } else {
                         // drive to distance using navx go straight pid controller
-                        driveSystem.resetDistanceTravelled();
-                        while ((driveSystem.getDistanceTravelledInInches() < inches) &&
+                        DriveSystem.ElapsedEncoderCounts elapsedCounts =
+                                driveSystem.getNewElapsedCountsObj();
+                        elapsedCounts.reset();
+                        while ((elapsedCounts.getDistanceTravelledInInches() < inches) &&
                                 robot.curOpMode.opModeIsActive()) {
                             robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
                         }
                         driveSystem.stop();
-                        driveSystem.resetDistanceTravelled();
                     }
                 }
                 break;

@@ -29,7 +29,7 @@ public class EncoderNavigation {
 
     }
 
-    public void setRobotOrientation (double targetYaw, double speed, NavigationException navExc) {
+    public void setRobotOrientation (double targetYaw, double speed, NavigationChecks navExc) {
         double degrees;
         degrees = navigation.getDegreesToTurn(currentYaw, targetYaw);
 

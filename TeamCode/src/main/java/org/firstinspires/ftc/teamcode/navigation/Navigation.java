@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 import org.json.JSONObject;
@@ -89,17 +90,20 @@ public class Navigation {
         // This will do nothing if the robot is already at the cirrect orientation,
         //  otherwise the robot will be spun a little bit more to accurarely position it.
         if (navxMicro.navxIsWorking()) {
+            // TODO: 12/27/16   create NavigationChecks objects' array and add as a 3rd parameter
             navxMicro.setRobotOrientation(targetYaw, motorSpeed);
         }
         else {
             double curYaw = encoderNav.getCurrentYaw();
-            // Create a NavigationException object to set the terminating conditions
-            NavigationException.NavExceptions[] exceptions = {NavigationException.NavExceptions.OPMODE_NOTACTIVE,
-                    NavigationException.NavExceptions.TIMED_OUT};
+            // Create a NavigationChecks object to set the terminating conditions
+            NavigationChecks.NavChecksSupported[] exceptions = {NavigationChecks.NavChecksSupported.CHECK_OPMODE_INACTIVE,
+                    NavigationChecks.NavChecksSupported.CHECK_TIMEOUT};
+            // TODO: 12/27/16 Initialize the criteria objects
+            NavigationChecks.NavCheckBaseClass[] criteria = new NavigationChecks.NavCheckBaseClass[2];
             // Calculate the timeout based on the targetYaw and currentYaw
             // at the rate of 100 milliseconds per degree of rotation at full speed
             long timeoutMillis = (long) Math.abs(this.distanceBetweenAngles(targetYaw, curYaw) * 100 / motorSpeed);
-            NavigationException navException = new NavigationException(robot, curOpMode, this, timeoutMillis, exceptions);
+            NavigationChecks navException = new NavigationChecks(robot, curOpMode, this, timeoutMillis, criteria);
             // First, do the encoder based turning.
             encoderNav.setRobotOrientation(targetYaw, motorSpeed, navException);
         }
@@ -149,13 +153,14 @@ public class Navigation {
         // If navx is working, using navx's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         if (navxMicro.navxIsWorking()) {
-            robot.driveSystem.resetDistanceTravelled();
-            while ((robot.driveSystem.getDistanceTravelledInInches() < inches) &&
+            DriveSystem.ElapsedEncoderCounts elapsedCounts =
+                    robot.driveSystem.getNewElapsedCountsObj();
+            elapsedCounts.reset();
+            while ((elapsedCounts.getDistanceTravelledInInches() < inches) &&
                     robot.curOpMode.opModeIsActive()) {
                 robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
             }
             robot.driveSystem.stop();
-            robot.driveSystem.resetDistanceTravelled();
         } else {
             // Use purely encoder based navigation
             robot.driveSystem.driveToDistance(speed, inches);

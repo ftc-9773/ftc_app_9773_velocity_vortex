@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
-import org.firstinspires.ftc.teamcode.navigation.NavigationException;
+import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.DriveSysReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.MotorSpecsReader;
@@ -20,6 +20,13 @@ public abstract class DriveSystem {
     LinearOpMode curOpMode;
     FTCRobot robot;
     String driveSysType;
+
+    public interface ElapsedEncoderCounts {
+        public abstract void reset();
+        public abstract double getDistanceTravelledInInches();
+        public abstract double getDegreesTurned();
+    }
+
 
     public DriveSystem(LinearOpMode curOpMode, FTCRobot robot, String driveSysType) {
         this.curOpMode = curOpMode;
@@ -81,14 +88,11 @@ public abstract class DriveSystem {
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
 
-    public abstract void turnDegrees(double degrees, float speed, NavigationException navExc);
+    public abstract void turnDegrees(double degrees, float speed, NavigationChecks navExc);
 
     public abstract void setMaxSpeed(float speed);
     public abstract void resumeMaxSpeed();
     public abstract void reverse();
+    public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
 
-
-    public abstract void resetDistanceTravelled();
-
-    public abstract double getDistanceTravelledInInches();
 }
