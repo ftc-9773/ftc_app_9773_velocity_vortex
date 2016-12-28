@@ -331,6 +331,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                DbgLog.msg("Degrees: %f, inches: %f, motorSpeed: %f, driveBackwards: %b", degrees, inches, motorSpeed, driveBackwards);
                 robot.navigation.goStraightToDistance(inches, degrees, (float) motorSpeed, driveBackwards);
                 break;
             }

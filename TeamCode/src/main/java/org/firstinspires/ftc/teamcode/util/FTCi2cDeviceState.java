@@ -22,6 +22,7 @@ package org.firstinspires.ftc.teamcode.util;
  * SOFTWARE.
  */
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.I2cController;
 import com.qualcomm.robotcore.hardware.I2cControllerPortDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
@@ -30,6 +31,7 @@ public class FTCi2cDeviceState
 {
     private I2cDeviceSynch syncDevice = null;
     private I2cController i2cController = null;
+    private ModernRoboticsI2cRangeSensor rangeSensor = null;
     private int port = 0;
     private I2cController.I2cPortReadyCallback deviceCallback = null;
     private boolean deviceEnabled = true;

@@ -17,9 +17,9 @@
   ],
   "testing2" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 10.0, "driveBackwards" : false},
+      "inches" : 10.0, "driveBackwards" : false, "motorSpeed": 0.5},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 10.0, "driveBackwards" : true},
+      "inches" : 10.0, "driveBackwards" : true, "motorSpeed": 0.5},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 180.0},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0}
   ],

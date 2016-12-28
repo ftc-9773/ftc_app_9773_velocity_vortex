@@ -138,7 +138,7 @@ public class BeaconClaim implements Attachment {
     public void activateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1000) {
+        while (elapsedTime.milliseconds() < 1000 && curOpMode.opModeIsActive()) {
             buttonServo.setPower(1.0);
         }
 //        curOpMode.sleep(500);
@@ -155,7 +155,7 @@ public class BeaconClaim implements Attachment {
     public void deactivateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1000) {
+        while (elapsedTime.milliseconds() < 1000 && curOpMode.opModeIsActive()) {
             buttonServo.setPower(-1.0);
         }
 //        curOpMode.sleep(500);

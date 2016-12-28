@@ -98,7 +98,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.wheel = wheel;
         this.motorCPR = motorCPR;
         this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
-        this.distBetweenWheels = 15.0;
+        this.distBetweenWheels = 14.75;
     }
 
     @Override
@@ -185,7 +185,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         this.drive((float) (speed * frictionCoefficient), 0.0f);
 
-        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()){
+        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy() && curOpMode.opModeIsActive()){
             curOpMode.idle();
         }
 
@@ -233,7 +233,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.drive((float) (speed * frictionCoefficient), 0.0f);
 
         while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()
-                && !navExc.stopNavigation()){
+                && !navExc.stopNavigation() && curOpMode.opModeIsActive()){
             curOpMode.idle();
         }
 

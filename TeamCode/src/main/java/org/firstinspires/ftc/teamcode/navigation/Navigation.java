@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.navigation;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
@@ -67,7 +69,7 @@ public class Navigation {
 
         if (navOption.rangeSensorExists()) {
             this.rangeSensor = curOpMode.hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor1");
-            this.rangeSensorState = new FTCi2cDeviceState((I2cDeviceSynch)rangeSensor);
+            //this.rangeSensorState = new FTCi2cDeviceState((I2cDeviceSynch)rangeSensor);
         }
          else {
             this.rangeSensor = null;
@@ -98,19 +100,24 @@ public class Navigation {
         double curYaw = encoderNav.getCurrentYaw();
         long timeoutMillis = (long) Math.abs(this.distanceBetweenAngles(targetYaw, curYaw) * 100 / motorSpeed);
         NavigationChecks.TimeoutCheck check1 = navigationChecks.new TimeoutCheck(timeoutMillis);
-        NavigationChecks.CheckNavxWhileTurning check2 = navigationChecks.new CheckNavxWhileTurning(10);
         navigationChecks.addNewCheck(check1);
-        navigationChecks.addNewCheck(check2);
 
         DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
         elapsedEncoderCounts.reset();
 
         // If the navx is working, then set the robot orientation with navx
         if (navxMicro.navxIsWorking()) {
+            curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
+            curOpMode.telemetry.update();
+            NavigationChecks.CheckNavxWhileTurning check2 = navigationChecks.new CheckNavxWhileTurning(10);
+            navigationChecks.addNewCheck(check2);
             navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
-            if (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS){
+            if ((navigationChecks.stopNavCriterion != null) &&
+                    (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS)){
                 double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
                 encoderNav.updateCurrentYaw(encoder_degreesTurned);
+                curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
+                curOpMode.telemetry.update();
                 encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
                 elapsedEncoderCounts.reset();
             }
@@ -119,10 +126,12 @@ public class Navigation {
         }
         else {
             // First, do the encoder based turning.
+            curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
+            curOpMode.telemetry.update();
             encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
+            DbgLog.msg("currYaw: %f", encoderNav.getCurrentYaw());
         }
-
     }
 
     public double distanceBetweenAngles(double angle1, double angle2) {
@@ -168,7 +177,8 @@ public class Navigation {
                                      float speed, boolean driveBackwards) {
         // First, disable the color sensor
         robot.beaconClaimObj.disableColorSensor();
-        rangeSensorState.setEnabled(false);
+        DbgLog.msg("Disabled color sensor");
+        //rangeSensorState.setEnabled(false);
         // If navx is working, using navx's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -177,7 +187,7 @@ public class Navigation {
         navChecks.addNewCheck(check1);
         navChecks.addNewCheck(check2);
         if (navxMicro.navxIsWorking()) {
-            while (!navChecks.stopNavigation()) {
+            while (!navChecks.stopNavigation() && curOpMode.opModeIsActive()) {
                 robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
             }
             robot.driveSystem.stop();
@@ -186,6 +196,7 @@ public class Navigation {
                 robot.driveSystem.reverse();
             }
             // Use purely encoder based navigation
+            DbgLog.msg("Speed: %f, distance: %f", speed, inches);
             robot.driveSystem.driveToDistance(speed, inches);
             if (driveBackwards) {
                 robot.driveSystem.reverse();
@@ -200,7 +211,7 @@ public class Navigation {
         navChecks.addNewCheck(check1);
         navChecks.addNewCheck(check2);
         if (navxMicro.navxIsWorking()) {
-            while (!navChecks.stopNavigation()) {
+            while (!navChecks.stopNavigation() && curOpMode.opModeIsActive()) {
                 robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
             }
             robot.driveSystem.stop();
@@ -209,7 +220,7 @@ public class Navigation {
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
-            while (!navChecks.stopNavigation()) {
+            while (!navChecks.stopNavigation() && curOpMode.opModeIsActive()) {
                 robot.driveSystem.drive(motorSpeed, 0);
             }
             if (driveBackwards) {
