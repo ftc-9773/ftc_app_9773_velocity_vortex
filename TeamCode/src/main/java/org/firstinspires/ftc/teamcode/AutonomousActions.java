@@ -315,12 +315,12 @@ public class AutonomousActions {
             robot.particleObj.releaseParticles();
         }
         else if (methodName.equalsIgnoreCase("navxGoStraightPID")) {
-            double Kp=0.005, degrees=0;
-            String termCondition=null;
-            double inches=0.0;
+            double Kp = 0.005, degrees = 0;
+            String termCondition = null;
+            double inches = 0.0;
             boolean driveUntilWhiteLine = false;
             boolean driveBackwards = false;
-            try{
+            try {
                 String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                 degrees = actionObj.getDouble(key);
                 key = JsonReader.getRealKeyIgnoreCase(actionObj, "endingCondition");
@@ -333,13 +333,13 @@ public class AutonomousActions {
                 }
                 key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
                 driveBackwards = actionObj.getBoolean(key);
-            }catch (JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             Kp = robot.navigation.navxMicro.straightPID_kp;
             DbgLog.msg("degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
             if (driveUntilWhiteLine) {
-                while((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
+                while ((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
                     robot.navigation.navxMicro.MygoStraightPID(driveBackwards, degrees);
                 }
                 driveSystem.stop();
@@ -353,6 +353,7 @@ public class AutonomousActions {
                 driveSystem.stop();
                 driveSystem.resetDistanceTravelled();
             }
+        }
         else if (methodName.equalsIgnoreCase("keepParticles")){
             robot.particleObj.keepParticles();
         }

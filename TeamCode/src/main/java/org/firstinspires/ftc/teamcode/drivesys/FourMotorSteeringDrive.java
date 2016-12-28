@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drivesys;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorL1 = null;
@@ -52,6 +53,19 @@ public class FourMotorSteeringDrive extends DriveSystem {
                 motorR1MaxSpeed, motorR2MaxSpeed);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
+    }
+
+    @Override
+    public void testEncoders(){
+        this.setDriveSysMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        timer.reset();
+        DbgLog.msg("L1 Encoder: %f L2 Encoder: %f R1 Encoder: %f R2 Encoder: %f", motorL1.getCurrentPosition(), motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+        while (curOpMode.opModeIsActive() && timer.milliseconds()<10000){
+            this.drive(1.0F,0);
+        }
+        this.stop();
+        DbgLog.msg("L1 Encoder: %f L2 Encoder: %f R1 Encoder: %f R2 Encoder: %f", motorL1.getCurrentPosition(), motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
     }
 
     @Override
