@@ -109,7 +109,8 @@ public class Navigation {
         if (navxMicro.navxIsWorking()) {
             curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
             curOpMode.telemetry.update();
-            NavigationChecks.CheckNavxWhileTurning check2 = navigationChecks.new CheckNavxWhileTurning(10);
+            NavigationChecks.CheckNavxWhileTurning check2 = navigationChecks.new
+                    CheckNavxWhileTurning(this.distanceBetweenAngles(targetYaw, curYaw) /2);
             navigationChecks.addNewCheck(check2);
             navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&

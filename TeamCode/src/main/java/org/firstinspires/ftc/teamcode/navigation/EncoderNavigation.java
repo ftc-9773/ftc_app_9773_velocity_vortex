@@ -45,6 +45,7 @@ public class EncoderNavigation {
         DbgLog.msg("degrees: %f, currYaw: %f, targetYaw: %f", degrees, this.getCurrentYaw(), targetYaw);
 
         driveSys.turnDegrees(degrees, (float)speed, navExc);
+        this.updateCurrentYaw(degrees);
     }
 
     public double getCurrentYaw() {

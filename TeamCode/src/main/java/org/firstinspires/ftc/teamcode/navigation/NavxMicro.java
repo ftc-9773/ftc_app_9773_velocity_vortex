@@ -195,7 +195,7 @@ public class NavxMicro {
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff < this.angleTolerance)
                 break;
-            DbgLog.msg("yawDiff=%f", yawDiff);
+            //DbgLog.msg("yawDiff=%f", yawDiff);
         }
         this.robot.driveSystem.stop();
         this.robot.driveSystem.resumeMaxSpeed();

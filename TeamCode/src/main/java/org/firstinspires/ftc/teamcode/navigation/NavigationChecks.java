@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -65,6 +66,7 @@ public class NavigationChecks {
                     navxMicro.getModifiedYaw());
             double diff = Math.abs(encoder_degreesTurned - navx_degreesTurned);
             if (diff > Math.abs(degreesToCheck)) {
+                DbgLog.msg("encoder degrees: %f, navx degrees: %f", encoder_degreesTurned, navx_degreesTurned);
                 return (true);
             } else {
                 return (false);

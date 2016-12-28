@@ -69,6 +69,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
             if (leftDegreesTurned < 0) {
                 degreesTurned *= -1; // Negate the number to indicate counterclockwise spin
             }
+            DbgLog.msg("distanceTravelledInInches: %f, degreesTurned: %f", distanceTravelledInInches, degreesTurned);
+
             return (degreesTurned);
         }
     }
