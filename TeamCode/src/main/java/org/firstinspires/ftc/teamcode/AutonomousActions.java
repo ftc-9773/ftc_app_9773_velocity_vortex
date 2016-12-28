@@ -66,7 +66,7 @@ public class AutonomousActions {
                 if(lineElements.length > 3){
                     if(turnCounter == 0) {
                         DbgLog.msg("Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
-                        robot.navigation.navxMicro.setRobotOrientation(Double.parseDouble(lineElements[3]),
+                        robot.navigation.setRobotOrientation(Double.parseDouble(lineElements[3]),
                                 robot.navigation.turnMaxSpeed);
                         DbgLog.msg("Reached target orientation");
                     }
@@ -153,7 +153,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                robot.navigation.navxMicro.turnRobot(degrees, speed);
+                //robot.navigation.navxMicro.turnRobot(degrees, speed, navigationChecks);
                 DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
                 break;
             }
@@ -226,7 +226,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                robot.navigation.navxMicro.setRobotOrientation(orientation, speed);
+                robot.navigation.setRobotOrientation(orientation, speed);
                 break;
             }
             case "SetRobotOrientationForBeacon": {
@@ -244,7 +244,7 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 if (robot.beaconClaimObj.numPressesNeeded[beaconId - 1] != 0) {
-                    robot.navigation.navxMicro.setRobotOrientation(orientation, speed);
+                    robot.navigation.setRobotOrientation(orientation, speed);
                 }
                 break;
             }
@@ -436,7 +436,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                robot.navigation.navxMicro.shiftRobot(distance, isForward);
+                //robot.navigation.navxMicro.shiftRobot(distance, isForward);
                 break;
             }
         }

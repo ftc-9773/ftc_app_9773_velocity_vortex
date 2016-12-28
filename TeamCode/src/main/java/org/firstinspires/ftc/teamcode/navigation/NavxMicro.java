@@ -5,15 +5,10 @@ import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.drivesys.FourMotorSteeringDrive;
-import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
-import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
-
-import java.lang.annotation.Target;
-import java.util.concurrent.TimeUnit;
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -127,14 +122,14 @@ public class NavxMicro {
         }
     }
 
-    public void setRobotOrientation(double targetAngle, double speed) {
+    public void setRobotOrientation(double targetAngle, double speed, NavigationChecks navigationChecks) {
         // The orientation is with respect to the initial autonomous starting position
         // The initial orientation of the robot at the beginning of the autonomous period
         // is '0'. targetAngle is between 0 to 360 degrees.
         double curYaw = getModifiedYaw();
         double diff = targetAngle - curYaw;
         double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
-        turnRobot(angleToTurn, speed);
+        turnRobot(angleToTurn, speed,navigationChecks);
     }
 
     public double getModifiedYaw() {
@@ -163,7 +158,7 @@ public class NavxMicro {
     }
 
 
-    public void turnRobot(double angle, double speed) {
+    public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw, yawDiff;
         boolean spinClockwise = false;
@@ -196,7 +191,8 @@ public class NavxMicro {
             DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                     navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
         this.robot.driveSystem.setMaxSpeed((float) speed);
-        while (curOpMode.opModeIsActive()) {
+
+        while (curOpMode.opModeIsActive() && !navigationChecks.checkExceptions()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff < this.angleTolerance)
@@ -242,7 +238,7 @@ public class NavxMicro {
         }
     }
 
-    public void shiftRobot(double distance, boolean isForward){
+    public void shiftRobot(double distance, boolean isForward, NavigationChecks navigationChecks){
         double moveDistance = Math.sqrt(100 + Math.pow(Math.abs(distance), 2));
         double angle = 90 - Math.toDegrees(Math.asin(10/moveDistance));
 
@@ -250,17 +246,17 @@ public class NavxMicro {
             if (distance < 0) {
                 angle *= -1;
             }
-            this.turnRobot(angle, this.driveSysInitialPower);
+            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) this.drive_speed, moveDistance);
-            this.turnRobot(-angle, this.driveSysInitialPower);
+            this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
         }
         else{
             if (distance > 0){
                 angle *= -1;
             }
-            this.turnRobot(angle, this.driveSysInitialPower);
+            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) this.drive_speed, -moveDistance);
-            this.turnRobot(-angle, this.driveSysInitialPower);
+            this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
         }
     }
 }

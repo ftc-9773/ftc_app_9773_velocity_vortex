@@ -17,12 +17,21 @@ public class EncoderNavigation {
     private Navigation navigation;
 
     public EncoderNavigation(FTCRobot robot, DriveSystem driveSys, LinearOpMode curOpMode,
-                             Navigation navigation, double currentYaw) {
+                             Navigation navigation) {
         this.robot = robot;
         this.driveSys = driveSys;
         this.curOpMode = curOpMode;
         this.navigation = navigation;
-        this.currentYaw = currentYaw;
+    }
+
+    public void updateCurrentYaw(double degreesTurned){
+        currentYaw += degreesTurned;
+        if (currentYaw < 0){
+            currentYaw += 360;
+        }
+        else if (currentYaw > 360){
+            currentYaw -= 360;
+        }
     }
 
     public void driveToDistance(double inches, double speed) {
