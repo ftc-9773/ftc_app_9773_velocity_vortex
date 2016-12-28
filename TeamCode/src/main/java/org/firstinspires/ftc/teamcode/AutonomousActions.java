@@ -334,6 +334,23 @@ public class AutonomousActions {
                 robot.navigation.goStraightToDistance(inches, degrees, (float) motorSpeed, driveBackwards);
                 break;
             }
+            case "GoStraightToWhiteLine": {
+                double motorSpeed = 0.0;
+                double degrees=0.0;
+                boolean driveBackwards = false;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                    degrees = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    motorSpeed = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
+                    driveBackwards = actionObj.getBoolean(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards);
+                break;
+            }
             case "navxGoStraightPID": {
                 double Kp = 0.005;
                 double degrees = 0;

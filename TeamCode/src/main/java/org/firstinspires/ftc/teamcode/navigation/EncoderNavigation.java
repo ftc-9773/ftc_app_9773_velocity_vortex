@@ -39,8 +39,7 @@ public class EncoderNavigation {
     }
 
     public void setRobotOrientation (double targetYaw, double speed, NavigationChecks navExc) {
-        double degrees;
-        degrees = navigation.getDegreesToTurn(currentYaw, targetYaw);
+        double degrees = navigation.getDegreesToTurn(currentYaw, targetYaw);
 
         driveSys.turnDegrees(degrees, (float)speed, navExc);
     }

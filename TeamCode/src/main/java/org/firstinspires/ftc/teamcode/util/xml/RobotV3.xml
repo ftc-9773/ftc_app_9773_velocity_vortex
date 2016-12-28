@@ -5,7 +5,7 @@
 
 <Robot type="FirstInspires-FTC">
     <DeviceInterfaceModule name="dim" serialNumber="AL00XKYB">
-        <I2cDevice name="navx" port="0" />
+        <I2cDevice name="navx" port="1" />
         <ModernRoboticsI2cRangeSensor name="rangeSensor1" port="2" />
         <ColorSensor name="colorSensor1" port="4" />
         <OpticalDistanceSensor name="ods" port="1" />
@@ -19,12 +19,12 @@
         <ContinuousRotationServo name="buttonServo" port="3" />
         <Servo name="particleReleaseServo" port="5" />
     </ServoController>
-    <MotorController name="lift n shooter Motor Controller" serialNumber="AL00VBJK">
-        <Motor name="liftMotor" port="1" />
-        <Motor name="partAccMotor" port="2" />
+    <MotorController name="Shooter Motor Controller" serialNumber="AL00VBJK">
+        <Motor name="partAccMotor" port="1" />
     </MotorController>
-    <MotorController name="Harvester Controller" serialNumber="AL00VS98">
+    <MotorController name="Harvester and Lift Controller" serialNumber="AL00VS98">
         <Motor name="harvesterMotor" port="1" />
+        <Motor name="liftMotor" port="2" />
     </MotorController>
     <MotorController name="Left Motor Controller" serialNumber="AL00YCFW">
         <Motor name="fMotorL" port="1" />

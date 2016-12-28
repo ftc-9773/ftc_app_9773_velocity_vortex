@@ -233,7 +233,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.drive((float) (speed * frictionCoefficient), 0.0f);
 
         while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()
-                && !navExc.checkExceptions()){
+                && !navExc.stopNavigation()){
             curOpMode.idle();
         }
 

@@ -72,6 +72,17 @@ public class NavigationChecks {
         }
     }
 
+    public class OpmodeInactiveCheck extends NavCheckBaseClass {
+        @Override
+        public boolean stopNavigation() {
+            if (curOpMode.opModeIsActive()) {
+                return (false);
+            } else {
+                return (true);
+            }
+        }
+    }
+
     public class EncoderCheckForDistance extends NavCheckBaseClass {
         double distanceInInches;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
@@ -96,6 +107,17 @@ public class NavigationChecks {
         }
     }
 
+    public class CheckForWhiteLine extends NavCheckBaseClass {
+        @Override
+        public boolean stopNavigation() {
+            if (navigationObj.lf.onWhiteLine()) {
+                return (true);
+            } else {
+                return (false);
+            }
+        }
+    }
+
     public NavigationChecks(FTCRobot robot, LinearOpMode curOpMode, Navigation navigationObj) {
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -103,7 +125,7 @@ public class NavigationChecks {
         stopNavCriterion = null;
     }
 
-    public boolean checkExceptions() {
+    public boolean stopNavigation() {
         for (NavCheckBaseClass e: this.criteriaToCheck) {
             if (e.stopNavigation()) {
                 this.stopNavCriterion = e;

@@ -15,6 +15,14 @@
     {"type" : "Programmed", "value" : "DriveToDistance", "distance" : 4.0, "motorSpeed" : 0.5},
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
+  "testing2" : [
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 10.0, "driveBackwards" : false},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 10.0, "driveBackwards" : true},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 180.0},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0}
+  ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,
       "endingCondition" : "driveToDistance", "inches" : 5.0, "driveBackwards" : false},

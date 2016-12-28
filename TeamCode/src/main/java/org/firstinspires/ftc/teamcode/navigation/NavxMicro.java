@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
-import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
-import org.firstinspires.ftc.teamcode.drivesys.FourMotorSteeringDrive;
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -115,7 +113,7 @@ public class NavxMicro {
 
     public boolean navxIsWorking() {
         if (navxStatus == NAVX_Status.WORKING) {
-            return (true);
+            return (false);
         }
         else {
             return (false);
@@ -129,7 +127,7 @@ public class NavxMicro {
         double curYaw = getModifiedYaw();
         double diff = targetAngle - curYaw;
         double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
-        turnRobot(angleToTurn, speed,navigationChecks);
+        turnRobot(angleToTurn, speed, navigationChecks);
     }
 
     public double getModifiedYaw() {
@@ -192,7 +190,7 @@ public class NavxMicro {
                     navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
         this.robot.driveSystem.setMaxSpeed((float) speed);
 
-        while (curOpMode.opModeIsActive() && !navigationChecks.checkExceptions()) {
+        while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff < this.angleTolerance)
