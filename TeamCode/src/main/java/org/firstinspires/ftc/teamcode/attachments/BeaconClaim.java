@@ -28,6 +28,7 @@ public class BeaconClaim implements Attachment {
     private I2cAddr i2cAddr=null;
     public boolean[] beaconClaimed;
     public String[] beaconColor;
+    public int[] colorSensorValues;
     public int[] numBlueDetected;
     public int[] numRedDetected;
     public int[] numPressesNeeded;
@@ -155,6 +156,50 @@ public class BeaconClaim implements Attachment {
 //            buttonServo.setPower(0.0);
 //        }
         buttonServo.setPower(curOpMode.gamepad2.x ? -1.0 : curOpMode.gamepad2.b ? 1.0 : 0.0);
+    }
+
+    public void startMonitoringColor(){
+        this.colorSensorValues = new int[1000];
+    }
+
+    public void updateValues(){
+        for (int i = 0; i<1000; i++){
+            if (colorSensorValues[i]==0) {
+                if (isBeaconRed()){
+                    colorSensorValues[i] = 2;
+                }
+                else if (isBeaconBlue()){
+                    colorSensorValues[i] = -2;
+                }
+                else{
+                    colorSensorValues[i] = 1;
+                }
+                break;
+            }
+        }
+    }
+
+    public String returnFirstColor(){
+        int firstCol = 0;
+        int secondCol = 0;
+        for (int i = 0; i<1000; i++){
+            if (colorSensorValues[i]!=0 && colorSensorValues[i]!=1){
+                if (firstCol == 0)
+                    firstCol = colorSensorValues[i];
+                else if (secondCol==0 && colorSensorValues[i]!=firstCol)
+                    secondCol = colorSensorValues[i];
+            }
+        }
+        if (secondCol==0){
+            firstCol = -firstCol;
+        }
+        if (firstCol==2){
+            return "Red";
+        }
+        else if (firstCol==-2){
+            return "Blue";
+        }
+        return "None";
     }
 
     public void activateButtonServo() {
