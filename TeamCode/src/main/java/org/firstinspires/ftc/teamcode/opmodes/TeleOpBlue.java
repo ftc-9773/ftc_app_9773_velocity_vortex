@@ -7,6 +7,10 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 @TeleOp(name = "TeleOpBlue", group = "TeleOp")
 public class TeleOpBlue extends LinearOpMode {
     @Override

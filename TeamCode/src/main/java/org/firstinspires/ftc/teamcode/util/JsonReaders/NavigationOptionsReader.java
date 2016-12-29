@@ -7,6 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class NavigationOptionsReader extends JsonReader {
     String navOptStr;
     public JSONObject navOptObj;

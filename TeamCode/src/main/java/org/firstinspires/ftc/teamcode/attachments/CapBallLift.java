@@ -13,6 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class CapBallLift implements  Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;

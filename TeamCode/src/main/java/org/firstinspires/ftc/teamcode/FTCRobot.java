@@ -23,6 +23,10 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Thread.sleep;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;
@@ -151,6 +155,7 @@ public class FTCRobot {
             curOpMode.waitForStart();
             DbgLog.msg("Starting delay = %d seconds", startingDelay);
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
+            navigation.initForPlay(); // Initialization after starting the robot
             autonomousActions.doActions();
             driveSystem.stop();
             curOpMode.stop();

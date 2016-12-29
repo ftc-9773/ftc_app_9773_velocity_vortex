@@ -16,6 +16,10 @@ import org.json.JSONObject;
  * Created by michaelzhou on 11/13/16.
  */
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class ParticleRelease implements Attachment{
 
     FTCRobot robot;

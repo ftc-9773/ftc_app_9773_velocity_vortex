@@ -5,20 +5,19 @@ import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
-import org.firstinspires.ftc.teamcode.drivesys.FourMotorSteeringDrive;
-import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
-import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 
-import java.lang.annotation.Target;
-import java.util.concurrent.TimeUnit;
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
 
 public class NavxMicro {
     LinearOpMode curOpMode;
     FTCRobot robot;
+    Navigation navigation;
 
+    private enum NAVX_Status {STATUS_NOT_SET, WORKING, NOT_WORKING}
     private AHRS navx_device;
     private double angleTolerance = 0.0;
     private double driveSysInitialPower = 0.0;
@@ -29,12 +28,15 @@ public class NavxMicro {
     public double straightPID_kp=0.005, turnPID_kp=0.005;
     private double pid_minSpeed=-1.0, pid_maxSpeed=1.0;
     private DcMotor.ZeroPowerBehavior prev_zp=null;
+    private NAVX_Status navxStatus;
 
-    public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, String dimName, int portNum,
+
+    public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, Navigation navigation, String dimName, int portNum,
                      double driveSysInitialPower, double angleTolerance, double straightPID_kp,
                      double turnPID_kp, double pid_minSpeed, double pid_maxSpeed) {
         this.curOpMode = curOpMode;
         this.robot = robot;
+        this.navigation = navigation;
         this.driveSysInitialPower = driveSysInitialPower;
         this.angleTolerance = angleTolerance;
 
@@ -73,16 +75,59 @@ public class NavxMicro {
                 pid_minSpeed, pid_maxSpeed, drive_speed);
         curOpMode.telemetry.addData("navx: ", "straightKp=%f, turnKp=%f", straightPID_kp, turnPID_kp);
         curOpMode.telemetry.update();
+
+        // navxStatus is set after the play button is pressed. It is not set during the init stage.
+        this.navxStatus = NAVX_Status.STATUS_NOT_SET;
     }
 
-    public void setRobotOrientation(double targetAngle, double speed) {
+    /**
+     * Converts the given targetYaw into the angle to turn.  Returns a value between [-180, +180]
+     * @param targetYaw
+     *      The targetYaw is with respect to the initial autonomous starting position
+     *      The initial orientation of the robot at the beginning of the autonomous period
+     *      is '0'. targetYaw is between 0 to 360 degrees.
+
+     * @return degreesToTurn
+     */
+    public double getDegreesToTurn (double targetYaw) {
+        double degreesToTurn=0.0;
+        double curYaw = getModifiedYaw();
+        double diff = targetYaw - curYaw;
+        degreesToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
+
+        return (degreesToTurn);
+    }
+
+    public void setNavxStatus() {
+        double updateCount1 = navx_device.getUpdateCount();
+        curOpMode.sleep(200);
+        double updateCount2 = navx_device.getUpdateCount();
+        if (navx_device.isConnected() && !navx_device.isCalibrating() &&
+                (updateCount2 > updateCount1)) {
+            navxStatus = NAVX_Status.WORKING;
+        }
+        else {
+            navxStatus = NAVX_Status.NOT_WORKING;
+        }
+    }
+
+    public boolean navxIsWorking() {
+        if (navxStatus == NAVX_Status.WORKING) {
+            return (true);
+        }
+        else {
+            return (false);
+        }
+    }
+
+    public void setRobotOrientation(double targetAngle, double speed, NavigationChecks navigationChecks) {
         // The orientation is with respect to the initial autonomous starting position
         // The initial orientation of the robot at the beginning of the autonomous period
         // is '0'. targetAngle is between 0 to 360 degrees.
         double curYaw = getModifiedYaw();
         double diff = targetAngle - curYaw;
         double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
-        turnRobot(angleToTurn, speed);
+        turnRobot(angleToTurn, speed, navigationChecks);
     }
 
     public double getModifiedYaw() {
@@ -110,21 +155,10 @@ public class NavxMicro {
         return (navxYaw);
     }
 
-    public double distanceBetweenAngles(double angle1, double angle2) {
-        // Both angle1 and angle2 are assumed to be positive numbers between 0 and 360
-        // The returnValue is between 0 and 180.
-        double angleDistance= Math.abs(angle1 - angle2);
 
-        if (angleDistance > 180) {
-            angleDistance = 360 - angleDistance;
-        }
-
-        return (angleDistance);
-    }
-
-    public void turnRobot(double angle, double speed) {
+    public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
-        double startingYaw, targetYaw, yawDiff, prevYawDiff;
+        double startingYaw, targetYaw, yawDiff;
         boolean spinClockwise = false;
         if (angle > 0 && angle < 360) {
             // Spin clockwise
@@ -154,23 +188,14 @@ public class NavxMicro {
         DbgLog.msg("initial power left = %f, right = %f",leftPower, rightPower);
             DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                     navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
-        yawDiff = prevYawDiff = distanceBetweenAngles(startingYaw, targetYaw);
         this.robot.driveSystem.setMaxSpeed((float) speed);
-        while (curOpMode.opModeIsActive()) {
+
+        while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
-//            DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
-//                    navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
-            /* ToDo:  we may miss the small window of time when the robot is within the angleTolerance.
-               In this case, the robot keeps spinning until it comes within the angleTolerance again.
-               To avoid this scenario, keep track of whether the robot is getting closer to targetYaw
-               or getting farther away from targetYaw.  If it is getting farther away, stop immediately.
-             */
-            yawDiff = distanceBetweenAngles(getModifiedYaw(), targetYaw);
-//            if ((yawDiff < this.angleTolerance) || ((yawDiff - prevYawDiff) > 0))
+            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff < this.angleTolerance)
                 break;
-            DbgLog.msg("yawDiff=%f", yawDiff);
-            prevYawDiff = yawDiff;
+            //DbgLog.msg("yawDiff=%f", yawDiff);
         }
         this.robot.driveSystem.stop();
         this.robot.driveSystem.resumeMaxSpeed();
@@ -208,6 +233,30 @@ public class NavxMicro {
             DbgLog.msg("Navx device is connected");
         } else {
             DbgLog.msg("Navx device is not connected");
+        }
+    }
+
+    public void shiftRobot(double distance, boolean isForward, NavigationChecks navigationChecks){
+        double moveDistance = Math.sqrt(100 + Math.pow(Math.abs(distance), 2));
+        double angle = 90 - Math.toDegrees(Math.asin(20/moveDistance));
+
+        if (isForward){
+            if (distance < 0) {
+                angle *= -1;
+            }
+            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, moveDistance);
+            this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, -moveDistance);
+        }
+        else{
+            if (distance > 0){
+                angle *= -1;
+            }
+            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, -moveDistance);
+            this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, moveDistance);
         }
     }
 }

@@ -5,11 +5,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorL1 = null;
     DcMotor motorL2 = null;
     DcMotor motorR1 = null;
     DcMotor motorR2 = null;
+    double prevPowerL1, prevPowerL2, prevPowerR1, prevPowerR2;
     int motorL1MaxSpeed = 0;
     int motorL2MaxSpeed = 0;
     int motorR1MaxSpeed = 0;
@@ -20,14 +27,54 @@ public class FourMotorSteeringDrive extends DriveSystem {
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
     boolean driveSysIsReversed = false;
+    double distBetweenWheels;
 
-    class EncoderTracker {
+    public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
         double encoderCountL1;
         double encoderCountL2;
         double encoderCountR1;
         double encoderCountR2;
+
+        public ElapsedEncoderCounts() {
+            encoderCountL1 = encoderCountL2 = encoderCountR1 = encoderCountR2 = 0;
+        }
+
+        public void reset() {
+            encoderCountL1 = motorL1.getCurrentPosition();
+            encoderCountL2 = motorL2.getCurrentPosition();
+            encoderCountR1 = motorR1.getCurrentPosition();
+            encoderCountR2 = motorR2.getCurrentPosition();
+        }
+
+        public double getDistanceTravelledInInches() {
+            double avgEncoderCounts = 0.0;
+            double distanceTravelled = 0.0;
+
+            avgEncoderCounts = (Math.abs(motorL1.getCurrentPosition() - encoderCountL1) +
+                    Math.abs(motorL2.getCurrentPosition() - encoderCountL2) +
+                    Math.abs(motorR1.getCurrentPosition() - encoderCountR1) +
+                    Math.abs(motorR2.getCurrentPosition() - encoderCountR2)) / 4;
+
+            distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
+            return (distanceTravelled);
+        }
+
+        public double getDegreesTurned() {
+            double distanceTravelledInInches, degreesTurned;
+            double leftDegreesTurned;
+
+            distanceTravelledInInches = this.getDistanceTravelledInInches();
+            degreesTurned = 360 * distanceTravelledInInches / (Math.PI * distBetweenWheels);
+            leftDegreesTurned = ((motorL1.getCurrentPosition() - encoderCountL1) +
+                    (motorL2.getCurrentPosition() - encoderCountL2)) / 2;
+            if (leftDegreesTurned < 0) {
+                degreesTurned *= -1; // Negate the number to indicate counterclockwise spin
+            }
+            DbgLog.msg("distanceTravelledInInches: %f, degreesTurned: %f", distanceTravelledInInches, degreesTurned);
+
+            return (degreesTurned);
+        }
     }
-    EncoderTracker encoderTracker=null;
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   double maxSpeed, double minSpeed, double frictionCoefficient,
@@ -53,6 +100,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
                 motorR1MaxSpeed, motorR2MaxSpeed);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
+        this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
+        this.distBetweenWheels = 14.75;
     }
 
     @Override
@@ -73,18 +122,44 @@ public class FourMotorSteeringDrive extends DriveSystem {
         double left = (speed + direction) * frictionCoefficient;
         double right = (speed - direction) * frictionCoefficient;
 
-        motorL1.setPower(left);
-        motorL2.setPower(left);
-        motorR1.setPower(right);
-        motorR2.setPower(right);
+        if(prevPowerL1 != left){
+            motorL1.setPower(left);
+            prevPowerL1 = left;
+        }
+        if(prevPowerL2 != left){
+            motorL2.setPower(left);
+            prevPowerL2 = left;
+        }
+        if(prevPowerR1 != right){
+            motorR1.setPower(right);
+            prevPowerR1 = right;
+        }
+
+        if(prevPowerR2 != right){
+            motorR2.setPower(right);
+            prevPowerR2 = right;
+        }
     }
 
     @Override
-    public void turnOrSpin(double leftSpeed, double rightSpeed) {
-        motorL1.setPower(leftSpeed);
-        motorL2.setPower(leftSpeed);
-        motorR1.setPower(rightSpeed);
-        motorR2.setPower(rightSpeed);
+    public void turnOrSpin(double left, double right) {
+        if(prevPowerL1 != left){
+            motorL1.setPower(left);
+            prevPowerL1 = left;
+        }
+        if(prevPowerL2 != left){
+            motorL2.setPower(left);
+            prevPowerL2 = left;
+        }
+        if(prevPowerR1 != right){
+            motorR1.setPower(right);
+            prevPowerR1 = right;
+        }
+
+        if(prevPowerR2 != right){
+            motorR2.setPower(right);
+            prevPowerR2 = right;
+        }
     }
 
     @Override
@@ -93,6 +168,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorL2.setPower(0.0);
         motorR1.setPower(0.0);
         motorR2.setPower(0.0);
+        prevPowerL1 = prevPowerL2 = prevPowerR1 = prevPowerR2 = 0.0;
     }
 
     @Override
@@ -123,12 +199,57 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        motorL1.setPower(speed * frictionCoefficient);
-        motorL2.setPower(speed * frictionCoefficient);
-        motorR1.setPower(speed * frictionCoefficient);
-        motorR2.setPower(speed * frictionCoefficient);
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
 
-        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()){
+        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy() && curOpMode.opModeIsActive()){
+            curOpMode.idle();
+        }
+
+        this.stop();
+        this.resumeMaxSpeed();
+
+        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public boolean isBusy() {
+        if (motorL1.isBusy()|| motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy()) {
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    @Override
+    public void turnDegrees(double degrees, float speed, NavigationChecks navExc){
+        this.setMaxSpeed(speed);
+
+        double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
+        double countsPerInch = motorCPR / wheel.getCircumference();
+        double targetCounts = countsPerInch * distInInches;
+        double L1targetCounts, L2targetCounts, R1targetCounts, R2targetCounts;
+
+        if (degrees < 0) {
+            // Spin counterclockwise => left motors backward, right motors forward
+            motorL1.setTargetPosition(motorL1.getCurrentPosition() - (int) targetCounts);
+            motorL2.setTargetPosition(motorL2.getCurrentPosition() - (int) targetCounts);
+            motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
+            motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
+        } else {
+            // Spin clockwise => left motors forward, right motors backward
+            motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
+            motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
+            motorR1.setTargetPosition(motorR1.getCurrentPosition() - (int) targetCounts);
+            motorR2.setTargetPosition(motorR2.getCurrentPosition() - (int) targetCounts);
+        }
+        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
+
+        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()
+                && !navExc.stopNavigation() && curOpMode.opModeIsActive()){
             curOpMode.idle();
         }
 
@@ -182,27 +303,9 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
     }
 
-    @Override
-    public void resetDistanceTravelled() {
-        encoderTracker = new EncoderTracker();
-        encoderTracker.encoderCountL1 = motorL1.getCurrentPosition();
-        encoderTracker.encoderCountL2 = motorL2.getCurrentPosition();
-        encoderTracker.encoderCountR1 = motorR1.getCurrentPosition();
-        encoderTracker.encoderCountR2 = motorR2.getCurrentPosition();
-    }
-
-    @Override
-    public double getDistanceTravelledInInches() {
-        double avgEncoderCounts = 0.0;
-        double distanceTravelled = 0.0;
-
-        avgEncoderCounts = (Math.abs(motorL1.getCurrentPosition() - encoderTracker.encoderCountL1) +
-                Math.abs(motorL2.getCurrentPosition() - encoderTracker.encoderCountL2) +
-                Math.abs(motorR1.getCurrentPosition() - encoderTracker.encoderCountR1) +
-                Math.abs(motorR2.getCurrentPosition() - encoderTracker.encoderCountR2)) / 4;
-
-        distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
-        return (distanceTravelled);
+    public ElapsedEncoderCounts getNewElapsedCountsObj() {
+        ElapsedEncoderCounts encoderCountsObj = new ElapsedEncoderCounts();
+        return (encoderCountsObj);
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){
