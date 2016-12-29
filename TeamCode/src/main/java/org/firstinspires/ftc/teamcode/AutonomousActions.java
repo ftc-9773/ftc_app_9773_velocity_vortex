@@ -17,6 +17,9 @@ import java.util.concurrent.TimeUnit;
  * Copyright (c) 2016 Robocracy 9773
  */
 
+/**
+ *
+ */
 public class AutonomousActions {
     FTCRobot robot;
     LinearOpMode curOpMode;
@@ -456,6 +459,24 @@ public class AutonomousActions {
                 }
                 robot.navigation.shiftRobot(distance, isForward);
                 break;
+            }
+            case "shiftToWall": {
+                double targetDistance = 0.0;
+                boolean isForward = false;
+                double distanceFromWall;
+                double distanceToShift;
+                try{
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "targetDistance");
+                    targetDistance = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "isForward");
+                    isForward = actionObj.getBoolean(key);
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
+                distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
+                distanceToShift = distanceFromWall - targetDistance;
+                robot.navigation.shiftRobot(-distanceToShift, isForward);
             }
         }
     }
