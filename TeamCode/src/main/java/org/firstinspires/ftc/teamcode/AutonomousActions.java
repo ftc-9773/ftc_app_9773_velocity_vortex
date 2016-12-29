@@ -454,7 +454,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //robot.navigation.navxMicro.shiftRobot(distance, isForward);
+                robot.navigation.shiftRobot(distance, isForward);
                 break;
             }
         }

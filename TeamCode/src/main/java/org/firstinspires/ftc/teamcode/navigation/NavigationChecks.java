@@ -140,4 +140,8 @@ public class NavigationChecks {
     public void addNewCheck(NavigationChecks.NavCheckBaseClass navCheck) {
         this.criteriaToCheck.add(navCheck);
     }
+
+    public void removeCheck(NavCheckBaseClass navCheck) {
+        this.criteriaToCheck.remove(navCheck);
+    }
 }

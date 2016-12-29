@@ -92,49 +92,6 @@ public class Navigation {
         navxMicro.setNavxStatus();
     }
 
-    public void setRobotOrientation(double targetYaw, double motorSpeed) {
-        // Create a NavigationChecks object to set the terminating conditions
-        NavigationChecks navigationChecks = new NavigationChecks(robot, curOpMode, this);
-        // Calculate the timeout based on the targetYaw and currentYaw
-        // at the rate of 100 milliseconds per degree of rotation at full speed
-        double curYaw = encoderNav.getCurrentYaw();
-        long timeoutMillis = (long) Math.abs(this.distanceBetweenAngles(targetYaw, curYaw) * 100 / motorSpeed);
-        NavigationChecks.TimeoutCheck check1 = navigationChecks.new TimeoutCheck(timeoutMillis);
-        navigationChecks.addNewCheck(check1);
-
-        DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
-        elapsedEncoderCounts.reset();
-
-        // If the navx is working, then set the robot orientation with navx
-        if (navxMicro.navxIsWorking()) {
-            curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
-            curOpMode.telemetry.update();
-            NavigationChecks.CheckNavxWhileTurning check2 = navigationChecks.new
-                    CheckNavxWhileTurning(this.distanceBetweenAngles(targetYaw, curYaw) /2);
-            navigationChecks.addNewCheck(check2);
-            navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
-            if ((navigationChecks.stopNavCriterion != null) &&
-                    (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS)){
-                double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
-                encoderNav.updateCurrentYaw(encoder_degreesTurned);
-                curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
-                curOpMode.telemetry.update();
-                encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
-                elapsedEncoderCounts.reset();
-            }
-            double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
-            encoderNav.updateCurrentYaw(encoder_degreesTurned);
-        }
-        else {
-            // First, do the encoder based turning.
-            curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
-            curOpMode.telemetry.update();
-            encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
-            encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
-            DbgLog.msg("currYaw: %f", encoderNav.getCurrentYaw());
-        }
-    }
-
     public double distanceBetweenAngles(double angle1, double angle2) {
         // Both angle1 and angle2 are assumed to be positive numbers between 0 and 360
         // The returnValue is between 0 and 180.
@@ -234,25 +191,71 @@ public class Navigation {
         DbgLog.msg("range sensor distance in cm = %f", rangeSensor.getDistance(DistanceUnit.CM));
     }
 
+    public void setRobotOrientation(double targetYaw, double motorSpeed) {
+        // Create a NavigationChecks object to set the terminating conditions
+        NavigationChecks navigationChecks = new NavigationChecks(robot, curOpMode, this);
+        // Calculate the timeout based on the targetYaw and currentYaw
+        // at the rate of 100 milliseconds per degree of rotation at full speed
+        double curYaw = encoderNav.getCurrentYaw();
+        long timeoutMillis = (long) Math.abs(this.distanceBetweenAngles(targetYaw, curYaw) * 100 / motorSpeed);
+        NavigationChecks.TimeoutCheck check1 = navigationChecks.new TimeoutCheck(timeoutMillis);
+        navigationChecks.addNewCheck(check1);
+
+        DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
+        elapsedEncoderCounts.reset();
+
+        // If the navx is working, then set the robot orientation with navx
+        if (navxMicro.navxIsWorking()) {
+            curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
+            curOpMode.telemetry.update();
+            NavigationChecks.CheckNavxWhileTurning check2 = navigationChecks.new
+                    CheckNavxWhileTurning(this.distanceBetweenAngles(targetYaw, curYaw) /2);
+            navigationChecks.addNewCheck(check2);
+            navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
+            if ((navigationChecks.stopNavCriterion != null) &&
+                    (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS)){
+                double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
+                encoderNav.updateCurrentYaw(encoder_degreesTurned);
+                curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
+                curOpMode.telemetry.update();
+                navigationChecks.removeCheck(check2);
+                encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
+                elapsedEncoderCounts.reset();
+            }
+            double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
+            encoderNav.updateCurrentYaw(encoder_degreesTurned);
+        }
+        else {
+            // First, do the encoder based turning.
+            curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
+            curOpMode.telemetry.update();
+            encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
+            encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
+            DbgLog.msg("currYaw: %f", encoderNav.getCurrentYaw());
+        }
+    }
+
     public void shiftRobot(double distance, boolean isForward){
         NavigationChecks navigationChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.TimeoutCheck timeoutCheck = navigationChecks.new TimeoutCheck(10000);
-        NavigationChecks.CheckNavxWhileTurning checkNavxWhileTurning = navigationChecks.new CheckNavxWhileTurning(10);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navigationChecks.new OpmodeInactiveCheck();
 
         navigationChecks.addNewCheck(timeoutCheck);
-        navigationChecks.addNewCheck(checkNavxWhileTurning);
         navigationChecks.addNewCheck(opmodeCheck);
 
         DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
         elapsedEncoderCounts.reset();
 
         if (navxMicro.navxIsWorking()) {
+            NavigationChecks.CheckNavxWhileTurning checkNavxWhileTurning = navigationChecks.new CheckNavxWhileTurning(90);
+            navigationChecks.addNewCheck(checkNavxWhileTurning);
             navxMicro.shiftRobot(distance, isForward, navigationChecks);
-            if (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS){
+            if ((navigationChecks.stopNavCriterion != null) &&
+                    navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS){
                 double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
                 encoderNav.updateCurrentYaw(encoder_degreesTurned);
                 elapsedEncoderCounts.reset();
+                navigationChecks.removeCheck(checkNavxWhileTurning);
             }
             double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
             encoderNav.updateCurrentYaw(encoder_degreesTurned);
@@ -265,6 +268,7 @@ public class Navigation {
             // Calculate the timeout based on the targetYaw and currentYaw
             // at the rate of 100 milliseconds per degree of rotation at full speed
             // First, do the encoder based turning.
+            encoderNav.shiftRobot(distance, isForward, navigationChecks);
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
         }
     }

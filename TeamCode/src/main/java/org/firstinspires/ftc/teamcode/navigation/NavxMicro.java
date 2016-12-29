@@ -247,6 +247,7 @@ public class NavxMicro {
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) this.drive_speed, moveDistance);
             this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, -moveDistance);
         }
         else{
             if (distance > 0){
@@ -255,6 +256,7 @@ public class NavxMicro {
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) this.drive_speed, -moveDistance);
             this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
+            robot.driveSystem.driveToDistance((float) this.drive_speed, moveDistance);
         }
     }
 }
