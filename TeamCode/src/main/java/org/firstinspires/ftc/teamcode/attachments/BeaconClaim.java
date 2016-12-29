@@ -4,11 +4,8 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
@@ -35,6 +32,10 @@ public class BeaconClaim implements Attachment {
     public int[] numRedDetected;
     public int[] numPressesNeeded;
     FTCi2cDeviceState colorSensorState;
+    double accumulatedRedValue, accumulatedBlueValue;
+    double firstDetectedTimeStamp, lastDetectedTimeStamp;
+    ElapsedTime beaconScanTimer;
+    public enum BeaconColor {RED, BLUE, NONE}
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
@@ -126,6 +127,12 @@ public class BeaconClaim implements Attachment {
             numRedDetected[i] = 0;
             numPressesNeeded[i] = 0;
         }
+
+        // Initialize attributes for beacon color scanning
+        beaconScanTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        accumulatedRedValue = accumulatedBlueValue = 0;
+        firstDetectedTimeStamp = Integer.MAX_VALUE;
+        lastDetectedTimeStamp = Integer.MIN_VALUE;
     }
 
     // method to activate or reset beacon claim attachment
@@ -162,7 +169,7 @@ public class BeaconClaim implements Attachment {
         buttonServo.setPower(0.0);
     }
 
-    public void claimABeacon(int beaconId) {
+    public void claimABeaconOld(int beaconId) {
         // Do different actions based on whether the beacon button has to be pressed once or twice.
         DbgLog.msg("beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
         if (numPressesNeeded[beaconId-1] == 1) {
@@ -178,7 +185,7 @@ public class BeaconClaim implements Attachment {
         curOpMode.sleep(100);
     }
 
-    public void claimABeaconV2() {
+    public void claimABeacon() {
         activateButtonServo();
         deactivateButtonServo();
     }
@@ -231,24 +238,59 @@ public class BeaconClaim implements Attachment {
         DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
     }
 
-    public void setBeaconStatusV2(int beaconId, String allianceColor) {
-        DbgLog.msg("setBeaconStatus: beaconID=%d, allianceColor=%s",
-                beaconId, allianceColor);
-
-        if (this.isBeaconBlue()) {
-            beaconColor[beaconId-1] = "blue";
-        } else if (this.isBeaconRed()) {
-            beaconColor[beaconId-1] = "red";
-        }
-        //numPressesNeeded[beaconId-1] = beaconColor[beaconId-1].equalsIgnoreCase(allianceColor) ? 1 : 2;
-        if (beaconColor[beaconId - 1].equalsIgnoreCase(allianceColor)) {
-
-            numPressesNeeded[beaconId - 1] = 1;
-        }
-        else if (!beaconColor[beaconId - 1].equalsIgnoreCase("unknown")){
-            numPressesNeeded[beaconId - 1] = 2;
-        }
-
-        DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
+    public void startBeaconScanning() {
+        beaconScanTimer.reset();
+        accumulatedRedValue = accumulatedBlueValue = 0;
+        firstDetectedTimeStamp = Integer.MAX_VALUE;
+        lastDetectedTimeStamp = Integer.MIN_VALUE;
+        this.enableColorSensor();
     }
+
+    public void stopBeaconScanning() {
+        this.disableColorSensor();
+    }
+
+    public void updateBeaconScanValues() {
+        double millis = beaconScanTimer.milliseconds();
+        if (this.isBeaconBlue()) {
+            accumulatedBlueValue += millis;
+        } else if (this.isBeaconRed()) {
+            accumulatedRedValue += millis;
+        }
+        if (firstDetectedTimeStamp > millis) {
+            firstDetectedTimeStamp = millis;
+        } else if (lastDetectedTimeStamp < millis) {
+            lastDetectedTimeStamp = millis;
+        }
+    }
+
+    public BeaconColor getBeaconColor(String firstOrSecond) {
+        switch (firstOrSecond) {
+            case "first" : {
+                if (accumulatedRedValue < accumulatedBlueValue) {
+                    return BeaconColor.RED;
+                } else if (accumulatedBlueValue < accumulatedRedValue) {
+                    return BeaconColor.BLUE;
+                }
+                break;
+            }
+            case "second" : {
+                if (accumulatedRedValue > accumulatedBlueValue) {
+                    return BeaconColor.RED;
+                } else if (accumulatedBlueValue > accumulatedRedValue) {
+                    return BeaconColor.BLUE;
+                }
+                break;
+            }
+            default: return BeaconColor.NONE;
+        }
+        return BeaconColor.NONE;
+    }
+
+    public void printBeaconScanningData() {
+        DbgLog.msg("accumulatedRed = %f, accumulatedBlue=%f, firstTimeStamp=%f, lastTimeStamp=%f",
+                accumulatedRedValue, accumulatedBlueValue,
+                firstDetectedTimeStamp, lastDetectedTimeStamp);
+    }
+
 }

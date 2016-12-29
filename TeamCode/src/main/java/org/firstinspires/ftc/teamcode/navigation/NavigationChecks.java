@@ -74,6 +74,29 @@ public class NavigationChecks {
         }
     }
 
+    public class CheckRobotTilting extends NavCheckBaseClass {
+        double pitchDegrees;
+        NavxMicro navxMicro;
+        double navxPitch;
+        // TODO: 12/29/16 Investigate the feasibility of using phone's builtin sensors to detect tilting
+
+        public CheckRobotTilting(double pitchDegrees) {
+            this.pitchDegrees = pitchDegrees;
+            navxMicro = navigationObj.navxMicro;
+            navxPitch = navxMicro.getPitch();
+            navcheck = NavChecksSupported.CHECK_ROBOT_TILTING;
+        }
+
+        @Override
+        public boolean stopNavigation() {
+            if (Math.abs(navxMicro.getPitch() - navxPitch) > pitchDegrees) {
+                return (true);
+            } else {
+                return (false);
+            }
+        }
+    }
+
     public class OpmodeInactiveCheck extends NavCheckBaseClass {
         @Override
         public boolean stopNavigation() {
@@ -85,6 +108,9 @@ public class NavigationChecks {
         }
     }
 
+    /**
+     * Check if the required distance in inches has been travelled
+     */
     public class EncoderCheckForDistance extends NavCheckBaseClass {
         double distanceInInches;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;

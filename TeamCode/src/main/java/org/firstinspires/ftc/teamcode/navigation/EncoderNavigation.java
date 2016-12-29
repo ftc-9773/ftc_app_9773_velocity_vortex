@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 
 /**
- * Created by rsburugula on 12/26/16.
+ * Created by ftcrobocracy on 12/26/16.
  */
 
 public class EncoderNavigation {
@@ -35,8 +35,14 @@ public class EncoderNavigation {
         }
     }
 
-    public void driveToDistance(double inches, double speed) {
-
+    /**
+     * Sets the encoderNavigation's private variable currentYaw to the given value.
+     * This method is called when navx is working well and we want the curYaw to have the
+     * same value as navxMicro.getYaw().
+     * @param yawValue
+     */
+    public void setCurrentYaw(double yawValue) {
+        this.currentYaw = yawValue;
     }
 
     public void setRobotOrientation (double targetYaw, double speed, NavigationChecks navExc) {
@@ -48,7 +54,8 @@ public class EncoderNavigation {
         this.updateCurrentYaw(degrees);
     }
 
-    public void shiftRobot(double distance, boolean isForward, NavigationChecks navigationChecks){
+    public void shiftRobot(double distance, boolean isForward, double speed,
+                           NavigationChecks navigationChecks){
         double moveDistance = Math.sqrt(100 + Math.pow(Math.abs(distance), 2));
         double angle = 90 - Math.toDegrees(Math.asin(10/moveDistance));
 
@@ -57,18 +64,18 @@ public class EncoderNavigation {
                 angle *= -1;
             }
             driveSys.turnDegrees(angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance(0.5f, moveDistance);
+            driveSys.driveToDistance((float)speed, moveDistance);
             driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance(0.5f, -moveDistance);
+            driveSys.driveToDistance((float)speed, -moveDistance);
         }
         else{
             if (distance > 0){
                 angle *= -1;
             }
             driveSys.turnDegrees(angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance(0.5f, -moveDistance);
+            driveSys.driveToDistance((float)speed, -moveDistance);
             driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance(0.5f, moveDistance);
+            driveSys.driveToDistance((float)speed, moveDistance);
         }
     }
 
