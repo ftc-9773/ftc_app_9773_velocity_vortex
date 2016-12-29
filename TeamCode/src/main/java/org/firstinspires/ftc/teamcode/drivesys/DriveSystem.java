@@ -68,6 +68,8 @@ public abstract class DriveSystem {
 
     public void drive(float speed, float direction) {return;}
 
+    public void testEncoders(){return;}
+
     public abstract void setZeroPowerMode(DcMotor.ZeroPowerBehavior zp_behavior);
 
     public abstract DcMotor.ZeroPowerBehavior getZeroPowerBehavior();

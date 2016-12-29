@@ -7,6 +7,9 @@
     {"type" : "Programmed", "value" : "verifyBeaconColor"},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 90.0}
   ],
+  "encoderValueTest" : [
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 1.0, "timeOutMillis" : 10000}
+  ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,
       "endingCondition" : "driveToDistance", "inches" : 5.0, "driveBackwards" : false},
@@ -152,10 +155,29 @@
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270},
     {"type" : "Programmed", "value" : "reverseDriveSystem"},
     {"type" : "Programmed", "value" : "DriveUntilBeacon", "distanceFromWall" : 18, "motorSpeed" : 0.3, "BeaconId" : 2},
-    {"type" : "Programmed", "value" : "reverseDriveSystem"}
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "claimAbeacon", "BeaconId" : 2}
+  ],
+  "beaconsAndShoot" : [
+    {"__type" : "Replay", "value" : "StartToBeacon2.csv"},
+    {"type" : "Programmed", "value" : "searchForWhiteLine"},
+    {"type" : "Programmed", "value" : "lineFollowProportional"},
+    {"type" : "Programmed", "value" : "claimAbeacon", "BeaconId" : 2},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 4.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 90.0},
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -40.0, "motorSpeed" : 1.0},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilWhiteLine", "motorSpeed" : 0.3, "timeoutMillis" : 5000},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "DriveUntilBeacon", "distanceFromWall" : 18, "motorSpeed" : 0.3, "BeaconId" : 2},
+    {"type" : "Programmed", "value" : "reverseDriveSystem"},
+    {"type" : "Programmed", "value" : "claimAbeacon", "BeaconId" : 2}
   ],
   "all_missions" : [
     {"type" : "Replay", "value" : "StartToBeacon1.csv"},
+    {"type" : "Programmed", "value" : "searchForWhiteLine"},
     {"type" : "Programmed", "value" : "lineFollowProportional"},
     {"type" : "Programmed", "value" : "claimAbeacon"},
     {"type" : "Replay", "value" : "Beacon1ToBeacon2.csv"},
