@@ -238,7 +238,7 @@ public class NavxMicro {
 
     public void shiftRobot(double distance, boolean isForward, NavigationChecks navigationChecks){
         double moveDistance = Math.sqrt(100 + Math.pow(Math.abs(distance), 2));
-        double angle = 90 - Math.toDegrees(Math.asin(10/moveDistance));
+        double angle = 90 - Math.toDegrees(Math.asin(20/moveDistance));
 
         if (isForward){
             if (distance < 0) {
