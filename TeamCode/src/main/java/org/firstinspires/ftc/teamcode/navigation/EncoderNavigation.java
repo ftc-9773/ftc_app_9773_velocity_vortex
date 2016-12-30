@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 
 /**
- * Created by rsburugula on 12/26/16.
+ * Created by ftcrobocracy on 12/26/16.
  */
 
 public class EncoderNavigation {
@@ -17,24 +18,67 @@ public class EncoderNavigation {
     private Navigation navigation;
 
     public EncoderNavigation(FTCRobot robot, DriveSystem driveSys, LinearOpMode curOpMode,
-                             Navigation navigation, double currentYaw) {
+                             Navigation navigation) {
         this.robot = robot;
         this.driveSys = driveSys;
         this.curOpMode = curOpMode;
         this.navigation = navigation;
-        this.currentYaw = currentYaw;
     }
 
-    public void driveToDistance(double inches, double speed) {
+    public void updateCurrentYaw(double degreesTurned){
+        currentYaw += degreesTurned;
+        if (currentYaw < 0){
+            currentYaw += 360;
+        }
+        else if (currentYaw > 360){
+            currentYaw -= 360;
+        }
+    }
 
+    /**
+     * Sets the encoderNavigation's private variable currentYaw to the given value.
+     * This method is called when navx is working well and we want the curYaw to have the
+     * same value as navxMicro.getYaw().
+     * @param yawValue
+     */
+    public void setCurrentYaw(double yawValue) {
+        this.currentYaw = yawValue;
     }
 
     public void setRobotOrientation (double targetYaw, double speed, NavigationChecks navExc) {
-        double degrees;
-        degrees = navigation.getDegreesToTurn(currentYaw, targetYaw);
+        double degrees = navigation.getDegreesToTurn(currentYaw, targetYaw);
+
+        DbgLog.msg("degrees: %f, currYaw: %f, targetYaw: %f", degrees, this.getCurrentYaw(), targetYaw);
 
         driveSys.turnDegrees(degrees, (float)speed, navExc);
+        this.updateCurrentYaw(degrees);
     }
+
+    public void shiftRobot(double distance, double moveDistance, boolean isForward, double speed,
+                           NavigationChecks navigationChecks){
+        double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(distance, 2));
+        double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
+
+        if (isForward){
+            if (distance < 0) {
+                angle *= -1;
+            }
+            driveSys.turnDegrees(angle, 0.5f, navigationChecks);
+            driveSys.driveToDistance((float)speed, driveDistance);
+            driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
+            driveSys.driveToDistance((float)speed, -driveDistance);
+        }
+        else{
+            if (distance > 0){
+                angle *= -1;
+            }
+            driveSys.turnDegrees(angle, 0.5f, navigationChecks);
+            driveSys.driveToDistance((float)speed, -driveDistance);
+            driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
+            driveSys.driveToDistance((float)speed, driveDistance);
+        }
+    }
+
 
     public double getCurrentYaw() {
         return currentYaw;

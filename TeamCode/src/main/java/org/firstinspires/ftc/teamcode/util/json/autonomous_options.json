@@ -15,6 +15,30 @@
     {"type" : "Programmed", "value" : "DriveToDistance", "distance" : 4.0, "motorSpeed" : 0.5},
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
+  "testing2" : [
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 5.0, "driveBackwards" : false, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 320,
+      "inches" : 45.0, "driveBackwards" : false, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 340.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 340,
+      "inches" : 9.0, "driveBackwards" : false, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 4.0, "moveDistance" : 10,
+      "isForward" : false, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
+      "driveBackwards" : false, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 5000},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 8.0, "driveBackwards" : true, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 4.0, "driveBackwards" : false, "motorSpeed" : 0.5}
+  ],
+  "testing3" : [
+    {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
+      "driveBackwards" : false, "motorSpeed" : 0.3}
+  ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,
       "endingCondition" : "driveToDistance", "inches" : 5.0, "driveBackwards" : false},
@@ -196,6 +220,10 @@
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "verifyBeaconColorOnly" : [
+    {"type" : "Programmed", "value" : "verifyBeaconColor"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 1000},
+    {"type" : "Programmed", "value" : "verifyBeaconColor"},
+    {"type" : "Programmed", "value" : "verifyBeaconColor"},
     {"type" : "Programmed", "value" : "verifyBeaconColor"}
   ],
   "lineFollowTest" : [

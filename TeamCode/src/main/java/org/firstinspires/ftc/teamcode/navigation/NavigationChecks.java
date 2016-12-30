@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NavigationChecks {
     public enum NavChecksSupported {CHECK_OPMODE_INACTIVE, CHECK_ROBOT_TILTING, CHECK_TIMEOUT,
@@ -12,9 +16,8 @@ public class NavigationChecks {
     LinearOpMode curOpMode;
     FTCRobot robot;
     Navigation navigationObj;
-    long timeoutMilliSec;
-    NavCheckBaseClass[] criteriaToCheck;
-    NavCheckBaseClass StopNavCriterion;
+    public List<NavCheckBaseClass> criteriaToCheck = new ArrayList<NavCheckBaseClass>();
+    public NavCheckBaseClass stopNavCriterion;
 
     public class NavCheckBaseClass {
         public NavChecksSupported navcheck;
@@ -42,12 +45,12 @@ public class NavigationChecks {
         }
     }
 
-    public class checkNavxWhileTurning extends NavCheckBaseClass {
+    public class CheckNavxWhileTurning extends NavCheckBaseClass {
         double degreesToCheck;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
         double navxYaw;
         NavxMicro navxMicro;
-        public checkNavxWhileTurning(double degreesToCheck) {
+        public CheckNavxWhileTurning(double degreesToCheck) {
             this.degreesToCheck = degreesToCheck;
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
             elapsedCounts.reset();
@@ -63,6 +66,7 @@ public class NavigationChecks {
                     navxMicro.getModifiedYaw());
             double diff = Math.abs(encoder_degreesTurned - navx_degreesTurned);
             if (diff > Math.abs(degreesToCheck)) {
+                DbgLog.msg("encoder degrees: %f, navx degrees: %f", encoder_degreesTurned, navx_degreesTurned);
                 return (true);
             } else {
                 return (false);
@@ -70,11 +74,48 @@ public class NavigationChecks {
         }
     }
 
-    public class encoderCheckForDistance extends NavCheckBaseClass {
+    public class CheckRobotTilting extends NavCheckBaseClass {
+        double pitchDegrees;
+        NavxMicro navxMicro;
+        double navxPitch;
+        // TODO: 12/29/16 Investigate the feasibility of using phone's builtin sensors to detect tilting
+
+        public CheckRobotTilting(double pitchDegrees) {
+            this.pitchDegrees = pitchDegrees;
+            navxMicro = navigationObj.navxMicro;
+            navxPitch = navxMicro.getPitch();
+            navcheck = NavChecksSupported.CHECK_ROBOT_TILTING;
+        }
+
+        @Override
+        public boolean stopNavigation() {
+            if (Math.abs(navxMicro.getPitch() - navxPitch) > pitchDegrees) {
+                return (true);
+            } else {
+                return (false);
+            }
+        }
+    }
+
+    public class OpmodeInactiveCheck extends NavCheckBaseClass {
+        @Override
+        public boolean stopNavigation() {
+            if (curOpMode.opModeIsActive()) {
+                return (false);
+            } else {
+                return (true);
+            }
+        }
+    }
+
+    /**
+     * Check if the required distance in inches has been travelled
+     */
+    public class EncoderCheckForDistance extends NavCheckBaseClass {
         double distanceInInches;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
 
-        public encoderCheckForDistance(double distanceInInches) {
+        public EncoderCheckForDistance(double distanceInInches) {
             this.distanceInInches = distanceInInches;
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
             elapsedCounts.reset();
@@ -94,23 +135,39 @@ public class NavigationChecks {
         }
     }
 
-    public NavigationChecks(FTCRobot robot, LinearOpMode curOpMode, Navigation navigationObj,
-                            long timeoutMilliSec, NavCheckBaseClass[] criteriaToCheck) {
+    public class CheckForWhiteLine extends NavCheckBaseClass {
+        @Override
+        public boolean stopNavigation() {
+            if (navigationObj.lf.onWhiteLine()) {
+                return (true);
+            } else {
+                return (false);
+            }
+        }
+    }
+
+    public NavigationChecks(FTCRobot robot, LinearOpMode curOpMode, Navigation navigationObj) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.navigationObj = navigationObj;
-        this.timeoutMilliSec = timeoutMilliSec;
-        this.criteriaToCheck = criteriaToCheck;
-        StopNavCriterion = null;
+        stopNavCriterion = null;
     }
 
-    public boolean checkExceptions() {
+    public boolean stopNavigation() {
         for (NavCheckBaseClass e: this.criteriaToCheck) {
             if (e.stopNavigation()) {
-                this.StopNavCriterion = e;
+                this.stopNavCriterion = e;
                 return (true);
             }
         }
         return (false);
+    }
+
+    public void addNewCheck(NavigationChecks.NavCheckBaseClass navCheck) {
+        this.criteriaToCheck.add(navCheck);
+    }
+
+    public void removeCheck(NavCheckBaseClass navCheck) {
+        this.criteriaToCheck.remove(navCheck);
     }
 }
