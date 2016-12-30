@@ -227,13 +227,13 @@ public class Navigation {
         // Determine the first and second colors
         double maxDistance=0.0;
         BeaconClaim.BeaconColor[] beaconColors = robot.beaconClaimObj.getBeaconColor();
-        if ((beaconColors[0] == BeaconClaim.BeaconColor.RED) || (beaconColors[1] == BeaconClaim.BeaconColor.BLUE)) {
+        if (beaconColors[1] == BeaconClaim.BeaconColor.BLUE) {
             if (robot.autonomousActions.allianceColor.equalsIgnoreCase("red")) {
                 maxDistance = maxDistance2;
             } else if (robot.autonomousActions.allianceColor.equalsIgnoreCase("blue")) {
                 maxDistance = maxDistance1;
             }
-        } else if ((beaconColors[0] == BeaconClaim.BeaconColor.BLUE) || (beaconColors[1] == BeaconClaim.BeaconColor.RED)) {
+        } else if (beaconColors[1] == BeaconClaim.BeaconColor.RED) {
             if (robot.autonomousActions.allianceColor.equalsIgnoreCase("red")) {
                 maxDistance = maxDistance1;
             } else if (robot.autonomousActions.allianceColor.equalsIgnoreCase("blue")) {
