@@ -6,7 +6,7 @@ import android.support.annotation.TransitionRes;
  * Created by michaelzhou on 12/30/16.
  */
 
-public class MyStateMachine {
+public class StateMachine {
     private enum State{
         STRING_GAMESTATE1,
         STRING_GAMESTATE2;
