@@ -469,11 +469,7 @@ public class FtcRobotControllerActivity extends Activity {
     File directory = RobotConfigFileManager.CONFIG_FILES_DIR;
     File networkTypeFile = new File(directory, fileName);
     if (!networkTypeFile.exists()) {
-      if (Build.MODEL.equals(Device.MODEL_410C)) {
-        defaultNetworkType = NetworkType.SOFTAP;
-      } else {
-        defaultNetworkType = NetworkType.WIFIDIRECT;
-      }
+      defaultNetworkType = Build.MODEL.equals(Device.MODEL_410C) ? NetworkType.SOFTAP : NetworkType.WIFIDIRECT;
       writeNetworkTypeFile(NETWORK_TYPE_FILENAME, defaultNetworkType.toString());
     }
 
