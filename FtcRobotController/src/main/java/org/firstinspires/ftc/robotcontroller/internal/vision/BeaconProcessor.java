@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Robocracy 9773.
  */
 
-package ftc.vision;
+package org.firstinspires.ftc.robotcontroller.internal.vision;
 
 
 import org.opencv.core.Core;

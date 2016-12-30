@@ -1,20 +1,20 @@
-/*
- * Copyright (c) 2016 Robocracy 9773.
- */
-
 package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.robotcontroller.internal.vision.BeaconColorResult;
+import org.firstinspires.ftc.robotcontroller.internal.vision.ImageProcessorResult;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 
-import ftc.vision.BeaconColorResult;
-import ftc.vision.FrameGrabber;
-import ftc.vision.ImageProcessorResult;
+import org.firstinspires.ftc.robotcontroller.internal.vision.FrameGrabber;
 
 /**
  * Created by pb8xe_000 on 12/30/2016.
+ */
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
  */
 
 public class Vision {
@@ -30,7 +30,7 @@ public class Vision {
 
     public BeaconColorResult.BeaconColor[] getVisionBeaconColors(){
         frameGrabber.grabSingleFrame();
-        while (!frameGrabber.isResultReady()){
+        while (!frameGrabber.isResultReady() && curOpMode.opModeIsActive()){
             curOpMode.sleep(5);
         }
 
@@ -40,10 +40,11 @@ public class Vision {
         BeaconColorResult.BeaconColor leftColor = result.getLeftColor();
         BeaconColorResult.BeaconColor rightColor = result.getRightColor();
 
-        curOpMode.telemetry.addData("Beacon color result: ", result);
+        BeaconColorResult.BeaconColor[] results = {leftColor, rightColor};
+
+        curOpMode.telemetry.addData("Beacon color result: ", results.toString());
         curOpMode.telemetry.update();
 
-        BeaconColorResult.BeaconColor[] results = {leftColor, rightColor};
 
         return results;
     }

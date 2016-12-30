@@ -104,8 +104,8 @@ import java.io.File;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import ftc.vision.BeaconProcessor;
-import ftc.vision.FrameGrabber;
+import org.firstinspires.ftc.robotcontroller.internal.vision.BeaconProcessor;
+import org.firstinspires.ftc.robotcontroller.internal.vision.FrameGrabber;
 
 public class FtcRobotControllerActivity extends Activity {
   ////////////// START VISION PROCESSING CODE //////////////
@@ -309,7 +309,9 @@ public class FtcRobotControllerActivity extends Activity {
     eventLoop = null;
 
     setContentView(R.layout.activity_ftc_controller);
-
+    ////////////// START VISION PROCESSING CODE //////////////
+    myOnCreate();
+    ////////////// END VISION PROCESSING CODE //////////////
     context = this;
     utility = new Utility(this);
     appUtil.setThisApp(new PeerAppRobotController(context));
@@ -403,12 +405,18 @@ public class FtcRobotControllerActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
+    ////////////// START VISION PROCESSING CODE //////////////
+    myOnResume();
+    ////////////// END VISION PROCESSING CODE //////////////
     RobotLog.vv(TAG, "onResume()");
   }
 
   @Override
   public void onPause() {
     super.onPause();
+    ////////////// START VISION PROCESSING CODE //////////////
+    myOnPause();
+    ////////////// END VISION PROCESSING CODE //////////////
     RobotLog.vv(TAG, "onPause()");
     if (programmingModeController.isActive()) {
       programmingModeController.stopProgrammingMode();
@@ -429,6 +437,9 @@ public class FtcRobotControllerActivity extends Activity {
   @Override
   public void onDestroy() {
     super.onDestroy();
+    ////////////// START VISION PROCESSING CODE //////////////
+    myOnDestroy();
+    ////////////// END VISION PROCESSING CODE //////////////
     RobotLog.vv(TAG, "onDestroy()");
 
     unbindFromService();

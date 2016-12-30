@@ -1,4 +1,4 @@
-package ftc.vision;
+package org.firstinspires.ftc.robotcontroller.internal.vision;
 
 
 import android.util.Log;

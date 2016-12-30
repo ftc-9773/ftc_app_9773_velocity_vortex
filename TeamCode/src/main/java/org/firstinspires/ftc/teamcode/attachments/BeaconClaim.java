@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Vision;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ftc.vision.BeaconColorResult;
+import org.firstinspires.ftc.robotcontroller.internal.vision.BeaconColorResult;
 
 
 /*

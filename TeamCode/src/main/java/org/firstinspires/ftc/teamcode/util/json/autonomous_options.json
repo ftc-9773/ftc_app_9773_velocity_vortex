@@ -33,7 +33,7 @@
   ],
   "testing3" : [
 
-  ]
+  ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,
       "endingCondition" : "driveToDistance", "inches" : 5.0, "driveBackwards" : false},
