@@ -223,19 +223,18 @@ public class Navigation {
         robot.beaconClaimObj.stopBeaconScanning();
     }
 
-    public void driveUntilAllianceBeaon(boolean driveBackwards, double motorSpeed, double degrees,
-                                        double maxDistance1, double maxDistance2) {
+    public void driveUntilAllianceBeacon(boolean driveBackwards, double motorSpeed, double degrees,
+                                         double maxDistance1, double maxDistance2) {
         // Determine the first and second colors
         double maxDistance=0.0;
-        BeaconClaim.BeaconColor color1 = robot.beaconClaimObj.getBeaconColor("first");
-        BeaconClaim.BeaconColor color2 = robot.beaconClaimObj.getBeaconColor("second");
-        if ((color1 == BeaconClaim.BeaconColor.RED) || (color2 == BeaconClaim.BeaconColor.BLUE)) {
+        BeaconClaim.BeaconColor[] beaconColors = robot.beaconClaimObj.getBeaconColor();
+        if ((beaconColors[0] == BeaconClaim.BeaconColor.RED) || (beaconColors[1] == BeaconClaim.BeaconColor.BLUE)) {
             if (robot.autonomousActions.allianceColor.equalsIgnoreCase("red")) {
                 maxDistance = maxDistance2;
             } else if (robot.autonomousActions.allianceColor.equalsIgnoreCase("blue")) {
                 maxDistance = maxDistance1;
             }
-        } else if ((color1 == BeaconClaim.BeaconColor.BLUE) || (color2 == BeaconClaim.BeaconColor.RED)) {
+        } else if ((beaconColors[0] == BeaconClaim.BeaconColor.BLUE) || (beaconColors[1] == BeaconClaim.BeaconColor.RED)) {
             if (robot.autonomousActions.allianceColor.equalsIgnoreCase("red")) {
                 maxDistance = maxDistance1;
             } else if (robot.autonomousActions.allianceColor.equalsIgnoreCase("blue")) {

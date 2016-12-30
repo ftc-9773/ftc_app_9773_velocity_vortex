@@ -31,6 +31,9 @@
       "inches" : 4.0, "driveBackwards" : false, "motorSpeed" : 0.5},
     {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 6.0, "isForward" : true, "motorSpeed" : 0.5}
   ],
+  "testing3" : [
+
+  ]
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,
       "endingCondition" : "driveToDistance", "inches" : 5.0, "driveBackwards" : false},

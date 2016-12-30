@@ -198,7 +198,7 @@ public class AutonomousActions {
                 }
                 DbgLog.msg("Degrees: %f, maxDistance1: %f, maxDistance2: %f, motorSpeed: %f, driveBackwards: %b",
                         degrees, maxDistance1, maxDistance2, motorSpeed, driveBackwards);
-                robot.navigation.driveUntilAllianceBeaon(driveBackwards, motorSpeed, degrees,
+                robot.navigation.driveUntilAllianceBeacon(driveBackwards, motorSpeed, degrees,
                         maxDistance1, maxDistance2);
                 break;
             }
