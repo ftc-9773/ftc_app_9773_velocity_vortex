@@ -11,8 +11,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.FTCi2cDeviceState;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
+import org.firstinspires.ftc.teamcode.util.Vision;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ftc.vision.BeaconColorResult;
 
 
 /*
@@ -26,6 +29,7 @@ public class BeaconClaim implements Attachment {
     private Servo colorServo=null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     private I2cAddr i2cAddr=null;
+    private Vision vision=null;
     public boolean[] beaconClaimed;
     public String[] beaconColor;
     public int[] numBlueDetected;
@@ -41,6 +45,7 @@ public class BeaconClaim implements Attachment {
         this.curOpMode = curOpMode;
         this.robot = robot;
         this.i2cAddr = new I2cAddr(0x04);
+        this.vision = new Vision(curOpMode, robot);
         String key;
         JSONObject beaconJsonObj=null;
         JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
@@ -264,27 +269,24 @@ public class BeaconClaim implements Attachment {
         }
     }
 
-    public BeaconColor getBeaconColor(String firstOrSecond) {
-        switch (firstOrSecond) {
-            case "first" : {
-                if (accumulatedRedValue < accumulatedBlueValue) {
-                    return BeaconColor.RED;
-                } else if (accumulatedBlueValue < accumulatedRedValue) {
-                    return BeaconColor.BLUE;
-                }
-                break;
-            }
-            case "second" : {
-                if (accumulatedRedValue > accumulatedBlueValue) {
-                    return BeaconColor.RED;
-                } else if (accumulatedBlueValue > accumulatedRedValue) {
-                    return BeaconColor.BLUE;
-                }
-                break;
-            }
-            default: return BeaconColor.NONE;
+    public BeaconColor[] getBeaconColor() {
+        BeaconColor[] beaconColors = new BeaconColor[2];
+        BeaconColorResult.BeaconColor[] visionBeaconColors = vision.getVisionBeaconColors();
+        if (visionBeaconColors[0] == BeaconColorResult.BeaconColor.RED) {
+            beaconColors[0] = BeaconColor.RED;
+        } else if (visionBeaconColors[0] == BeaconColorResult.BeaconColor.BLUE) {
+            beaconColors[0] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[0] == (BeaconColorResult.BeaconColor.GREEN) || (visionBeaconColors[0] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            beaconColors[0] = BeaconColor.NONE;
         }
-        return BeaconColor.NONE;
+        if (visionBeaconColors[1] == BeaconColorResult.BeaconColor.RED) {
+            beaconColors[1] = BeaconColor.RED;
+        } else if (visionBeaconColors[1] == BeaconColorResult.BeaconColor.BLUE) {
+            beaconColors[1] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[1] == (BeaconColorResult.BeaconColor.GREEN) || (visionBeaconColors[1] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            beaconColors[1] = BeaconColor.NONE;
+        }
+        return beaconColors;
     }
 
     public void printBeaconScanningData() {
