@@ -285,8 +285,7 @@ public class FtcRobotControllerActivity extends Activity {
     if (this.eventLoop != null) {
       for (;;) {
         UsbDevice usbDevice = receivedUsbAttachmentNotifications.poll();
-        if (usbDevice == null)
-          break;
+        if (usbDevice == null) break;
         this.eventLoop.onUsbDeviceAttached(usbDevice);
       }
     }
@@ -514,7 +513,7 @@ public class FtcRobotControllerActivity extends Activity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     int id = item.getItemId();
-
+    //TODO: make the ids into switch statements
     if (id == R.id.action_programming_mode) {
       if (cfgFileMgr.getActiveConfig().isNoConfig()) {
         // Tell the user they must configure the robot before starting programming mode.
