@@ -65,8 +65,8 @@ public class BeaconClaim implements Attachment {
         try {
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServo");
             buttonServoObj = motorsObj.getJSONObject(key);
-           key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
-            coloSensor1Obj = sensorsObj.getJSONObject(key);
+            //key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
+            //coloSensor1Obj = sensorsObj.getJSONObject(key);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -80,12 +80,12 @@ public class BeaconClaim implements Attachment {
                 e.printStackTrace();
             }
         }
-        if (coloSensor1Obj != null) {
+        /*if (coloSensor1Obj != null) {
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
             colorSensor1.enableLed(false);
             // Create an FTCi2cDeviceState object for the color sensor
             colorSensorState = new FTCi2cDeviceState(colorSensor1);
-        }
+        }*/
         if (colorServoObj != null) {
             try {
                 colorServo = curOpMode.hardwareMap.servo.get("colorServo");
@@ -158,10 +158,10 @@ public class BeaconClaim implements Attachment {
     }
 
     public void enableColorSensor() {
-        colorSensorState.setEnabled(true);
+        //colorSensorState.setEnabled(true);
     }
     public void disableColorSensor() {
-        colorSensorState.setEnabled(false);
+        //colorSensorState.setEnabled(false);
     }
 
     public void deactivateButtonServo() {
@@ -196,7 +196,6 @@ public class BeaconClaim implements Attachment {
     }
 
     public void verifyBeaconColor(){
-        colorSensor1.enableLed(false);
         BeaconColor[] beaconColors = this.getBeaconColor();
         curOpMode.telemetry.addData("left: ", "%s", beaconColors[0].toString());
         curOpMode.telemetry.addData("right: ", "%s", beaconColors[1].toString());

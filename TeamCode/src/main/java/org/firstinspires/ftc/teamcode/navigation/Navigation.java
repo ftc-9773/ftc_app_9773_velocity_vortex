@@ -193,13 +193,13 @@ public class Navigation {
         navChecks.addNewCheck(check1);
         navChecks.addNewCheck(check2);
         // Start beacon color scanning
-        robot.beaconClaimObj.startBeaconScanning();
+        //robot.beaconClaimObj.startBeaconScanning();
         if (navxMicro.navxIsWorking()) {
             NavigationChecks.CheckRobotTilting check3 = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(check3);
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
-                robot.beaconClaimObj.updateBeaconScanValues();
+                //robot.beaconClaimObj.updateBeaconScanValues();
             }
             robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
@@ -211,7 +211,7 @@ public class Navigation {
             }
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(motorSpeed, 0);
-                robot.beaconClaimObj.updateBeaconScanValues();
+                //robot.beaconClaimObj.updateBeaconScanValues();
             }
             robot.driveSystem.stop();
             if (driveBackwards) {
@@ -219,8 +219,8 @@ public class Navigation {
             }
         }
         // Print the first and second scanned values for information purpose only
-        robot.beaconClaimObj.printBeaconScanningData();
-        robot.beaconClaimObj.stopBeaconScanning();
+        //robot.beaconClaimObj.printBeaconScanningData();
+        //robot.beaconClaimObj.stopBeaconScanning();
     }
 
     public void driveUntilAllianceBeacon(boolean driveBackwards, double motorSpeed, double degrees,
