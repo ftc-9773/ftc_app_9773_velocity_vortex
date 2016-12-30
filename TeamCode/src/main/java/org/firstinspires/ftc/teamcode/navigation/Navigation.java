@@ -147,7 +147,6 @@ public class Navigation {
                                      float speed, boolean driveBackwards) {
         // First, disable the color sensor
         robot.beaconClaimObj.disableColorSensor();
-        DbgLog.msg("Disabled color sensor");
         //rangeSensorState.setEnabled(false);
         // If navx is working, using navx's goStraightPID() method, else use driveSystem's
         // driveToDistance method
@@ -289,8 +288,13 @@ public class Navigation {
         if (navxMicro.navxIsWorking()) {
             curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
             curOpMode.telemetry.update();
+            // The difference between the encoder-based degrees and navx based degrees can easily
+            // go upto 10 degrees even when navx is working well.  So, we should not have too low
+            // value for the CheckWhileTurning constructor.  Ensure that we do not check for less
+            // 30 degree deviation between the encoder-based and navx-based angles.
+            double degreesToCheck = Math.max(this.distanceBetweenAngles(targetYaw, curYaw) /2, 30);
             NavigationChecks.CheckNavxWhileTurning check3 = navigationChecks.new
-                    CheckNavxWhileTurning(this.distanceBetweenAngles(targetYaw, curYaw) /2);
+                    CheckNavxWhileTurning(degreesToCheck);
             navigationChecks.addNewCheck(check3);
             navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&
@@ -319,7 +323,7 @@ public class Navigation {
         }
     }
 
-    public void shiftRobot(double distance, boolean isForward, double speed){
+    public void shiftRobot(double distance, double moveDistance, boolean isForward, double speed){
         NavigationChecks navigationChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.TimeoutCheck timeoutCheck = navigationChecks.new TimeoutCheck(10000);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navigationChecks.new OpmodeInactiveCheck();
@@ -331,9 +335,11 @@ public class Navigation {
         elapsedEncoderCounts.reset();
 
         if (navxMicro.navxIsWorking()) {
+            curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
+            curOpMode.telemetry.update();
             NavigationChecks.CheckNavxWhileTurning checkNavxWhileTurning = navigationChecks.new CheckNavxWhileTurning(90);
             navigationChecks.addNewCheck(checkNavxWhileTurning);
-            navxMicro.shiftRobot(distance, isForward, speed, navigationChecks);
+            navxMicro.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&
                     navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS){
                 double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
@@ -346,7 +352,9 @@ public class Navigation {
             }
         }
         else {
-            encoderNav.shiftRobot(distance, isForward, speed, navigationChecks);
+            curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
+            curOpMode.telemetry.update();
+            encoderNav.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
         }
     }

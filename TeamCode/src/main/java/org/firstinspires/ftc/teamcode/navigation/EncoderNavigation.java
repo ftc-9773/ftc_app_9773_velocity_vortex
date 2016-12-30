@@ -54,28 +54,28 @@ public class EncoderNavigation {
         this.updateCurrentYaw(degrees);
     }
 
-    public void shiftRobot(double distance, boolean isForward, double speed,
+    public void shiftRobot(double distance, double moveDistance, boolean isForward, double speed,
                            NavigationChecks navigationChecks){
-        double moveDistance = Math.sqrt(100 + Math.pow(Math.abs(distance), 2));
-        double angle = 90 - Math.toDegrees(Math.asin(10/moveDistance));
+        double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(distance, 2));
+        double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
 
         if (isForward){
             if (distance < 0) {
                 angle *= -1;
             }
             driveSys.turnDegrees(angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance((float)speed, moveDistance);
+            driveSys.driveToDistance((float)speed, driveDistance);
             driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance((float)speed, -moveDistance);
+            driveSys.driveToDistance((float)speed, -driveDistance);
         }
         else{
             if (distance > 0){
                 angle *= -1;
             }
             driveSys.turnDegrees(angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance((float)speed, -moveDistance);
+            driveSys.driveToDistance((float)speed, -driveDistance);
             driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance((float)speed, moveDistance);
+            driveSys.driveToDistance((float)speed, driveDistance);
         }
     }
 

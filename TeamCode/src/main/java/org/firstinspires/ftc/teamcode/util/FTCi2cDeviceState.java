@@ -29,9 +29,7 @@ import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 
 public class FTCi2cDeviceState
 {
-    private I2cDeviceSynch syncDevice = null;
     private I2cController i2cController = null;
-    private ModernRoboticsI2cRangeSensor rangeSensor = null;
     private int port = 0;
     private I2cController.I2cPortReadyCallback deviceCallback = null;
     private boolean deviceEnabled = true;
@@ -44,11 +42,6 @@ public class FTCi2cDeviceState
         deviceEnabled = true;
     }   //FtcI2cDeviceState
 
-    public FTCi2cDeviceState(I2cDeviceSynch device)
-    {
-        this.syncDevice = device;
-    }   //FtcI2cDeviceState
-
     public boolean isEnabled()
     {
         return deviceEnabled;
@@ -58,17 +51,9 @@ public class FTCi2cDeviceState
     {
         if (deviceEnabled != enabled) {
             if (enabled) {
-                if (syncDevice != null) {
-                    syncDevice.engage();
-                } else {
-                    i2cController.registerForI2cPortReadyCallback(deviceCallback, port);
-                }
+                i2cController.registerForI2cPortReadyCallback(deviceCallback, port);
             } else {
-                if (syncDevice != null) {
-                    syncDevice.disengage();
-                } else {
-                    i2cController.deregisterForPortReadyCallback(port);
-                }
+                i2cController.deregisterForPortReadyCallback(port);
             }
             deviceEnabled = enabled;
         }
