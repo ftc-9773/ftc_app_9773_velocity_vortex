@@ -37,8 +37,8 @@ public class Vision {
         ImageProcessorResult imageProcessorResult = frameGrabber.getResult();
         BeaconColorResult result = (BeaconColorResult) imageProcessorResult.getResult();
 
-        BeaconColorResult.BeaconColor leftColor = result.getLeftColor();
-        BeaconColorResult.BeaconColor rightColor = result.getRightColor();
+        BeaconColorResult.BeaconColor leftColor = result.getRightColor();
+        BeaconColorResult.BeaconColor rightColor = result.getLeftColor();
 
         BeaconColorResult.BeaconColor[] results = {leftColor, rightColor};
 
