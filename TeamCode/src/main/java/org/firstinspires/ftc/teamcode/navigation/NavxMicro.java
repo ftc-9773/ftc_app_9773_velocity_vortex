@@ -177,6 +177,8 @@ public class NavxMicro {
                 break;
             //DbgLog.msg("yawDiff=%f", yawDiff);
         }
+
+        DbgLog.msg("angle = %f", angle);
         this.robot.driveSystem.stop();
     }
 
@@ -210,18 +212,20 @@ public class NavxMicro {
             if (shiftDistance < 0) {
                 angle *= -1;
             }
+            double startingYaw = this.getModifiedYaw();
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) speed, driveDistance);
-            this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
+            this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) speed, -driveDistance);
         }
         else{
             if (shiftDistance > 0){
                 angle *= -1;
             }
+            double startingYaw = this.getModifiedYaw();
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) speed, -driveDistance);
-            this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
+            this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) speed, driveDistance);
         }
     }
