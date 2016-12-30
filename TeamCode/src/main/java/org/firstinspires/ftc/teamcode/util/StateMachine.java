@@ -21,7 +21,10 @@ public class StateMachine {
         }
     }
 
-    void setState(State newState){
-        state = newState;
-    }
+    void setState(State newState){state = newState;}
+
+    public State getCurrentState(){return state;}
+
+
+
 }
