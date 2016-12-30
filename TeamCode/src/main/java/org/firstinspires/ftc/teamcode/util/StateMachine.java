@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import android.support.annotation.TransitionRes;
+//import android.support.annotation.TransitionRes;
 
 /**
  * Created by michaelzhou on 12/30/16.
@@ -14,7 +14,7 @@ public class StateMachine {
 
     State state;
 
-    void transition(String input){
+    public void transition(String input){
         switch(input){
             case "gamePad1": setState(State.STRING_GAMESTATE1); break;
             case "gamePad2": setState(State.STRING_GAMESTATE2); break;
