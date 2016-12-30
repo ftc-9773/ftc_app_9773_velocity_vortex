@@ -127,6 +127,8 @@ public abstract class DriveSystem {
 
     public abstract DcMotor.ZeroPowerBehavior getZeroPowerBehavior();
 
+    public void testEncoders(){return;}
+
     public void driveToDistance(float speed, double distanceInInches){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
