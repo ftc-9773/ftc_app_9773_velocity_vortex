@@ -297,11 +297,14 @@ public class AutonomousActions {
             }
             case "shiftRobot": {
                 double distance = 0.0;
+                double moveDistance = 0.0;
                 double motorSpeed = 1.0;
                 boolean isForward = false;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance");
                     distance = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
+                    moveDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "isForward");
                     isForward = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
@@ -309,11 +312,12 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                robot.navigation.shiftRobot(distance, isForward, motorSpeed);
+                robot.navigation.shiftRobot(distance, moveDistance, isForward, motorSpeed);
                 break;
             }
             case "shiftToWall": {
                 double targetDistance = 0.0;
+                double moveDistance = 0.0;
                 double motorSpeed = 1.0;
                 boolean isForward = false;
                 double distanceFromWall;
@@ -321,6 +325,8 @@ public class AutonomousActions {
                 try{
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "targetDistance");
                     targetDistance = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
+                    moveDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "isForward");
                     isForward = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
@@ -331,14 +337,16 @@ public class AutonomousActions {
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
                 distanceToShift = distanceFromWall - targetDistance;
+                DbgLog.msg("targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, isForward=%b",
+                        targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, isForward);
                 // If we are already close enough to the wall, then do nothing.
                 if (distanceToShift > 0) {
                     if (allianceColor.equalsIgnoreCase("red")) {
                         // shift left
-                        robot.navigation.shiftRobot(-distanceToShift, isForward, motorSpeed);
+                        robot.navigation.shiftRobot(-distanceToShift, moveDistance, isForward, motorSpeed);
                     } else if (allianceColor.equalsIgnoreCase("blue")) {
                         // shift right
-                        robot.navigation.shiftRobot(distanceToShift, isForward, motorSpeed);
+                        robot.navigation.shiftRobot(distanceToShift, moveDistance, isForward, motorSpeed);
                     }
                 }
                 break;

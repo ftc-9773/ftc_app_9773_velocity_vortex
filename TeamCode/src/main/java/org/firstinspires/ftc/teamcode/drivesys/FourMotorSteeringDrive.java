@@ -69,7 +69,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
             if (leftDegreesTurned < 0) {
                 degreesTurned *= -1; // Negate the number to indicate counterclockwise spin
             }
-            DbgLog.msg("distanceTravelledInInches: %f, degreesTurned: %f", distanceTravelledInInches, degreesTurned);
+//            DbgLog.msg("distanceTravelledInInches: %f, degreesTurned: %f", distanceTravelledInInches, degreesTurned);
 
             return (degreesTurned);
         }
@@ -172,7 +172,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void driveToDistance(float speed, double distanceInInches) {
-        this.setMaxSpeed(speed);
 
         double countsPerInch = motorCPR / wheel.getCircumference();
         double targetCounts = countsPerInch * distanceInInches;
@@ -192,7 +191,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
 
         this.stop();
-        this.resumeMaxSpeed();
 
         DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -208,7 +206,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void turnDegrees(double degrees, float speed, NavigationChecks navExc){
-        this.setMaxSpeed(speed);
 
         double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
         double countsPerInch = motorCPR / wheel.getCircumference();
@@ -240,7 +237,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
 
         this.stop();
-        this.resumeMaxSpeed();
 
         DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -253,6 +249,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorR2.setMode(runMode);
     }
 
+    // Note: setMaxSpeed should be set once during the init time.
+    //  Calling setMaxSpeed and resumeMaxSpeed() will not work well with the
+    //  new optimization in the drive() method, where the prevPower values are saved and
+    //  the new power values do not get applied if they are same as the previous power values.
     @Override
     public void setMaxSpeed(float speed){
         DbgLog.msg("Current max speed: L1=%d, L2=%d, R1=%d, R2=%d", motorL1.getMaxSpeed(),

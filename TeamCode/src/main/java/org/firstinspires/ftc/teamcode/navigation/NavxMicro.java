@@ -169,7 +169,6 @@ public class NavxMicro {
         DbgLog.msg("power left = %f, right = %f",leftPower, rightPower);
         DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                 navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
-        this.robot.driveSystem.setMaxSpeed((float) speed);
 
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
@@ -179,7 +178,6 @@ public class NavxMicro {
             //DbgLog.msg("yawDiff=%f", yawDiff);
         }
         this.robot.driveSystem.stop();
-        this.robot.driveSystem.resumeMaxSpeed();
     }
 
     public void navxGoStraightPID(boolean driveBackwards, double degrees) {
@@ -195,7 +193,7 @@ public class NavxMicro {
         correction = this.straightPID_kp * error / 2;
         leftSpeed = drive_speed - correction;
         rightSpeed = drive_speed + correction;
-        DbgLog.msg("error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
+//        DbgLog.msg("error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
         if (!driveBackwards) {
             robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);
         } else {
@@ -203,28 +201,28 @@ public class NavxMicro {
         }
     }
 
-    public void shiftRobot(double distance, boolean isForward, double speed,
+    public void shiftRobot(double shiftDistance, double moveDistance, boolean isForward, double speed,
                            NavigationChecks navigationChecks){
-        double moveDistance = Math.sqrt(100 + Math.pow(Math.abs(distance), 2));
-        double angle = 90 - Math.toDegrees(Math.asin(20/moveDistance));
+        double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
+        double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
 
         if (isForward){
-            if (distance < 0) {
+            if (shiftDistance < 0) {
                 angle *= -1;
             }
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, moveDistance);
+            robot.driveSystem.driveToDistance((float) speed, driveDistance);
             this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -moveDistance);
+            robot.driveSystem.driveToDistance((float) speed, -driveDistance);
         }
         else{
-            if (distance > 0){
+            if (shiftDistance > 0){
                 angle *= -1;
             }
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -moveDistance);
+            robot.driveSystem.driveToDistance((float) speed, -driveDistance);
             this.turnRobot(-angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, moveDistance);
+            robot.driveSystem.driveToDistance((float) speed, driveDistance);
         }
     }
 

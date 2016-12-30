@@ -32,21 +32,28 @@
   ],
   "testing3" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 5.0, "driveBackwards" : false, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.5},
+      "inches" : 5.0, "driveBackwards" : false, "motorSpeed" : 0.4},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.25},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 320,
-      "inches" : 45.0, "driveBackwards" : false, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 350.0, "motorSpeed" : 0.5},
+      "inches" : 45.0, "driveBackwards" : false, "motorSpeed" : 0.4},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 350.0, "motorSpeed" : 0.25},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 350,
-      "inches" : 9.0, "driveBackwards" : false, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.5},
+      "inches" : 9.0, "driveBackwards" : false, "motorSpeed" : 0.4},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.25},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
-      "driveBackwards" : false, "motorSpeed" : 0.5},
+      "driveBackwards" : false, "motorSpeed" : 0.4},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 9.0, "driveBackwards" : true, "motorSpeed" : 0.75},
+      "inches" : 7.0, "driveBackwards" : true, "motorSpeed" : 0.4},
     {"type" : "Programmed", "value" : "verifyBeaconColor"},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 2000}
-
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 2000},
+    {"type" : "Programmed", "value" : "DriveUntilAllianceBeacon", "degrees" : 0.0, "maxDistance1" : 6.0,
+    "maxDistance2" : 11.5, "motorSpeed" : 0.4, "driveBackwards" : false},
+    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 4.0, "moveDistance" : 15.0, "isForward" : false,
+    "motorSpeed" : 0.25}
+  ],
+  "testing4" : [
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 9.0, "driveBackwards" : true, "motorSpeed" : 0.75}
   ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,

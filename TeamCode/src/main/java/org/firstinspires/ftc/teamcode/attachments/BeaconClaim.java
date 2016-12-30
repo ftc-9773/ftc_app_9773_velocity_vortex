@@ -214,7 +214,7 @@ public class BeaconClaim implements Attachment {
     }
 
     public boolean isBeaconBlue() {
-        return colorSensor1.blue() < colorSensor1.red();
+        return colorSensor1.blue() > colorSensor1.red();
     }
 
     public String checkBeaconColor() {
@@ -259,13 +259,18 @@ public class BeaconClaim implements Attachment {
         double millis = beaconScanTimer.milliseconds();
         if (this.isBeaconBlue()) {
             accumulatedBlueValue += millis;
+            if (firstDetectedTimeStamp > millis) {
+                firstDetectedTimeStamp = millis;
+            } else if (lastDetectedTimeStamp < millis) {
+                lastDetectedTimeStamp = millis;
+            }
         } else if (this.isBeaconRed()) {
             accumulatedRedValue += millis;
-        }
-        if (firstDetectedTimeStamp > millis) {
-            firstDetectedTimeStamp = millis;
-        } else if (lastDetectedTimeStamp < millis) {
-            lastDetectedTimeStamp = millis;
+            if (firstDetectedTimeStamp > millis) {
+                firstDetectedTimeStamp = millis;
+            } else if (lastDetectedTimeStamp < millis) {
+                lastDetectedTimeStamp = millis;
+            }
         }
     }
 
