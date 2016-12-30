@@ -197,10 +197,11 @@ public class BeaconClaim implements Attachment {
 
     public void verifyBeaconColor(){
         colorSensor1.enableLed(false);
-        curOpMode.telemetry.addData("red: ", "%s", Integer.toString(colorSensor1.red()));
-        curOpMode.telemetry.addData("blue: ", "%s", Integer.toString(colorSensor1.blue()));
+        BeaconColor[] beaconColors = this.getBeaconColor();
+        curOpMode.telemetry.addData("left: ", "%s", beaconColors[0].toString());
+        curOpMode.telemetry.addData("right: ", "%s", beaconColors[1].toString());
         curOpMode.telemetry.update();
-        DbgLog.msg("red value = %d, blue value = %d",colorSensor1.red(),colorSensor1.blue());
+        DbgLog.msg("left value = %s, right value = %s",beaconColors[0].toString(),beaconColors[1].toString());
         //DbgLog.msg("color number = %x", colorSensor1.getI2cAddress().get7Bit());
     }
 
