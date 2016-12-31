@@ -211,11 +211,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public boolean isBusy() {
-        if (motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy()) {
-            return (true);
-        } else {
-            return (false);
-        }
+        return motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy();
     }
 
     @Override

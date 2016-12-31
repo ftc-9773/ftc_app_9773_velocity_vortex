@@ -166,6 +166,7 @@ public class Navigation {
         if (navxMicro.navxIsWorking()) {
             DbgLog.msg("Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
+            inches = driveBackwards ? -inches : inches;
             robot.driveSystem.startDriveToPosition(inches);
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
@@ -178,6 +179,7 @@ public class Navigation {
                 }
             }
             robot.driveSystem.doneWithDriveToPosition();
+            DbgLog.msg("Reached HERE DONE WITH DRIVE TO POS!");
 //            robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
