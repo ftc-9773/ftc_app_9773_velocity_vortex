@@ -22,6 +22,7 @@ public class NavigationChecks {
     public class NavCheckBaseClass {
         public NavChecksSupported navcheck;
         public boolean stopNavigation() { return (false);}
+        public void reset() { return; }
     }
 
     public class TimeoutCheck extends NavCheckBaseClass {
@@ -33,6 +34,11 @@ public class NavigationChecks {
             this.timer.reset();
             this.timeoutMillis = timeoutMillis;
             navcheck = NavChecksSupported.CHECK_TIMEOUT;
+        }
+
+        @Override
+        public void reset() {
+            this.timer.reset();
         }
 
         @Override
@@ -57,6 +63,12 @@ public class NavigationChecks {
             navxMicro = navigationObj.navxMicro;
             navxYaw = navxMicro.getModifiedYaw();
             navcheck = NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS;
+        }
+
+        @Override
+        public void reset() {
+            elapsedCounts.reset();
+            navxYaw = navxMicro.getModifiedYaw();
         }
 
         @Override
@@ -88,6 +100,11 @@ public class NavigationChecks {
         }
 
         @Override
+        public void reset() {
+            return;
+        }
+
+        @Override
         public boolean stopNavigation() {
             if (Math.abs(navxMicro.getPitch() - navxPitch) > pitchDegrees) {
                 return (true);
@@ -106,6 +123,12 @@ public class NavigationChecks {
                 return (true);
             }
         }
+
+        @Override
+        public void reset() {
+            return;
+        }
+
     }
 
     /**
@@ -136,6 +159,7 @@ public class NavigationChecks {
             }
         }
 
+        @Override
         public void reset() {
             elapsedCounts.reset();
         }
@@ -149,6 +173,11 @@ public class NavigationChecks {
             } else {
                 return (false);
             }
+        }
+
+        @Override
+        public void reset() {
+            return;
         }
     }
 
@@ -167,6 +196,11 @@ public class NavigationChecks {
             }
         }
         return (false);
+    }
+    public void reset() {
+        for (NavCheckBaseClass e: this.criteriaToCheck) {
+            e.reset();
+        }
     }
 
     public void addNewCheck(NavigationChecks.NavCheckBaseClass navCheck) {

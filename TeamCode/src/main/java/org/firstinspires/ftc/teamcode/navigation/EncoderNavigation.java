@@ -64,8 +64,9 @@ public class EncoderNavigation {
             }
             driveSys.turnDegrees(angle, 0.5f, navigationChecks);
             driveSys.driveToDistance((float)speed, driveDistance);
+            navigationChecks.reset();
             driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance((float)speed, -driveDistance);
+            driveSys.driveToDistance((float)speed, -moveDistance);
         }
         else{
             if (distance > 0){
@@ -73,8 +74,9 @@ public class EncoderNavigation {
             }
             driveSys.turnDegrees(angle, 0.5f, navigationChecks);
             driveSys.driveToDistance((float)speed, -driveDistance);
+            navigationChecks.reset();
             driveSys.turnDegrees(-angle, 0.5f, navigationChecks);
-            driveSys.driveToDistance((float)speed, driveDistance);
+            driveSys.driveToDistance((float)speed, moveDistance);
         }
     }
 

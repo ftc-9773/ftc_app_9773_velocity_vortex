@@ -98,7 +98,7 @@ public class NavxMicro {
 
     public boolean navxIsWorking() {
         if (navxStatus == NAVX_Status.WORKING) {
-            return (false);
+            return (true);
         }
         else {
             return (false);
@@ -218,8 +218,9 @@ public class NavxMicro {
             double startingYaw = this.getModifiedYaw();
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) speed, driveDistance);
+            navigationChecks.reset();
             this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -driveDistance);
+            robot.driveSystem.driveToDistance((float) speed, -moveDistance);
         }
         else{
             if (shiftDistance > 0){
@@ -228,8 +229,9 @@ public class NavxMicro {
             double startingYaw = this.getModifiedYaw();
             this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
             robot.driveSystem.driveToDistance((float) speed, -driveDistance);
+            navigationChecks.reset();
             this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, driveDistance);
+            robot.driveSystem.driveToDistance((float) speed, moveDistance);
         }
     }
 

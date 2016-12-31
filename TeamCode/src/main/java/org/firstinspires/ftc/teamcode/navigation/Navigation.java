@@ -337,8 +337,9 @@ public class Navigation {
         elapsedEncoderCounts.reset();
 
         if (navxMicro.navxIsWorking()) {
-            curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
+            curOpMode.telemetry.addData("ShiftRobot", "Using Navx");
             curOpMode.telemetry.update();
+            DbgLog.msg("ShiftRobot: %s", "using Navx");
             NavigationChecks.CheckNavxWhileTurning checkNavxWhileTurning = navigationChecks.new CheckNavxWhileTurning(90);
             navigationChecks.addNewCheck(checkNavxWhileTurning);
             navxMicro.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
@@ -354,8 +355,9 @@ public class Navigation {
             }
         }
         else {
-            curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
+            curOpMode.telemetry.addData("ShiftRobot", "Not Using Navx");
             curOpMode.telemetry.update();
+            DbgLog.msg("ShiftRobot: %s", "Not using Navx");
             encoderNav.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
             // We should not update the currentYaw with shift robot because the robot is supposed
             // to be in the same orientation in the ending position as in the starting position.
