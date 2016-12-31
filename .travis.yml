@@ -11,8 +11,6 @@ android:
     - android-23
     - extra-android-m2repository
     - addon-google_apis-google-19
-  lintOptions:
-    abortOnError false
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
