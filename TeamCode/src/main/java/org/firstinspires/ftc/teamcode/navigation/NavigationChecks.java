@@ -12,7 +12,8 @@ import java.util.List;
 
 public class NavigationChecks {
     public enum NavChecksSupported {CHECK_OPMODE_INACTIVE, CHECK_ROBOT_TILTING, CHECK_TIMEOUT,
-        CHECK_WHITElINE, CHECK_DEGREES_TURNED, CHECK_DISTANCE_TRAVELLED, CROSSCHECK_NAVX_WITH_ENCODERS}
+        CHECK_WHITElINE, CHECK_DEGREES_TURNED, CHECK_DISTANCE_TRAVELLED,
+        CROSSCHECK_NAVX_WITH_ENCODERS, CHECK_DRIVESYS_BUSY}
     LinearOpMode curOpMode;
     FTCRobot robot;
     Navigation navigationObj;
@@ -49,6 +50,20 @@ public class NavigationChecks {
                 return (false);
             }
         }
+    }
+
+    public class CheckDrivesysBusy extends NavCheckBaseClass {
+        @Override
+        public boolean stopNavigation() {
+            if (!robot.driveSystem.isBusy()) {
+                return (true);
+            } else {
+                return (false);
+            }
+        }
+
+        @Override
+        public void reset() { return;}
     }
 
     public class CheckNavxWhileTurning extends NavCheckBaseClass {

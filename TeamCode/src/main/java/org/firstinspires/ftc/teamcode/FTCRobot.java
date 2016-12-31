@@ -141,7 +141,6 @@ public class FTCRobot {
         float direction;
 
         // Set the drive system teleop mode max speed
-        driveSystem.setMaxSpeed((float) navigation.driveSysTeleopMaxSpeed);
         curOpMode.waitForStart();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){

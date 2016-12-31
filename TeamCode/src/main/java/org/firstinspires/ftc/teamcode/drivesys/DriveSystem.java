@@ -80,7 +80,7 @@ public abstract class DriveSystem {
             }
             DbgLog.msg("maxSpeedCPS = %d", maxSpeedCPS);
             fourMotorSteeringDrive = new FourMotorSteeringDrive(fMotorL, rMotorL, fMotorR, rMotorR,
-                    maxSpeedCPS, frictionCoeff, wheel, CPR);
+                    maxSpeedCPS, frictionCoeff, robot.distanceBetweenWheels, wheel, CPR);
             fourMotorSteeringDrive.curOpMode = curOpMode;
             fourMotorSteeringDrive.robot = robot;
             fourMotorSteeringDrive.driveSysType = driveSysName;
@@ -130,6 +130,12 @@ public abstract class DriveSystem {
     public void driveToDistance(float speed, double distanceInInches){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
+
+    public abstract void startDriveToPosition(double distanceInInches);
+
+    public abstract boolean isBusy();
+
+    public abstract void doneWithDriveToPosition();
 
     public abstract void turnDegrees(double degrees, float speed, NavigationChecks navExc);
 

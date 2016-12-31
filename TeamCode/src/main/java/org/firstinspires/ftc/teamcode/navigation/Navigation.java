@@ -158,13 +158,15 @@ public class Navigation {
         // If navx is working, using navx's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
-        NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
+//        NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
+        NavigationChecks.CheckDrivesysBusy drivesysBusy = navChecks.new CheckDrivesysBusy();
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
-        navChecks.addNewCheck(encodercheck);
+        navChecks.addNewCheck(drivesysBusy);
         navChecks.addNewCheck(check2);
         if (navxMicro.navxIsWorking()) {
             DbgLog.msg("Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
+            robot.driveSystem.startDriveToPosition(inches);
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
                 if (tiltingCheck.stopNavigation()) {
@@ -174,7 +176,8 @@ public class Navigation {
                     robot.driveSystem.reverse();
                 }
             }
-            robot.driveSystem.stop();
+            robot.driveSystem.doneWithDriveToPosition();
+//            robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
@@ -184,7 +187,7 @@ public class Navigation {
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
-            encodercheck.reset(); // just in case drive system is reversed
+            drivesysBusy.reset(); // just in case drive system is reversed
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(speed, 0);
             }

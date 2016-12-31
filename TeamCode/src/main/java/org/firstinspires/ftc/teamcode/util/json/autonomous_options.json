@@ -32,10 +32,7 @@
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.5},
     {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
-      "driveBackwards" : false, "motorSpeed" : 0.5},
-    {"type" : "Programmed", "value" : "printNavigationValues"},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 4.0, "driveBackwards" : false, "motorSpeed" : 0.5},
+      "driveBackwards" : false, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "printNavigationValues"}
   ],
   "testing3" : [

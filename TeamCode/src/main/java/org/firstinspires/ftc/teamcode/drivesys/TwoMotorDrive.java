@@ -111,6 +111,33 @@ public class TwoMotorDrive extends DriveSystem{
     }
 
     @Override
+    public void startDriveToPosition(double distanceInInches) {
+        double countsPerInch = motorCPR / wheel.getCircumference();
+        double targetCounts = countsPerInch * distanceInInches;
+
+        motorL.setTargetPosition(motorL.getCurrentPosition() + (int) targetCounts);
+        motorR.setTargetPosition(motorR.getCurrentPosition() + (int) targetCounts);
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    }
+
+    @Override
+    public boolean isBusy() {
+        if (motorL.isBusy() || motorR.isBusy()) {
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    @Override
+    public void doneWithDriveToPosition() {
+        this.stop();
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Override
     public void turnDegrees(double degrees, float speed, NavigationChecks navExc) {
         return;
     }
@@ -169,4 +196,10 @@ public class TwoMotorDrive extends DriveSystem{
     public void printCurrentPosition() {
         DbgLog.msg("L:%d, R:%d", motorL.getCurrentPosition(), motorR.getCurrentPosition());
     }
+
+    private void setDriveSysMode(DcMotor.RunMode runMode) {
+        motorL.setMode(runMode);
+        motorR.setMode(runMode);
+    }
+
 }

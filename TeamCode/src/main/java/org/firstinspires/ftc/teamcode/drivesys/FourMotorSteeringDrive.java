@@ -81,7 +81,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   int maxSpeedCPS, double frictionCoefficient,
-                                  Wheel wheel, int motorCPR) {
+                                  double distanceBetweenWheels, Wheel wheel, int motorCPR) {
         this.motorL1 = motorL1;
         this.motorL2 = motorL2;
         this.motorR1 = motorR1;
@@ -102,7 +102,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.wheel = wheel;
         this.motorCPR = motorCPR;
         this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
-        this.distBetweenWheels = robot.distanceBetweenWheels; // 14.75;
+        this.distBetweenWheels = distanceBetweenWheels; // 14.75 or 15.5;
     }
 
     @Override
@@ -178,7 +178,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
         double countsPerInch = motorCPR / wheel.getCircumference();
         double targetCounts = countsPerInch * distanceInInches;
 
-        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
         motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
         motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
@@ -194,16 +193,35 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         this.stop();
 
-        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    @Override
+    public void startDriveToPosition(double distanceInInches) {
+        double countsPerInch = motorCPR / wheel.getCircumference();
+        double targetCounts = countsPerInch * distanceInInches;
+
+        motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
+        motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
+        motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
+        motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    @Override
     public boolean isBusy() {
         if (motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy()) {
             return (true);
         } else {
             return (false);
         }
+    }
+
+    @Override
+    public void doneWithDriveToPosition() {
+        this.stop();
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
