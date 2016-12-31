@@ -357,7 +357,8 @@ public class Navigation {
             curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
             curOpMode.telemetry.update();
             encoderNav.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
-            encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
+            // We should not update the currentYaw with shift robot because the robot is supposed
+            // to be in the same orientation in the ending position as in the starting position.
         }
     }
 }
