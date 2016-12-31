@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drivesys;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -56,6 +57,12 @@ public class TwoMotorDrive extends DriveSystem{
                 degreesTurned *= -1; // Negate the number to indicate counterclockwise spin
             }
             return (degreesTurned);
+        }
+
+        @Override
+        public void printCurrentEncoderCounts() {
+            DbgLog.msg("printCurrent...(): encoder counts: L=%d, R=%d",
+                    motorL.getCurrentPosition(), motorR.getCurrentPosition());
         }
     }
 

@@ -146,16 +146,16 @@ public class Navigation {
     public void goStraightToDistance(double inches, double degrees,
                                      float speed, boolean driveBackwards) {
         // First, disable the color sensor
-        robot.beaconClaimObj.disableColorSensor();
-        //rangeSensorState.setEnabled(false);
+        //robot.beaconClaimObj.disableColorSensor();
         // If navx is working, using navx's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
-        NavigationChecks.EncoderCheckForDistance check1 = navChecks.new EncoderCheckForDistance(inches);
+        NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
-        navChecks.addNewCheck(check1);
+        navChecks.addNewCheck(encodercheck);
         navChecks.addNewCheck(check2);
         if (navxMicro.navxIsWorking()) {
+            DbgLog.msg("Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
@@ -170,11 +170,13 @@ public class Navigation {
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
+            DbgLog.msg("Navx is not working");
             // Use purely encoder based navigation
             DbgLog.msg("Speed: %f, distance: %f", speed, inches);
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
+            encodercheck.reset(); // just in case drive system is reversed
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(speed, 0);
             }
@@ -258,6 +260,7 @@ public class Navigation {
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
+            distanceCheck.reset(); // just in case drive system is reversed
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive((float)motorSpeed, 0);
             }

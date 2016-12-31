@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drivesys;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
 
@@ -29,10 +30,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
     double distBetweenWheels;
 
     public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
-        double encoderCountL1;
-        double encoderCountL2;
-        double encoderCountR1;
-        double encoderCountR2;
+        long encoderCountL1;
+        long encoderCountL2;
+        long encoderCountR1;
+        long encoderCountR2;
 
         public ElapsedEncoderCounts() {
             encoderCountL1 = encoderCountL2 = encoderCountR1 = encoderCountR2 = 0;
@@ -43,6 +44,14 @@ public class FourMotorSteeringDrive extends DriveSystem {
             encoderCountL2 = motorL2.getCurrentPosition();
             encoderCountR1 = motorR1.getCurrentPosition();
             encoderCountR2 = motorR2.getCurrentPosition();
+            DbgLog.msg("In reset(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d", encoderCountL1,
+                    encoderCountL2, encoderCountR1, encoderCountR2);
+        }
+
+        public  void printCurrentEncoderCounts() {
+            DbgLog.msg("In printCurrent...(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d",
+                    motorL1.getCurrentPosition(), motorL2.getCurrentPosition(),
+                    motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
         }
 
         public double getDistanceTravelledInInches() {
@@ -77,7 +86,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
                                   double maxSpeed, double minSpeed, double frictionCoefficient,
-                                  Wheel wheel, int motorCPR){
+                                  Wheel wheel, int motorCPR) {
         this.motorL1 = motorL1;
         this.motorL2 = motorL2;
         this.motorR1 = motorR1;
@@ -100,28 +109,28 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.wheel = wheel;
         this.motorCPR = motorCPR;
         this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
-        this.distBetweenWheels = 14.75;
+        this.distBetweenWheels = 15.5; // 14.75;
     }
 
     @Override
-    public void drive(float speed, float direction){
+    public void drive(float speed, float direction) {
         double left = (speed + direction) * frictionCoefficient;
         double right = (speed - direction) * frictionCoefficient;
 
-        if(prevPowerL1 != left){
+        if (prevPowerL1 != left) {
             motorL1.setPower(left);
             prevPowerL1 = left;
         }
-        if(prevPowerL2 != left){
+        if (prevPowerL2 != left) {
             motorL2.setPower(left);
             prevPowerL2 = left;
         }
-        if(prevPowerR1 != right){
+        if (prevPowerR1 != right) {
             motorR1.setPower(right);
             prevPowerR1 = right;
         }
 
-        if(prevPowerR2 != right){
+        if (prevPowerR2 != right) {
             motorR2.setPower(right);
             prevPowerR2 = right;
         }
@@ -129,20 +138,20 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void turnOrSpin(double left, double right) {
-        if(prevPowerL1 != left){
+        if (prevPowerL1 != left) {
             motorL1.setPower(left);
             prevPowerL1 = left;
         }
-        if(prevPowerL2 != left){
+        if (prevPowerL2 != left) {
             motorL2.setPower(left);
             prevPowerL2 = left;
         }
-        if(prevPowerR1 != right){
+        if (prevPowerR1 != right) {
             motorR1.setPower(right);
             prevPowerR1 = right;
         }
 
-        if(prevPowerR2 != right){
+        if (prevPowerR2 != right) {
             motorR2.setPower(right);
             prevPowerR2 = right;
         }
@@ -186,7 +195,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         this.drive((float) (speed * frictionCoefficient), 0.0f);
 
-        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy() && curOpMode.opModeIsActive()){
+        while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy() && curOpMode.opModeIsActive()) {
             curOpMode.idle();
         }
 
@@ -197,7 +206,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     public boolean isBusy() {
-        if (motorL1.isBusy()|| motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy()) {
+        if (motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy()) {
             return (true);
         } else {
             return (false);
@@ -205,7 +214,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     @Override
-    public void turnDegrees(double degrees, float speed, NavigationChecks navExc){
+    public void turnDegrees(double degrees, float speed, NavigationChecks navExc) {
 
         double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
         double countsPerInch = motorCPR / wheel.getCircumference();
@@ -231,8 +240,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         this.drive((float) (speed * frictionCoefficient), 0.0f);
 
-        while(motorL1.isBusy()&&motorL2.isBusy()&&motorR1.isBusy()&&motorR2.isBusy()
-                && !navExc.stopNavigation() && curOpMode.opModeIsActive()){
+        while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()
+                && !navExc.stopNavigation() && curOpMode.opModeIsActive()) {
             curOpMode.idle();
         }
 
@@ -242,7 +251,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    private void setDriveSysMode(DcMotor.RunMode runMode){
+    private void setDriveSysMode(DcMotor.RunMode runMode) {
         motorL1.setMode(runMode);
         motorL2.setMode(runMode);
         motorR1.setMode(runMode);
@@ -254,7 +263,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     //  new optimization in the drive() method, where the prevPower values are saved and
     //  the new power values do not get applied if they are same as the previous power values.
     @Override
-    public void setMaxSpeed(float speed){
+    public void setMaxSpeed(float speed) {
         DbgLog.msg("Current max speed: L1=%d, L2=%d, R1=%d, R2=%d", motorL1.getMaxSpeed(),
                 motorL2.getMaxSpeed(), motorR1.getMaxSpeed(), motorR2.getMaxSpeed());
         motorL1.setMaxSpeed((int) (motorL1MaxSpeed * speed));
@@ -279,8 +288,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
             motorR1.setDirection(DcMotorSimple.Direction.FORWARD);
             motorR2.setDirection(DcMotorSimple.Direction.FORWARD);
             driveSysIsReversed = false;
-        }
-        else {
+        } else {
             motorL1.setDirection(DcMotorSimple.Direction.FORWARD);
             motorL2.setDirection(DcMotorSimple.Direction.FORWARD);
             motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -306,4 +314,21 @@ public class FourMotorSteeringDrive extends DriveSystem {
         motorR.setPower(0);
         motorL.setPower(0);
     }*/
+
+    @Override
+    public void testEncoders() {
+//        this.setDriveSysMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+//        timer.reset();
+//        DbgLog.msg("L1 Encoder: %d L2 Encoder: %d R1 Encoder: %d R2 Encoder: %d", motorL1.getCurrentPosition(), motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+//        while (curOpMode.opModeIsActive() && timer.milliseconds()<4000){
+//            this.drive(1.0F,0);
+//        }
+//        this.stop();
+//        DbgLog.msg("L1 Encoder: %d L2 Encoder: %d R1 Encoder: %d R2 Encoder: %d", motorL1.getCurrentPosition(), motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+        this.motorL1.setMaxSpeed(2500);
+        this.motorL2.setMaxSpeed(2500);
+        this.motorR1.setMaxSpeed(2500);
+        this.motorR2.setMaxSpeed(2500);
+    }
 }

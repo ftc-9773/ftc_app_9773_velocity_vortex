@@ -128,10 +128,16 @@ public class NavigationChecks {
             // Check for both magnitude and sign
             if ((Math.abs(distanceTravelled) >= Math.abs(distanceInInches)) &&
                     ((distanceTravelled / distanceInInches) > 0)) {
+                DbgLog.msg("distanceTravelled = %f", distanceTravelled);
+                elapsedCounts.printCurrentEncoderCounts();
                 return (true);
             } else {
                 return (false);
             }
+        }
+
+        public void reset() {
+            elapsedCounts.reset();
         }
     }
 

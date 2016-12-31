@@ -2,13 +2,13 @@
   "testing1" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
       "inches" : 5.0, "driveBackwards" : false},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.25},
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 320,
       "endingCondition" : "driveToDistance", "inches" : 45.0, "driveBackwards" : false},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 340.0},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 340.0, "motorSpeed" : 0.25},
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 340,
       "endingCondition" : "driveToDistance", "inches" : 9.0, "driveBackwards" : false},
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.25},
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0.0,
       "endingCondition" : "driveUntilWhiteLine", "driveBackwards" : false},
     {"type" : "Programmed", "value" : "reverseDriveSystem"},
@@ -51,8 +51,8 @@
     "motorSpeed" : 0.25}
   ],
   "testing4" : [
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 6.0, "moveDistance" : 15.0, "isForward" : true,
-      "motorSpeed" : 0.25}
+    {"type" : "Programmed", "value" : "testEncoders"},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270.0, "motorSpeed" : 0.6}
   ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,

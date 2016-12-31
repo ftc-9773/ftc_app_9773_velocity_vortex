@@ -25,6 +25,7 @@ public abstract class DriveSystem {
         public abstract void reset();
         public abstract double getDistanceTravelledInInches();
         public abstract double getDegreesTurned();
+        public abstract void printCurrentEncoderCounts();
     }
 
 
@@ -94,5 +95,7 @@ public abstract class DriveSystem {
     public abstract void resumeMaxSpeed();
     public abstract void reverse();
     public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
+
+    public void testEncoders(){return;}
 
 }

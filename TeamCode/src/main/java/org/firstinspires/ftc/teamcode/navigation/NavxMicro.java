@@ -95,7 +95,7 @@ public class NavxMicro {
 
     public boolean navxIsWorking() {
         if (navxStatus == NAVX_Status.WORKING) {
-            return (true);
+            return (false);
         }
         else {
             return (false);

@@ -351,6 +351,9 @@ public class AutonomousActions {
                 }
                 break;
             }
+            case "testEncoders":{
+                robot.driveSystem.testEncoders();
+            }
         }
     }
 
