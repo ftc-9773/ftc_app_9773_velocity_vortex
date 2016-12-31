@@ -261,6 +261,7 @@ public class AutonomousActions {
                 double degrees = 0;
                 String termCondition = null;
                 double inches = 0.0;
+                double speed=0.5;
                 boolean driveUntilWhiteLine = false;
                 boolean driveBackwards = false;
                 try {
@@ -283,7 +284,7 @@ public class AutonomousActions {
                 DbgLog.msg("degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
                 if (driveUntilWhiteLine) {
                     while ((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
-                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
+                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) speed);
                     }
                     driveSystem.stop();
                 } else {
@@ -293,7 +294,7 @@ public class AutonomousActions {
                     elapsedCounts.reset();
                     while ((elapsedCounts.getDistanceTravelledInInches() < inches) &&
                             robot.curOpMode.opModeIsActive()) {
-                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
+                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) speed);
                     }
                     driveSystem.stop();
                 }

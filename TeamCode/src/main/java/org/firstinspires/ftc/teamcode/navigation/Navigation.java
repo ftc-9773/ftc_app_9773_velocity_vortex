@@ -168,8 +168,9 @@ public class Navigation {
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             robot.driveSystem.startDriveToPosition(inches);
             while (!navChecks.stopNavigation()) {
-                robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
+                robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
                 if (tiltingCheck.stopNavigation()) {
+                    robot.driveSystem.doneWithDriveToPosition();
                     // Move backward for 15 inches
                     robot.driveSystem.reverse();
                     robot.driveSystem.driveToDistance(speed, 15);
@@ -210,7 +211,7 @@ public class Navigation {
             NavigationChecks.CheckRobotTilting check3 = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(check3);
             while (!navChecks.stopNavigation()) {
-                robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
+                robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, motorSpeed);
                 //robot.beaconClaimObj.updateBeaconScanValues();
             }
             robot.driveSystem.stop();
@@ -261,7 +262,7 @@ public class Navigation {
         navChecks.addNewCheck(distanceCheck);
         if (navxMicro.navxIsWorking()) {
             while (!navChecks.stopNavigation()) {
-                robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
+                robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) motorSpeed);
             }
             robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro

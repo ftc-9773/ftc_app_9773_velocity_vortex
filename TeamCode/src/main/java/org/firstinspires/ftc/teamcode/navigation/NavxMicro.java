@@ -7,6 +7,7 @@ import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FTCRobot;
@@ -185,7 +186,7 @@ public class NavxMicro {
         this.robot.driveSystem.stop();
     }
 
-    public void navxGoStraightPID(boolean driveBackwards, double degrees) {
+    public void navxGoStraightPID(boolean driveBackwards, double degrees, float speed) {
         // degrees specified robot orientation
         double error=0.0, correction=0.0;
         double leftSpeed, rightSpeed;
@@ -196,8 +197,10 @@ public class NavxMicro {
             error = error + 360;
         }
         correction = this.straightPID_kp * error / 2;
-        leftSpeed = drive_speed - correction;
-        rightSpeed = drive_speed + correction;
+        leftSpeed = Range.clip(speed - correction, 0, drive_speed);
+        rightSpeed = Range.clip(speed + correction, 0, drive_speed);
+//        leftSpeed = drive_speed - correction;
+//        rightSpeed = drive_speed + correction;
 //        DbgLog.msg("error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
         if (!driveBackwards) {
             robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);
