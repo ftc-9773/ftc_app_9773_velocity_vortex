@@ -11,11 +11,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.FTCi2cDeviceState;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
-import org.firstinspires.ftc.teamcode.util.Vision;
+import org.firstinspires.ftc.teamcode.util.vision.Vision;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.firstinspires.ftc.robotcontroller.internal.vision.BeaconColorResult;
+import org.firstinspires.ftc.teamcode.util.vision.BeaconColorResult;
 
 
 /*
@@ -196,7 +196,7 @@ public class BeaconClaim implements Attachment {
     }
 
     public void verifyBeaconColor(){
-        BeaconColor[] beaconColors = this.getBeaconColor();
+        BeaconColor[] beaconColors = this.getLeftBeaconColor();
         curOpMode.telemetry.addData("left: ", "%s", beaconColors[0].toString());
         curOpMode.telemetry.addData("right: ", "%s", beaconColors[1].toString());
         curOpMode.telemetry.update();
@@ -274,24 +274,48 @@ public class BeaconClaim implements Attachment {
         }
     }
 
-    public BeaconColor[] getBeaconColor() {
-        BeaconColor[] beaconColors = new BeaconColor[2];
-        BeaconColorResult.BeaconColor[] visionBeaconColors = vision.getVisionBeaconColors();
-        if (visionBeaconColors[0] == BeaconColorResult.BeaconColor.RED) {
-            beaconColors[0] = BeaconColor.RED;
-        } else if (visionBeaconColors[0] == BeaconColorResult.BeaconColor.BLUE) {
-            beaconColors[0] = BeaconColor.BLUE;
-        } else if (visionBeaconColors[0] == (BeaconColorResult.BeaconColor.GREEN) || (visionBeaconColors[0] == BeaconColorResult.BeaconColor.UNKNOWN)){
-            beaconColors[0] = BeaconColor.NONE;
+    public BeaconColor[] getLeftBeaconColor() {
+        BeaconColor[] leftBeaconColors = new BeaconColor[2];
+        BeaconColorResult.BeaconColor[][] visionBeaconColors = vision.getBothBeaconColors();
+        if (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.RED) {
+            leftBeaconColors[0] = BeaconColor.RED;
+        } else if (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.BLUE) {
+            leftBeaconColors[0] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[0][0] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            leftBeaconColors[0] = BeaconColor.NONE;
         }
-        if (visionBeaconColors[1] == BeaconColorResult.BeaconColor.RED) {
-            beaconColors[1] = BeaconColor.RED;
-        } else if (visionBeaconColors[1] == BeaconColorResult.BeaconColor.BLUE) {
-            beaconColors[1] = BeaconColor.BLUE;
-        } else if (visionBeaconColors[1] == (BeaconColorResult.BeaconColor.GREEN) || (visionBeaconColors[1] == BeaconColorResult.BeaconColor.UNKNOWN)){
-            beaconColors[1] = BeaconColor.NONE;
+        if (visionBeaconColors[0][1] == BeaconColorResult.BeaconColor.RED) {
+            leftBeaconColors[1] = BeaconColor.RED;
+        } else if (visionBeaconColors[0][1] == BeaconColorResult.BeaconColor.BLUE) {
+            leftBeaconColors[1] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[0][1] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[0][1] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            leftBeaconColors[1] = BeaconColor.NONE;
         }
-        return beaconColors;
+        return leftBeaconColors;
+    }
+
+    public BeaconColor[] getRightBeaconColor(){
+        BeaconColor[] rightBeaconColors = new BeaconColor[2];
+        BeaconColorResult.BeaconColor[][] visionBeaconColors = vision.getBothBeaconColors();
+        if (visionBeaconColors[1][0] == BeaconColorResult.BeaconColor.RED) {
+            rightBeaconColors[0] = BeaconColor.RED;
+        } else if (visionBeaconColors[1][0] == BeaconColorResult.BeaconColor.BLUE) {
+            rightBeaconColors[0] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[1][0] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[1][0] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            rightBeaconColors[0] = BeaconColor.NONE;
+        }
+        if (visionBeaconColors[1][1] == BeaconColorResult.BeaconColor.RED) {
+            rightBeaconColors[1] = BeaconColor.RED;
+        } else if (visionBeaconColors[1][1] == BeaconColorResult.BeaconColor.BLUE) {
+            rightBeaconColors[1] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[1][1] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[1][1] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            rightBeaconColors[1] = BeaconColor.NONE;
+        }
+        return rightBeaconColors;
     }
 
     public void printBeaconScanningData() {
