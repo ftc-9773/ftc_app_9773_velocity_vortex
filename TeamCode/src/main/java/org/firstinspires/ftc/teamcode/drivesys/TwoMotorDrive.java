@@ -15,7 +15,6 @@ public class TwoMotorDrive extends DriveSystem{
     DcMotor motorR = null;
     double frictionCoefficient;
     double maxSpeed;
-    double minSpeed;
     int motorLMaxSpeed, motorRMaxSpeed;
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
@@ -66,13 +65,12 @@ public class TwoMotorDrive extends DriveSystem{
         }
     }
 
-    public TwoMotorDrive(DcMotor motorL, DcMotor motorR, double maxSpeed, double minSpeed,
+    public TwoMotorDrive(DcMotor motorL, DcMotor motorR, double maxSpeed,
                          double frictionCoefficient, Wheel wheel, int motorCPR){
         this.motorL = motorL;
         this.motorR = motorR;
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeed = maxSpeed;
-        this.minSpeed = minSpeed;
         this.wheel = wheel;
         this.motorCPR = motorCPR;
         this.motorLMaxSpeed = motorL.getMaxSpeed();

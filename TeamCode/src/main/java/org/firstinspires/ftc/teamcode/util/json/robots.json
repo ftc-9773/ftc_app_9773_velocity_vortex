@@ -41,6 +41,7 @@
     "attachments": ["CapBallLift", "BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator"],
     "navigation": "LineFollow_IMU_DriveSysEncoders",
     "distanceBetweenLeftAndODS":11,
-    "distanceBetweenRightAndODS":4
+    "distanceBetweenRightAndODS":4,
+    "distanceBetweenWheels" : 15.5
   }
 }

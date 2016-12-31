@@ -57,4 +57,15 @@ public class DriveSysReader extends JsonReader {
     public String getDriveSysName() {
         return driveSysName;
     }
+
+    public int getMaxMotorSpeed() {
+        int maxMotorSpeed = 0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(driveSysObj, "MaxMotorSpeed");
+            maxMotorSpeed = driveSysObj.getInt(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxMotorSpeed);
+    }
 }

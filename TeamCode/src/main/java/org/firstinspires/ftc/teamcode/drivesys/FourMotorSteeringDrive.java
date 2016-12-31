@@ -17,13 +17,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorR1 = null;
     DcMotor motorR2 = null;
     double prevPowerL1, prevPowerL2, prevPowerR1, prevPowerR2;
-    int motorL1MaxSpeed = 0;
-    int motorL2MaxSpeed = 0;
-    int motorR1MaxSpeed = 0;
-    int motorR2MaxSpeed = 0;
     double frictionCoefficient;
-    double maxSpeed;
-    double minSpeed;
+    double maxSpeedCPS; // encoder counts per second
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
     boolean driveSysIsReversed = false;
@@ -85,7 +80,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
-                                  double maxSpeed, double minSpeed, double frictionCoefficient,
+                                  double maxSpeedCPS, double frictionCoefficient,
                                   Wheel wheel, int motorCPR) {
         this.motorL1 = motorL1;
         this.motorL2 = motorL2;
@@ -98,18 +93,12 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.setZeroPowerMode(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;
-        this.maxSpeed = maxSpeed;
-        this.minSpeed = minSpeed;
-        this.motorL1MaxSpeed = this.motorL1.getMaxSpeed();
-        this.motorL2MaxSpeed = this.motorL2.getMaxSpeed();
-        this.motorR1MaxSpeed = this.motorR1.getMaxSpeed();
-        this.motorR2MaxSpeed = this.motorR2.getMaxSpeed();
-        DbgLog.msg("max speeds: L1=%d, L2=%d, R1=%d, R2=%d", motorL1MaxSpeed, motorL2MaxSpeed,
-                motorR1MaxSpeed, motorR2MaxSpeed);
+        this.maxSpeedCPS = maxSpeedCPS;
+        DbgLog.msg("max speed CPS = %d", maxSpeedCPS);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
         this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
-        this.distBetweenWheels = 15.5; // 14.75;
+        this.distBetweenWheels = robot.distanceBetweenWheels; // 14.75;
     }
 
     @Override
@@ -264,20 +253,19 @@ public class FourMotorSteeringDrive extends DriveSystem {
     //  the new power values do not get applied if they are same as the previous power values.
     @Override
     public void setMaxSpeed(float speed) {
-        DbgLog.msg("Current max speed: L1=%d, L2=%d, R1=%d, R2=%d", motorL1.getMaxSpeed(),
-                motorL2.getMaxSpeed(), motorR1.getMaxSpeed(), motorR2.getMaxSpeed());
-        motorL1.setMaxSpeed((int) (motorL1MaxSpeed * speed));
-        motorL2.setMaxSpeed((int) (motorL2MaxSpeed * speed));
-        motorR1.setMaxSpeed((int) (motorR1MaxSpeed * speed));
-        motorR2.setMaxSpeed((int) (motorR2MaxSpeed * speed));
+        DbgLog.msg("Current max speed =%d", maxSpeedCPS);
+        motorL1.setMaxSpeed((int) (maxSpeedCPS * speed));
+        motorL2.setMaxSpeed((int) (maxSpeedCPS * speed));
+        motorR1.setMaxSpeed((int) (maxSpeedCPS * speed));
+        motorR2.setMaxSpeed((int) (maxSpeedCPS * speed));
     }
 
     @Override
     public void resumeMaxSpeed() {
-        motorL1.setMaxSpeed(motorL1MaxSpeed);
-        motorL2.setMaxSpeed(motorL2MaxSpeed);
-        motorR1.setMaxSpeed(motorR1MaxSpeed);
-        motorR2.setMaxSpeed(motorR2MaxSpeed);
+        motorL1.setMaxSpeed((int) maxSpeedCPS);
+        motorL2.setMaxSpeed((int) maxSpeedCPS);
+        motorR1.setMaxSpeed((int) maxSpeedCPS);
+        motorR2.setMaxSpeed((int) maxSpeedCPS);
     }
 
     @Override

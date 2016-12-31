@@ -47,6 +47,7 @@ public class FTCRobot {
     public ParticleRelease particleObj;
     public double distanceLeft;
     public double distanceRight;
+    public double distanceBetweenWheels;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -60,6 +61,8 @@ public class FTCRobot {
         String driveSysName = null;
         distanceLeft = robotConfig.getDistanceLeft();
         distanceRight = robotConfig.getDistanceRight();
+        distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
+        DbgLog.msg("distanceBetweenWheels=%f", distanceBetweenWheels);
 
         // Instantiate the Drive System
         try {
@@ -68,7 +71,7 @@ public class FTCRobot {
                 DbgLog.msg("driveSysName = %s", driveSysName);
                 driveSystem = DriveSystem.createDriveSystem(curOpMode, this, driveSysName);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if (driveSystem == null) {

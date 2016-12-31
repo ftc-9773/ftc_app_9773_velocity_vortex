@@ -97,4 +97,16 @@ public class RobotConfigReader extends JsonReader {
         }
         return (value);
     }
+
+    public double getDistanceBetweenWheels() {
+        double value = 0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenWheels");
+            value = robotObj.getDouble(key);
+            DbgLog.msg("getDistanceBetweenWheels(): key = %s, value=%f", key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
+    }
 }

@@ -69,12 +69,38 @@ public abstract class DriveSystem {
             Wheel wheel = new Wheel(wheel_type, wheelDiameter);
 
             DbgLog.msg("wheel diameter = %f", wheel.diameter);
+            int maxSpeedCPS = driveSysReader.getMaxMotorSpeed();
             fourMotorSteeringDrive = new FourMotorSteeringDrive(fMotorL, rMotorL, fMotorR, rMotorR,
-                    1, 0, frictionCoeff, wheel, CPR);
+                    maxSpeedCPS, frictionCoeff, wheel, CPR);
             fourMotorSteeringDrive.curOpMode = curOpMode;
             fourMotorSteeringDrive.robot = robot;
             fourMotorSteeringDrive.driveSysType = driveSysName;
             driveSys = (DriveSystem) fourMotorSteeringDrive;
+        } else if (driveSysName.equalsIgnoreCase("2Motor2WDSteering")) {
+            int CPR = 0;
+            double wheelDiameter = 0.0;
+            double frictionCoeff = 1.0;
+            TwoMotorDrive twoMotorDrive;
+
+            String motorL_type = driveSysReader.getMotorType("motorL");
+            String wheel_type = driveSysReader.getWheelType();
+            MotorSpecsReader motorSpecs =
+                    new MotorSpecsReader(JsonReader.motorSpecsFile, motorL_type);
+            CPR = motorSpecs.getCPR();
+            wheelDiameter = wheelSpecs.getDiameter();
+            frictionCoeff = wheelSpecs.getFrictionCoeff();
+
+            DcMotor motorL = curOpMode.hardwareMap.dcMotor.get("motorL");
+            DcMotor motorR = curOpMode.hardwareMap.dcMotor.get("motorR");
+            Wheel wheel = new Wheel(wheel_type, wheelDiameter);
+
+            DbgLog.msg("wheel diameter = %f", wheel.diameter);
+            int maxSpeedCPS = driveSysReader.getMaxMotorSpeed();
+            twoMotorDrive = new TwoMotorDrive(motorL, motorR, maxSpeedCPS, frictionCoeff, wheel, CPR);
+            twoMotorDrive.curOpMode = curOpMode;
+            twoMotorDrive.robot = robot;
+            twoMotorDrive.driveSysType = driveSysName;
+            driveSys = (DriveSystem) twoMotorDrive;
         }
         return (driveSys);
     }
