@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.util.Iterator;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class JsonReader {
     public static final String baseDir = new String("/sdcard/FIRST/team9773/");
     public static final String sensorSpecsFile = new String(baseDir + "specs/sensor_specs.json");

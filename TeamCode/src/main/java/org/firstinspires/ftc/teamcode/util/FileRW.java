@@ -14,6 +14,10 @@ import java.io.IOException;
  * Created by pranavb on 9/23/16.
  */
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class FileRW {
     File file = null;
     FileReader fileReader = null;

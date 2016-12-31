@@ -6,10 +6,10 @@
         "type": "OpticalDistanceSensor"
       },
       "lineFollowVariables": {
-        "white": 0.227761,
-        "black" : 0.187683,
-        "lowSpeed": 0.05,
-        "highSpeed": 0.1,
+        "white": 0.722385,
+        "black" : 0.108504,
+        "lowSpeed": 0.4,
+        "highSpeed": 0.9,
         "timeOut": 4.0
       }
     },
@@ -18,17 +18,21 @@
       "DIMname" : "dim",
       "type" : "navx-micro",
       "porttype": "i2c",
-      "portnum": 0,
-      "driveSysInitialPower": 0.3,
-      "driveSysTargetPower": 0.3,
-      "angleTolerance": 3.0
+      "portnum": 1,
+      "driveSysInitialPower": 0.25,
+      "driveSysTargetPower": 0.5,
+      "angleTolerance": 2.0,
+      "straightPID_kp" : 0.01,
+      "turnPID_kp" : 0.005,
+      "PID_minSpeed" : -1.0,
+      "PID_maxSpeed" : 1.0
     },
     "RangeSensor" : {
       "name": "rangeSensor1"
     },
     "DriveSysEncoderVariables" : {
       "__Comment" : "These values are applicable when driving with RUN_USING_ENCODERS or RUN_TO_POSITION setting",
-      "LineFollowMaxSpeed" : 0.2,
+      "LineFollowMaxSpeed" : 0.3,
       "TurningMaxSpeed" : 0.3,
       "StraightLineMaxSpeed" : 0.5,
       "DriveSysTeleOpMaxSpeed" : 1.0
@@ -74,5 +78,8 @@
         "timeOut": 2.5
       }
     }
+  },
+  "none" : {
+
   }
 }

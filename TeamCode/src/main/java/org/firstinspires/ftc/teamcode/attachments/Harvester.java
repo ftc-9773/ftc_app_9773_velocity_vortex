@@ -14,6 +14,10 @@ import org.json.JSONObject;
  * Created by rsburugula on 10/22/16.
  */
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class Harvester implements Attachment {
     FTCRobot robot;
     LinearOpMode curOpMode;

@@ -23,6 +23,17 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Thread.sleep;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
+/**
+ * Top-level robot class. This class contains all attachments, and calls both the TeleOp and Autonomous initialize/start
+ * methods/sequences. An object of this class is created in every opmode.
+ *
+ * @author pranavburugula
+ * @version 2.2
+ */
 public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;
@@ -34,12 +45,21 @@ public class FTCRobot {
     public Harvester harvesterObj;
     public ParticleAccelerator partAccObj;
     public ParticleRelease particleObj;
+    public double distanceLeft;
+    public double distanceRight;
 
+    /**
+     * Reads robots JSON file, initializes drive system and attachments.
+     * @param curOpMode Current running opmode, used for FTC libraries.
+     * @param robotName Name of the robot configuration to initialize.
+     */
     public FTCRobot(LinearOpMode curOpMode, String robotName) {
         this.curOpMode = curOpMode;
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
         String driveSysName = null;
+        distanceLeft = robotConfig.getDistanceLeft();
+        distanceRight = robotConfig.getDistanceRight();
 
         // Instantiate the Drive System
         try {
@@ -64,8 +84,14 @@ public class FTCRobot {
         } else{
             navigation = null;
         }
+
+        DbgLog.msg("Done with robot initialization.  Current Voltage = %f", getVoltage());
     }
 
+    /**
+     * Iterates through listed attachments in robots JSON file, and initializes.
+     * @param attachments   Array of attachment names specified in robots JSON file
+     */
     private void createAttachments(String[] attachments) {
         JsonReader attachmentsReader = new JsonReader(JsonReader.attachments);
         JSONObject rootObj = attachmentsReader.jsonRoot;
@@ -101,6 +127,9 @@ public class FTCRobot {
         }
     }
 
+    /**
+     * Main TeleOp method. Run from TeleOp opmode classes.
+     */
     public void runTeleOp(String allianceColor) {
         float speed;
         float direction;
@@ -136,6 +165,16 @@ public class FTCRobot {
         }
     }
 
+    /**
+     * Main autonomous method. Run from Autonomous opmode classes.
+     * <br/>
+     * This method does not actually run the Autonomous oppmode, rather it calls {@link AutonomousActions#doActions()},
+     * which parses the autonomous JSON configuration.
+     * @param autonomousOpt Name of the autonomous configuration as listed in the autonomous_options JSON file.
+     * @param allianceColor Current alliance color.
+     * @param startingDelay Amount of time, in seconds, the robot should wait before starting autonomous opmode. Used
+     *                      to coordinate with alliance partner, and prevent collision.
+     */
     public void runAutonomous(String autonomousOpt, String allianceColor,
                               long startingDelay, int startingPosition) {
         this.autonomousActions =
@@ -145,10 +184,8 @@ public class FTCRobot {
             curOpMode.waitForStart();
             DbgLog.msg("Starting delay = %d seconds", startingDelay);
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
-            while (curOpMode.opModeIsActive()) {
-                autonomousActions.doActions();
-                break;
-            }
+            navigation.initForPlay(); // Initialization after starting the robot
+            autonomousActions.doActions();
             driveSystem.stop();
             curOpMode.stop();
         } catch (InterruptedException e) {
@@ -157,6 +194,13 @@ public class FTCRobot {
         }
     }
 
+    /**
+     * Record method for the Record/Replay system. Directly writes the record data (processed gamepad values)
+     * into a .<!---->csv file.
+     * @param opmodeCfg {@link JsonReader} used in the recording opmode class.
+     * @param allianceColor Current alliance color.
+     * @throws InterruptedException
+     */
     public void autonomousRecord(JsonReader opmodeCfg, String allianceColor) throws InterruptedException {
         long clockCycle=5000;
         String recordFilePath, recordFileName=null;
@@ -195,11 +239,20 @@ public class FTCRobot {
         while (curOpMode.opModeIsActive()) {
             double speed = 0;
             if(!isReverse) {
+                // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+                //       "DriveSysEncoderVariables"->"StraightLineMaxSpeed" instead of
+                //       multiplying with a hardcoded number 0.3
                 speed = -curOpMode.gamepad1.left_stick_y * 0.3;
             }
             else if(isReverse){
+                // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+                //       "DriveSysEncoderVariables"->"StraightLineMaxSpeed" instead of
+                //       multiplying with a hardcoded number 0.3
                 speed = curOpMode.gamepad1.left_stick_y * 0.3;
             }
+            // ToDo: use navigation_options.json::"LineFollow_IMU_DriveSysEncoders"->
+            //       "DriveSysEncoderVariables"->"TurningMaxSpeed" instead of
+            //       multiplying with a hardcoded number 0.5
             double direction = curOpMode.gamepad1.right_stick_x * 0.5;
             if(curOpMode.gamepad1.x){
                 isReverse = true;
@@ -240,5 +293,12 @@ public class FTCRobot {
         }
         DbgLog.msg("Is close executing?");
         fileRW.close();
+    }
+
+    /**
+     * @return  Current battery voltage.
+     */
+    public double getVoltage() {
+        return (curOpMode.hardwareMap.voltageSensor.iterator().next().getVoltage());
     }
 }

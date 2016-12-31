@@ -13,6 +13,10 @@ import java.util.List;
  * Created by pranavb on 10/15/16.
  */
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class RobotConfigReader extends JsonReader {
     String robotName;
     JSONObject robotObj=null;
@@ -68,5 +72,29 @@ public class RobotConfigReader extends JsonReader {
                     robotName);
         }
         return (attachmentsArr);
+    }
+
+    public double getDistanceLeft() {
+        double value = 0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenLeftAndODS");
+            value = robotObj.getDouble(key);
+            DbgLog.msg("getDistanceLeft(): key = %s, value=%f", key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
+    }
+
+    public double getDistanceRight() {
+        double value = 0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenRightAndODS");
+            value = robotObj.getDouble(key);
+            DbgLog.msg("getDistanceRight(): key = %s, value=%f", key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
     }
 }

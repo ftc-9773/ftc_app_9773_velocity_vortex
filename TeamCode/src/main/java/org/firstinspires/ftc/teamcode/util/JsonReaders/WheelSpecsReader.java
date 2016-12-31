@@ -6,6 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class WheelSpecsReader extends JsonReader {
     JSONObject wheelSpecObj;
     String wheelType;

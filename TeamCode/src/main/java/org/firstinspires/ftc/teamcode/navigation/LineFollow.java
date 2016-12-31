@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.navigation;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
@@ -10,12 +11,17 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 /**
  * Created by Luke on 10/15/2016.
  */
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class LineFollow{
 
     OpticalDistanceSensor lightSensor;
     double white, black, mid;
     double lowSpeed, highSpeed;
-    double light;
+    double odsOffset;
     double prevLight;
     double basePower, Kp;
     DriveSystem driveSystem;
@@ -32,13 +38,16 @@ public class LineFollow{
         this.lowSpeed = lowSpeed;
         this.highSpeed = highSpeed;
         this.basePower = (lowSpeed+highSpeed)/2;
-        this.Kp = (highSpeed-lowSpeed)/2;
         this.white = white;
         this.black = black;
         this.mid = (white + black) / 2;
+        //this.Kp = (highSpeed-this.basePower) / (white - this.mid);
+        this.Kp = 0.5;
+        this.odsOffset = robot.distanceLeft / (robot.distanceLeft + robot.distanceRight);
         this.timoutNanoSec = (long) (lineFollowTimeOut * 1000000000L);
         DbgLog.msg("sensorName=%s, lowSpeed=%f, highSpeed=%f, timeoutNanoSec=%d",
                 lightSensorName, lowSpeed, highSpeed, this.timoutNanoSec);
+        DbgLog.msg("Kp = %f, odsOffset=%f", this.Kp, this.odsOffset);
 //        this.white = -1;
 //        this.black = -1;
         prevLight = -1;
@@ -48,48 +57,6 @@ public class LineFollow{
         // ToDo:  Move the robot for ~ 2 seconds or until a white line is found.
         //  ToDo:  We may not actually need this if turnOrSpin can reliably find the white line
         return;
-    }
-
-    public void setStartTimeStamp() {
-        this.stopTimeStamp = System.nanoTime() + this.timoutNanoSec;
-        driveSystem.turnOrSpin(this.highSpeed,this.highSpeed);
-    }
-
-    public boolean timeoutReached() {
-        return (System.nanoTime() >= this.stopTimeStamp);
-    }
-
-    public void followLine() {
-        light = lightSensor.getLightDetected();
-        if (white == -1) {
-            driveSystem.turnOrSpin(lowSpeed, highSpeed);
-            if (light > prevLight)
-                prevLight = light;
-            else {
-                white = prevLight;
-            }
-        } else if (black == -1) {
-            driveSystem.turnOrSpin(highSpeed, lowSpeed);
-            if (light < prevLight)
-                prevLight = light;
-            else if (light < white) {
-                black = prevLight;
-            }
-        } else {
-            mid = (black + white) / 2;
-            if (light > mid) {
-                driveSystem.turnOrSpin(highSpeed, lowSpeed);
-            } else if (light < mid) {
-                driveSystem.turnOrSpin(lowSpeed, highSpeed);
-            } else {
-                driveSystem.turnOrSpin(highSpeed, highSpeed);
-            }
-        }
-
-        DbgLog.msg(String.format("Light Detected= %f, mid=%f", light, mid));
-        DbgLog.msg("ahtoiqhtoiwnegt    o");
-        //DbgLog.msg(String.format("MotorL power: %f", motor1.getPower()));
-        //DbgLog.msg(String.format("MotorR power: %f", motor2.getPower()));
     }
 
     public void turnUntilWhiteLine(boolean spinClockwise) {
@@ -103,7 +70,7 @@ public class LineFollow{
             leftInitialPower = -0.3;
             rightInitialPower = -leftInitialPower;
         }
-        while (lightSensor.getLightDetected()<this.mid) {
+        while ((lightSensor.getLightDetected()<this.mid) && robot.curOpMode.opModeIsActive()) {
             driveSystem.turnOrSpin(leftInitialPower,rightInitialPower);
 //            if (lightSensor.getLightDetected()<this.mid)
 //                break;
@@ -112,10 +79,28 @@ public class LineFollow{
         driveSystem.resumeMaxSpeed();
 
     }
-    public void driveUntilWhiteLine(){
-        this.robot.driveSystem.setMaxSpeed((float)this.robot.navigation.straightDrMaxSpeed);
-        while(lightSensor.getLightDetected()<this.mid) {
-            driveSystem.drive(-(float) this.robot.navigation.lfMaxSpeed, 0);
+    public void driveUntilWhiteLine(double speed, long timeoutMillis){
+        // timeout puts an upper limit on how long the while loop can run
+        long startTime = System.nanoTime();
+        this.robot.driveSystem.setMaxSpeed((float) speed);
+        while((lightSensor.getLightDetected()<this.mid) && robot.curOpMode.opModeIsActive()
+                && ((System.nanoTime() - startTime) < (timeoutMillis*1000000))) {
+            driveSystem.drive((float) 1.0, 0);
+            DbgLog.msg("light detected = %f", lightSensor.getLightDetected());
+        }
+        DbgLog.msg("light detected = %f", lightSensor.getLightDetected());
+        driveSystem.stop();
+        driveSystem.resumeMaxSpeed();
+    }
+
+    public void drivePastWhiteLine(double speed) {
+        // timeout puts an upper limit on how long the while loop can run
+        ElapsedTime timeout = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        this.robot.driveSystem.setMaxSpeed((float) speed);
+        timeout.reset();
+        while((lightSensor.getLightDetected()>this.mid) && robot.curOpMode.opModeIsActive()
+                && (timeout.milliseconds() < 1000)) {
+            driveSystem.drive((float) 1.0, 0);
         }
         driveSystem.stop();
         driveSystem.resumeMaxSpeed();
@@ -127,7 +112,7 @@ public class LineFollow{
         robot.driveSystem.turnOrSpin(-0.4, 0.4);
         double initialYaw = robot.navigation.navxMicro.getModifiedYaw();
         double diffYaw=0.0;
-        while (diffYaw < 45.0) {
+        while ((diffYaw < 45.0) && robot.curOpMode.opModeIsActive()) {
             curLight = robot.navigation.lf.lightSensor.getLightDetected();
             if (minLight > curLight) minLight = curLight;
             if (maxLight < curLight) maxLight = curLight;
@@ -142,20 +127,31 @@ public class LineFollow{
     }
 
     public void followLineProportional() {
-        light = lightSensor.getLightDetected();
+        double light = lightSensor.getLightDetected();
 
-        double lightOffset = (light-mid)/(white-mid);
-        double leftPower = basePower+ Kp*lightOffset;
-        double rightPower = basePower- Kp*lightOffset;
+//        double lightOffset = (light-mid)/(white-mid);
+//        double odsOffset = (this.robot.distanceLeft/(this.robot.distanceLeft+this.robot.distanceRight));
+//        double leftPower = basePower+ Kp*lightOffset;
+//        double rightPower = basePower- Kp*lightOffset;
+//        leftPower = leftPower*odsOffset*2;
+//        rightPower = rightPower*(1-odsOffset)*2;
+
+        double error = mid - light;
+        double correction = this.Kp * error;
+        double leftCorrection = this.odsOffset * correction;
+        double rightCorrection = (1 - this.odsOffset) * correction;
+        double leftPower = Range.clip(basePower - leftCorrection, -1.0, 1.0);
+        double rightPower = Range.clip(basePower + rightCorrection, -1.0, 1.0);
+        DbgLog.msg("lightDetected = %f, error = %f, correction = %f, left correction = %f, right correction = %f, leftPower=%f, rightPower=%f",
+                light, error, correction, leftCorrection, rightCorrection, leftPower,rightPower);
         driveSystem.turnOrSpin(leftPower, rightPower);
-
-        DbgLog.msg("Here! light = %f, light offset = %f, leftPower=%f, rightPower=%f", light, lightOffset,leftPower,rightPower);
 
 //        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
 //        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
 //                error, correction, leftPower, rightPower);
     }
 
-
-
+    public boolean onWhiteLine() {
+        return (lightSensor.getLightDetected() >= this.mid);
+    }
 }

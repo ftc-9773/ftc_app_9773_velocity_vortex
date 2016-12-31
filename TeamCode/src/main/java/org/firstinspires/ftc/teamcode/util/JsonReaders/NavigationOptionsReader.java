@@ -7,6 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class NavigationOptionsReader extends JsonReader {
     String navOptStr;
     public JSONObject navOptObj;
@@ -118,39 +122,15 @@ public class NavigationOptionsReader extends JsonReader {
         return (imuPortNum);
     }
 
-    public double getIMUdriveSysInitialPower() {
-        double driveSysPower=0.0;
-
+    public double getIMUVariableDouble(String variableName) {
+        double value=0.0;
         try {
-            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysInitialPower");
-            driveSysPower = imuObj.getDouble(key);
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, variableName);
+            value = imuObj.getDouble(key);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return (driveSysPower);
-    }
-
-    public double getIMUdriveSysTargetPower() {
-        double driveSysPower=0.0;
-
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "driveSysTargetPower");
-            driveSysPower = imuObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return (driveSysPower);
-    }
-
-    public double getIMUAngleTolerance() {
-        double angleTolerance=0.0;
-        try {
-            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "angleTolerance");
-            angleTolerance = imuObj.getDouble(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return angleTolerance;
+        return (value);
     }
 
     public double getDoubleDriveSysEncVar(String varName) {
