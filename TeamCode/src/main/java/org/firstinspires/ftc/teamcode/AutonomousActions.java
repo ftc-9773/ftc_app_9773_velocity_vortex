@@ -109,6 +109,10 @@ public class AutonomousActions {
                 robot.beaconClaimObj.verifyBeaconServo();
                 break;
             }
+            case "printNavigationValues" : {
+                robot.navigation.printNavigationValues();
+                break;
+            }
             case "TurnDegrees": {
                 DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
                 double degrees = 0.0;

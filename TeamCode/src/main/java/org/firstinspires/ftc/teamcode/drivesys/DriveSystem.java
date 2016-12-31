@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.MotorSpecsReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.WheelSpecsReader;
 
+import java.lang.annotation.Annotation;
+
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -69,7 +71,14 @@ public abstract class DriveSystem {
             Wheel wheel = new Wheel(wheel_type, wheelDiameter);
 
             DbgLog.msg("wheel diameter = %f", wheel.diameter);
-            int maxSpeedCPS = driveSysReader.getMaxMotorSpeed();
+            // Determine if autonomous or teleop
+            int maxSpeedCPS=4000; // = driveSysReader.getMaxMotorSpeed();
+            if (robot.autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("AutonomousMaxMotorSpeed");
+            } else if (robot.autoOrTeleop.equalsIgnoreCase("Teleop")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("TeleOpMaxMotorSpeed");
+            }
+            DbgLog.msg("maxSpeedCPS = %d", maxSpeedCPS);
             fourMotorSteeringDrive = new FourMotorSteeringDrive(fMotorL, rMotorL, fMotorR, rMotorR,
                     maxSpeedCPS, frictionCoeff, wheel, CPR);
             fourMotorSteeringDrive.curOpMode = curOpMode;
@@ -95,7 +104,14 @@ public abstract class DriveSystem {
             Wheel wheel = new Wheel(wheel_type, wheelDiameter);
 
             DbgLog.msg("wheel diameter = %f", wheel.diameter);
-            int maxSpeedCPS = driveSysReader.getMaxMotorSpeed();
+            // Determine if autonomous or teleop
+            int maxSpeedCPS=4000; // = driveSysReader.getMaxMotorSpeed();
+            if (robot.autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("AutonomousMaxMotorSpeed");
+            } else if (robot.autoOrTeleop.equalsIgnoreCase("Teleop")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("TeleOpMaxMotorSpeed");
+            }
+            DbgLog.msg("maxSpeedCPS = %d", maxSpeedCPS);
             twoMotorDrive = new TwoMotorDrive(motorL, motorR, maxSpeedCPS, frictionCoeff, wheel, CPR);
             twoMotorDrive.curOpMode = curOpMode;
             twoMotorDrive.robot = robot;
@@ -121,6 +137,7 @@ public abstract class DriveSystem {
     public abstract void resumeMaxSpeed();
     public abstract void reverse();
     public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
+    public abstract void printCurrentPosition();
 
     public void testEncoders(){return;}
 

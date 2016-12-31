@@ -18,7 +18,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     DcMotor motorR2 = null;
     double prevPowerL1, prevPowerL2, prevPowerR1, prevPowerR2;
     double frictionCoefficient;
-    double maxSpeedCPS; // encoder counts per second
+    int maxSpeedCPS; // encoder counts per second
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
     boolean driveSysIsReversed = false;
@@ -80,7 +80,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     public FourMotorSteeringDrive(DcMotor motorL1, DcMotor motorL2, DcMotor motorR1, DcMotor motorR2,
-                                  double maxSpeedCPS, double frictionCoefficient,
+                                  int maxSpeedCPS, double frictionCoefficient,
                                   Wheel wheel, int motorCPR) {
         this.motorL1 = motorL1;
         this.motorL2 = motorL2;
@@ -95,6 +95,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeedCPS = maxSpeedCPS;
         DbgLog.msg("max speed CPS = %d", maxSpeedCPS);
+        motorL1.setMaxSpeed(maxSpeedCPS);
+        motorL2.setMaxSpeed(maxSpeedCPS);
+        motorR1.setMaxSpeed(maxSpeedCPS);
+        motorR2.setMaxSpeed(maxSpeedCPS);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
         this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
@@ -288,6 +292,12 @@ public class FourMotorSteeringDrive extends DriveSystem {
     public ElapsedEncoderCounts getNewElapsedCountsObj() {
         ElapsedEncoderCounts encoderCountsObj = new ElapsedEncoderCounts();
         return (encoderCountsObj);
+    }
+
+    @Override
+    public void printCurrentPosition() {
+        DbgLog.msg("L1:%d, L2:%d, R1:%d, R2:%d", motorL1.getCurrentPosition(),
+                motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){

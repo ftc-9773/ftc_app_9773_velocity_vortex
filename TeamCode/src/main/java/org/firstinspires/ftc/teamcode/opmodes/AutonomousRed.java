@@ -33,7 +33,9 @@ public class AutonomousRed extends LinearOpMode {
             e.printStackTrace();
         }
 
-        robot = new FTCRobot(this, robotName);
+        // TODO: 12/31/16 Instead of passing a 3rd parameter Autonomous/Teleop, use annotations to detect
+        //     that FTCRobot is being instantiated for Autonomous or Teleop mode
+        robot = new FTCRobot(this, robotName, "Autonomous");
         robot.runAutonomous(autonomousOpt, "red", startingDelay, startingPosition);
     }
 }

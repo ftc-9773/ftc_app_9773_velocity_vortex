@@ -18,17 +18,25 @@
   "testing2" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
       "inches" : 5.0, "driveBackwards" : false, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 320,
       "inches" : 45.0, "driveBackwards" : false, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 340.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 340,
       "inches" : 9.0, "driveBackwards" : false, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
       "driveBackwards" : false, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 4.0, "driveBackwards" : false, "motorSpeed" : 0.5}
+      "inches" : 4.0, "driveBackwards" : false, "motorSpeed" : 0.5},
+    {"type" : "Programmed", "value" : "printNavigationValues"}
   ],
   "testing3" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,

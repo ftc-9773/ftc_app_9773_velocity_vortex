@@ -48,14 +48,17 @@ public class FTCRobot {
     public double distanceLeft;
     public double distanceRight;
     public double distanceBetweenWheels;
+    public String autoOrTeleop;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
      * @param curOpMode Current running opmode, used for FTC libraries.
      * @param robotName Name of the robot configuration to initialize.
+     * @param autoOrTeleop
      */
-    public FTCRobot(LinearOpMode curOpMode, String robotName) {
+    public FTCRobot(LinearOpMode curOpMode, String robotName, String autoOrTeleop) {
         this.curOpMode = curOpMode;
+        this.autoOrTeleop = autoOrTeleop;
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
         String driveSysName = null;

@@ -87,6 +87,14 @@ public class Navigation {
         DbgLog.msg("range sensor distance in cm = %f", rangeSensor.getDistance(DistanceUnit.CM));
     }
 
+    public void printNavigationValues() {
+        DbgLog.msg("encoderYaw=%f, navxYaw=%f", encoderNav.getCurrentYaw(), navxMicro.getModifiedYaw());
+        DbgLog.msg("navxPitch=%f, RangeSensor value CM = %f, ods light detected=%f", navxMicro.getPitch(),
+                rangeSensor.getDistance(DistanceUnit.CM), lf.lightSensor.getLightDetected());
+        DbgLog.msg("Drive system Encoder values:");
+        robot.driveSystem.printCurrentPosition();
+    }
+
     /**
      * Initialize the navigation system just after pressing the play button.
      */

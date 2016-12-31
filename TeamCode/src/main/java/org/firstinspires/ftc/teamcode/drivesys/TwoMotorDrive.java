@@ -14,7 +14,7 @@ public class TwoMotorDrive extends DriveSystem{
     DcMotor motorL = null;
     DcMotor motorR = null;
     double frictionCoefficient;
-    double maxSpeed;
+    int maxSpeedCPS; // encoder counts per second
     int motorLMaxSpeed, motorRMaxSpeed;
     Wheel wheel;
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
@@ -65,16 +65,17 @@ public class TwoMotorDrive extends DriveSystem{
         }
     }
 
-    public TwoMotorDrive(DcMotor motorL, DcMotor motorR, double maxSpeed,
+    public TwoMotorDrive(DcMotor motorL, DcMotor motorR, int maxSpeedCPS,
                          double frictionCoefficient, Wheel wheel, int motorCPR){
         this.motorL = motorL;
         this.motorR = motorR;
         this.frictionCoefficient = frictionCoefficient;
-        this.maxSpeed = maxSpeed;
+        this.maxSpeedCPS = maxSpeedCPS;
+        DbgLog.msg("max speed CPS = %d", maxSpeedCPS);
+        motorL.setMaxSpeed(maxSpeedCPS);
+        motorR.setMaxSpeed(maxSpeedCPS);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
-        this.motorLMaxSpeed = motorL.getMaxSpeed();
-        this.motorRMaxSpeed = motorR.getMaxSpeed();
     }
 
     @Override
@@ -162,5 +163,10 @@ public class TwoMotorDrive extends DriveSystem{
     public ElapsedEncoderCounts getNewElapsedCountsObj() {
         ElapsedEncoderCounts encoderCountsObj = new ElapsedEncoderCounts();
         return encoderCountsObj;
+    }
+
+    @Override
+    public void printCurrentPosition() {
+        DbgLog.msg("L:%d, R:%d", motorL.getCurrentPosition(), motorR.getCurrentPosition());
     }
 }

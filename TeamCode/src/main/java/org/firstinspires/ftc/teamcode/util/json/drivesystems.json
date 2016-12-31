@@ -3,7 +3,8 @@
     "__Comment" : "It is assumed that each motor is individually connected to its wheel, and the system uses steering control",
     "MaxMotorSpeed__Comment" : "MaxMotorSpeed is in the units of encoder counts per second",
     "MaxMotorSpeed__Comment2" : "This value has to be obtained by experimentation",
-    "MaxMotorSpeed": 4000,
+    "AutonomousMaxMotorSpeed": 4000,
+    "TeleOpMaxMotorSpeed": 4000,
     "Motors": {
       "fMotorL": "Neverest20",
       "fMotorR": "Neverest20",
@@ -18,7 +19,8 @@
     "__Comment" : "2 motors are linked to drive 3 wheels on each side, and the system uses steering control",
     "MaxMotorSpeed__Comment" : "MaxMotorSpeed is in the units of encoder counts per second",
     "MaxMotorSpeed__Comment2" : "This value has to be obtained by experimentation",
-    "MaxMotorSpeed": 2500,
+    "AutonomousMaxMotorSpeed": 4000,
+    "TeleOpMaxMotorSpeed": 4000,
     "Motors": {
       "fMotorL": "Neverest40",
       "fMotorR": "Neverest40",
@@ -32,7 +34,8 @@
   "2Motor2WDSteering" : {
     "MaxMotorSpeed__Comment" : "MaxMotorSpeed is in the units of encoder counts per second",
     "MaxMotorSpeed__Comment2" : "This value has to be obtained by experimentation",
-    "MaxMotorSpeed" : 2500,
+    "AutonomousMaxMotorSpeed": 4000,
+    "TeleOpMaxMotorSpeed": 4000,
     "Motors": {
       "motorL": "Neverest40",
       "motorR": "Neverest40"
