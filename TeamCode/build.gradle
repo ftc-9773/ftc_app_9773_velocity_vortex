@@ -10,11 +10,6 @@
 
 
 // Custom definitions may go here
-android {
-    lintOptions {
-        abortOnError false
-    }
-}
 repositories {
     flatDir {
         dirs '../libs'
