@@ -42,7 +42,7 @@ public class ParticleAccelerator implements Attachment{
             launcherMotorObj = motorsObj.getJSONObject(key);
             launcherMotor = curOpMode.hardwareMap.dcMotor.get("partAccMotor");
             if (launcherMotorObj.getBoolean("needReverse")) {
-                DbgLog.msg("Reversing the launcher motor");
+                DbgLog.msg("ftc9773: Reversing the launcher motor");
                 launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
             key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj, "rampUpTime");

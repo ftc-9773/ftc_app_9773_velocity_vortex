@@ -50,7 +50,7 @@ public class RobotConfigReader extends JsonReader {
             navigationOption = robotObj.getString(key);
         }catch (JSONException e){
             e.printStackTrace();
-            DbgLog.error("navigation key not found for the robot named %s!", robotName);
+            DbgLog.error("ftc9773: navigation key not found for the robot named %s!", robotName);
         }
         return (navigationOption);
     }
@@ -61,14 +61,14 @@ public class RobotConfigReader extends JsonReader {
         try {
             JSONArray attachs = robotObj.getJSONArray("attachments");
             len = attachs.length();
-            DbgLog.msg("Length of attachs array = %d", attachs.length());
+            DbgLog.msg("ftc9773: Length of attachs array = %d", attachs.length());
             attachmentsArr = new String[len];
             for (int i = 0; i < len; i++) {
                 attachmentsArr[i] = attachs.getString(i);
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            DbgLog.error("Problem finding one or more attachments for the robot named %s",
+            DbgLog.error("ftc9773: Problem finding one or more attachments for the robot named %s",
                     robotName);
         }
         return (attachmentsArr);
@@ -79,7 +79,7 @@ public class RobotConfigReader extends JsonReader {
         try {
             String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenLeftAndODS");
             value = robotObj.getDouble(key);
-            DbgLog.msg("getDistanceLeft(): key = %s, value=%f", key, value);
+            DbgLog.msg("ftc9773: getDistanceLeft(): key = %s, value=%f", key, value);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -91,7 +91,7 @@ public class RobotConfigReader extends JsonReader {
         try {
             String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenRightAndODS");
             value = robotObj.getDouble(key);
-            DbgLog.msg("getDistanceRight(): key = %s, value=%f", key, value);
+            DbgLog.msg("ftc9773: getDistanceRight(): key = %s, value=%f", key, value);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -103,7 +103,7 @@ public class RobotConfigReader extends JsonReader {
         try {
             String key = JsonReader.getRealKeyIgnoreCase(robotObj, "distanceBetweenWheels");
             value = robotObj.getDouble(key);
-            DbgLog.msg("getDistanceBetweenWheels(): key = %s, value=%f", key, value);
+            DbgLog.msg("ftc9773: getDistanceBetweenWheels(): key = %s, value=%f", key, value);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -84,14 +84,14 @@ public class Navigation {
     }
 
     public void printRangeSensorValue() {
-        DbgLog.msg("range sensor distance in cm = %f", rangeSensor.getDistance(DistanceUnit.CM));
+        DbgLog.msg("ftc9773: range sensor distance in cm = %f", rangeSensor.getDistance(DistanceUnit.CM));
     }
 
     public void printNavigationValues() {
-        DbgLog.msg("encoderYaw=%f, navxYaw=%f", encoderNav.getCurrentYaw(), navxMicro.getModifiedYaw());
-        DbgLog.msg("navxPitch=%f, RangeSensor value CM = %f, ods light detected=%f", navxMicro.getPitch(),
+        DbgLog.msg("ftc9773: encoderYaw=%f, navxYaw=%f", encoderNav.getCurrentYaw(), navxMicro.getModifiedYaw());
+        DbgLog.msg("ftc9773: navxPitch=%f, RangeSensor value CM = %f, ods light detected=%f", navxMicro.getPitch(),
                 rangeSensor.getDistance(DistanceUnit.CM), lf.lightSensor.getLightDetected());
-        DbgLog.msg("Drive system Encoder values:");
+        DbgLog.msg("ftc9773: Drive system Encoder values:");
         robot.driveSystem.printCurrentPosition();
     }
 
@@ -164,7 +164,7 @@ public class Navigation {
         navChecks.addNewCheck(drivesysBusy);
         navChecks.addNewCheck(check2);
         if (navxMicro.navxIsWorking()) {
-            DbgLog.msg("Navx is working");
+            DbgLog.msg("ftc9773: Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             inches = driveBackwards ? -inches : inches;
             robot.driveSystem.startDriveToPosition(inches);
@@ -179,14 +179,14 @@ public class Navigation {
                 }
             }
             robot.driveSystem.doneWithDriveToPosition();
-            DbgLog.msg("Reached HERE DONE WITH DRIVE TO POS!");
+            DbgLog.msg("ftc9773: Reached HERE DONE WITH DRIVE TO POS!");
 //            robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
-            DbgLog.msg("Navx is not working");
+            DbgLog.msg("ftc9773: Navx is not working");
             // Use purely encoder based navigation
-            DbgLog.msg("Speed: %f, distance: %f", speed, inches);
+            DbgLog.msg("ftc9773: Speed: %f, distance: %f", speed, inches);
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
@@ -260,28 +260,24 @@ public class Navigation {
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
-        NavigationChecks.EncoderCheckForDistance distanceCheck = navChecks.new EncoderCheckForDistance(maxDistance);
-        navChecks.addNewCheck(distanceCheck);
+//        NavigationChecks.EncoderCheckForDistance distanceCheck = navChecks.new EncoderCheckForDistance(maxDistance);
+        NavigationChecks.CheckDrivesysBusy drivesysBusy = navChecks.new CheckDrivesysBusy();
+        navChecks.addNewCheck(drivesysBusy);
         if (navxMicro.navxIsWorking()) {
+            maxDistance = driveBackwards ? -maxDistance : maxDistance;
+            robot.driveSystem.startDriveToPosition(maxDistance);
+
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) motorSpeed);
             }
-            robot.driveSystem.stop();
+            robot.driveSystem.doneWithDriveToPosition();
+//            robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
-            // Use purely encoder based navigation
-            if (driveBackwards) {
-                robot.driveSystem.reverse();
-            }
-            distanceCheck.reset(); // just in case drive system is reversed
-            while (!navChecks.stopNavigation()) {
-                robot.driveSystem.drive((float)motorSpeed, 0);
-            }
-            robot.driveSystem.stop();
-            if (driveBackwards) {
-                robot.driveSystem.reverse();
-            }
+
+            maxDistance = driveBackwards ? -maxDistance : maxDistance;
+            robot.driveSystem.driveToDistance((float)motorSpeed, maxDistance);
         }
     }
 
@@ -335,7 +331,7 @@ public class Navigation {
             curOpMode.telemetry.update();
             encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
-            DbgLog.msg("currYaw: %f", encoderNav.getCurrentYaw());
+            DbgLog.msg("ftc9773: currYaw: %f", encoderNav.getCurrentYaw());
         }
     }
 
@@ -353,7 +349,7 @@ public class Navigation {
         if (navxMicro.navxIsWorking()) {
             curOpMode.telemetry.addData("ShiftRobot", "Using Navx");
             curOpMode.telemetry.update();
-            DbgLog.msg("ShiftRobot: %s", "using Navx");
+            DbgLog.msg("ftc9773: ShiftRobot: %s", "using Navx");
             NavigationChecks.CheckNavxWhileTurning checkNavxWhileTurning = navigationChecks.new CheckNavxWhileTurning(90);
             navigationChecks.addNewCheck(checkNavxWhileTurning);
             navxMicro.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
@@ -371,7 +367,7 @@ public class Navigation {
         else {
             curOpMode.telemetry.addData("ShiftRobot", "Not Using Navx");
             curOpMode.telemetry.update();
-            DbgLog.msg("ShiftRobot: %s", "Not using Navx");
+            DbgLog.msg("ftc9773: ShiftRobot: %s", "Not using Navx");
             encoderNav.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
             // We should not update the currentYaw with shift robot because the robot is supposed
             // to be in the same orientation in the ending position as in the starting position.

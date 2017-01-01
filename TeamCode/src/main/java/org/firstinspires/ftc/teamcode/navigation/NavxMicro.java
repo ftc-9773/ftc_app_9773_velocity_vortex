@@ -44,7 +44,7 @@ public class NavxMicro {
         this.driveSysInitialPower = driveSysInitialPower;
         this.angleTolerance = angleTolerance;
 
-        DbgLog.msg("dimName=%s, portNum=%d", dimName, portNum);
+        DbgLog.msg("ftc9773: dimName=%s, portNum=%d", dimName, portNum);
         navx_device = AHRS.getInstance(curOpMode.hardwareMap.deviceInterfaceModule.get(dimName),
                 portNum, AHRS.DeviceDataType.kProcessedData);
 
@@ -56,17 +56,17 @@ public class NavxMicro {
         }
         if (navx_device.isCalibrating()) {
             // sleep for 20 milli seconds
-            DbgLog.msg("still calibating navx....");
+            DbgLog.msg("ftc9773: still calibating navx....");
             curOpMode.telemetry.addData("navx: ", "calibrating %s", "navx");
 //            curOpMode.sleep(20);
         } else {
-            DbgLog.msg("Done with calibrating navx");
+            DbgLog.msg("ftc9773: Done with calibrating navx");
             curOpMode.telemetry.addData("navx: ", "Done with calibrating %s", "navx");
         }
 
         // ToDo:  The should be done only in the autonomous mode.
         navx_device.zeroYaw();
-        DbgLog.msg("Current yaw = %f", getModifiedYaw());
+        DbgLog.msg("ftc9773: Current yaw = %f", getModifiedYaw());
 
         /* Configure the PID controller */
         this.pid_minSpeed = pid_minSpeed;
@@ -158,7 +158,7 @@ public class NavxMicro {
             rightPower = speed;
             leftPower = -1 * rightPower;
         } else {
-            DbgLog.msg("angle %f is invalid!", angle);
+            DbgLog.msg("ftc9773: angle %f is invalid!", angle);
             return;
         }
 
@@ -170,8 +170,8 @@ public class NavxMicro {
         } else if (targetYaw < 0) {
             targetYaw += 360;
         }
-        DbgLog.msg("power left = %f, right = %f",leftPower, rightPower);
-        DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
+        DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
+        DbgLog.msg("ftc9773: raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                 navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
 
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
@@ -179,10 +179,10 @@ public class NavxMicro {
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff < this.angleTolerance)
                 break;
-            //DbgLog.msg("yawDiff=%f", yawDiff);
+            //DbgLog.msg("ftc9773: yawDiff=%f", yawDiff);
         }
 
-        DbgLog.msg("angle = %f", angle);
+        DbgLog.msg("ftc9773: angle = %f", angle);
         this.robot.driveSystem.stop();
     }
 
@@ -201,7 +201,7 @@ public class NavxMicro {
         rightSpeed = Range.clip(speed + correction, 0, drive_speed);
 //        leftSpeed = drive_speed - correction;
 //        rightSpeed = drive_speed + correction;
-//        DbgLog.msg("error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
+//        DbgLog.msg("ftc9773: error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
         if (!driveBackwards) {
             robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);
         } else {
@@ -240,15 +240,15 @@ public class NavxMicro {
 
     public void testNavxCalibrateConnection() {
         if (this.navx_device.isCalibrating()) {
-            DbgLog.msg("Navx device is calibrating");
+            DbgLog.msg("ftc9773: Navx device is calibrating");
         } else {
-            DbgLog.msg("Navx device is done with calibration");
+            DbgLog.msg("ftc9773: Navx device is done with calibration");
         }
 
         if (this.navx_device.isConnected()) {
-            DbgLog.msg("Navx device is connected");
+            DbgLog.msg("ftc9773: Navx device is connected");
         } else {
-            DbgLog.msg("Navx device is not connected");
+            DbgLog.msg("ftc9773: Navx device is not connected");
         }
     }
 

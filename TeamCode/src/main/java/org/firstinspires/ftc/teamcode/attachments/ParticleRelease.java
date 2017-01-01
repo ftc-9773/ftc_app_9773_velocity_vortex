@@ -44,7 +44,7 @@ public class ParticleRelease implements Attachment{
             particleServo.scaleRange(particleServoObj.getDouble("scaleRangeMin"),
                     particleServoObj.getDouble("scaleRangeMax"));
             if (particleServoObj.getBoolean("needReverse")) {
-                DbgLog.msg("Reversing the particle release servo");
+                DbgLog.msg("ftc9773: Reversing the particle release servo");
                 particleServo.setDirection(Servo.Direction.REVERSE);
             }
             particleServo.setPosition(1.0);

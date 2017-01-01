@@ -65,20 +65,20 @@ public class FTCRobot {
         distanceLeft = robotConfig.getDistanceLeft();
         distanceRight = robotConfig.getDistanceRight();
         distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
-        DbgLog.msg("distanceBetweenWheels=%f", distanceBetweenWheels);
+        DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
 
         // Instantiate the Drive System
         try {
             driveSysName = robotConfig.getDriveSysName();
             if (driveSysName != null) {
-                DbgLog.msg("driveSysName = %s", driveSysName);
+                DbgLog.msg("ftc9773: driveSysName = %s", driveSysName);
                 driveSystem = DriveSystem.createDriveSystem(curOpMode, this, driveSysName);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         if (driveSystem == null) {
-            DbgLog.error("Drivesystem not properly initialized");
+            DbgLog.error("ftc9773: Drivesystem not properly initialized");
         }
 
         // Create the objects for attachments
@@ -91,7 +91,7 @@ public class FTCRobot {
             navigation = null;
         }
 
-        DbgLog.msg("Done with robot initialization.  Current Voltage = %f", getVoltage());
+        DbgLog.msg("ftc9773: Done with robot initialization.  Current Voltage = %f", getVoltage());
     }
 
     /**
@@ -107,27 +107,27 @@ public class FTCRobot {
                 case "BeaconClaim":
                     attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
                     beaconClaimObj = (BeaconClaim) attachmentsArr[i];
-                    DbgLog.msg("beaconClaimObj created");
+                    DbgLog.msg("ftc9773: beaconClaimObj created");
                     break;
                 case "CapBallLift":
                     attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
                     capBallLiftObj = (CapBallLift) attachmentsArr[i];
-                    DbgLog.msg("capBallLiftObj created");
+                    DbgLog.msg("ftc9773: capBallLiftObj created");
                     break;
                 case "Harvester":
                     attachmentsArr[i] = new Harvester(this, curOpMode, rootObj);
                     harvesterObj = (Harvester) attachmentsArr[i];
-                    DbgLog.msg("harvesterObj created");
+                    DbgLog.msg("ftc9773: harvesterObj created");
                     break;
                 case "ParticleAccelerator":
                     attachmentsArr[i] = new ParticleAccelerator(this, curOpMode, rootObj);
                     partAccObj = (ParticleAccelerator) attachmentsArr[i];
-                    DbgLog.msg("partAccObj created");
+                    DbgLog.msg("ftc9773: partAccObj created");
                     break;
                 case "ParticleRelease":
                     attachmentsArr[i] = new ParticleRelease(this, curOpMode, rootObj);
                     particleObj = (ParticleRelease) attachmentsArr[i];
-                    DbgLog.msg("particleObj created");
+                    DbgLog.msg("ftc9773: particleObj created");
                     break;
             }
         }
@@ -187,7 +187,7 @@ public class FTCRobot {
 
         try {
             curOpMode.waitForStart();
-            DbgLog.msg("Starting delay = %d seconds", startingDelay);
+            DbgLog.msg("ftc9773: Starting delay = %d seconds", startingDelay);
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
             navigation.initForPlay(); // Initialization after starting the robot
             autonomousActions.doActions();
@@ -227,8 +227,8 @@ public class FTCRobot {
         }
         recordFilePath = recordFilesDir + recordFileName;
 
-        DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
-        DbgLog.msg("record filepath = %s", recordFilePath);
+        DbgLog.msg("ftc9773: clock Cycle = %d nanoseconds", clockCycle);
+        DbgLog.msg("ftc9773: record filepath = %s", recordFilePath);
 
         fileRW = new FileRW(recordFilePath, true);
         // First row is a header row.
@@ -286,17 +286,17 @@ public class FTCRobot {
                         Double.toString(direction));
             }
 
-//            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
+//            DbgLog.msg(String.format("ftc9773: Speed: %f, Direction: %f", speed, direction));
 
             if(curOpMode.gamepad1.a){
                 break;
             }
 
-            DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
+            DbgLog.msg("ftc9773: prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
             prev_elapsedTime = elapsedTime;
             // sleep(5);
         }
-        DbgLog.msg("Is close executing?");
+        DbgLog.msg("ftc9773: Is close executing?");
         fileRW.close();
     }
 
