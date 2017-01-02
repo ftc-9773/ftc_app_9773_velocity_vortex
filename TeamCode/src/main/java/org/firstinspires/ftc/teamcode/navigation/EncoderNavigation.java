@@ -54,7 +54,7 @@ public class EncoderNavigation {
     }
 
     public void shiftRobot(double distance, double moveDistance, boolean isForward, double speed,
-                           NavigationChecks navigationChecks){
+                           NavigationChecks navigationChecks, boolean returnToSamePos){
         double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(distance, 2));
         double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
 

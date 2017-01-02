@@ -126,8 +126,18 @@ public class BeaconClaim implements Attachment {
     public void activateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1000 && curOpMode.opModeIsActive()) {
+        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
             buttonServo.setPower(1.0);
+        }
+//        curOpMode.sleep(500);
+        buttonServo.setPower(0.0);
+    }
+
+    public void deactivateButtonServo() {
+        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        elapsedTime.reset();
+        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
+            buttonServo.setPower(-1.0);
         }
 //        curOpMode.sleep(500);
         buttonServo.setPower(0.0);
@@ -138,16 +148,6 @@ public class BeaconClaim implements Attachment {
     }
     public void disableColorSensor() {
         colorSensorState.setEnabled(false);
-    }
-
-    public void deactivateButtonServo() {
-        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1000 && curOpMode.opModeIsActive()) {
-            buttonServo.setPower(-1.0);
-        }
-//        curOpMode.sleep(500);
-        buttonServo.setPower(0.0);
     }
 
     public void claimABeaconOld(int beaconId) {
@@ -168,6 +168,7 @@ public class BeaconClaim implements Attachment {
 
     public void claimABeacon() {
         activateButtonServo();
+        curOpMode.sleep(50);
         deactivateButtonServo();
     }
 
@@ -235,28 +236,8 @@ public class BeaconClaim implements Attachment {
         }
     }
 
-    public BeaconColor getBeaconColor(String firstOrSecond) {
+    public BeaconColor getBeaconColor() {
         return (beaconColor);
-//        switch (firstOrSecond) {
-//            case "first" : {
-//                if (accumulatedRedValue < accumulatedBlueValue) {
-//                    return BeaconColor.RED;
-//                } else if (accumulatedBlueValue < accumulatedRedValue) {
-//                    return BeaconColor.BLUE;
-//                }
-//                break;
-//            }
-//            case "second" : {
-//                if (accumulatedRedValue > accumulatedBlueValue) {
-//                    return BeaconColor.RED;
-//                } else if (accumulatedBlueValue > accumulatedRedValue) {
-//                    return BeaconColor.BLUE;
-//                }
-//                break;
-//            }
-//            default: return BeaconColor.NONE;
-//        }
-//        return BeaconColor.NONE;
     }
 
     public void printBeaconScanningData() {

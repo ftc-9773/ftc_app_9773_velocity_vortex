@@ -131,12 +131,6 @@ public abstract class DriveSystem {
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
 
-    public abstract void startDriveToPosition(double distanceInInches);
-
-    public abstract boolean isBusy();
-
-    public abstract void doneWithDriveToPosition();
-
     public abstract void turnDegrees(double degrees, float speed, NavigationChecks navExc);
 
     public abstract void setMaxSpeed(float speed);
@@ -144,6 +138,7 @@ public abstract class DriveSystem {
     public abstract void reverse();
     public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
     public abstract void printCurrentPosition();
+    public abstract void initForPlay();
 
     public void testEncoders(){return;}
 

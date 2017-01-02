@@ -52,20 +52,6 @@ public class NavigationChecks {
         }
     }
 
-    public class CheckDrivesysBusy extends NavCheckBaseClass {
-        @Override
-        public boolean stopNavigation() {
-            if (!robot.driveSystem.isBusy()) {
-                return (true);
-            } else {
-                return (false);
-            }
-        }
-
-        @Override
-        public void reset() { return;}
-    }
-
     public class CheckNavxWhileTurning extends NavCheckBaseClass {
         double degreesToCheck;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;

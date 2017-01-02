@@ -162,25 +162,21 @@ public class Navigation {
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
-//        NavigationChecks.CheckDrivesysBusy drivesysBusy = navChecks.new CheckDrivesysBusy();
-        NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
+        NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         LoopStatistics instr = new LoopStatistics();
-//        navChecks.addNewCheck(drivesysBusy);
-        navChecks.addNewCheck(check2);
+        navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
         inches = driveBackwards ? -inches : inches;
         if (navxMicro.navxIsWorking()) {
             DbgLog.msg("ftc9773: Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
-            robot.driveSystem.startDriveToPosition(inches);
             instr.startLoopInstrumentation();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
                 instr.updateLoopInstrumentation();
                 if (tiltingCheck.stopNavigation()) {
                     DbgLog.msg("ftc9773: tilting detected");
-                    robot.driveSystem.doneWithDriveToPosition();
                     // Move backward for 15 inches
                     robot.driveSystem.reverse();
                     robot.driveSystem.driveToDistance(speed, 15);
@@ -190,8 +186,7 @@ public class Navigation {
 
             DbgLog.msg("ftc9773: stop navigation condition met");
             instr.printLoopInstrumentation();
-            robot.driveSystem.doneWithDriveToPosition();
-//            robot.driveSystem.stop();
+            robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
@@ -199,12 +194,11 @@ public class Navigation {
             // Use purely encoder based navigation
             DbgLog.msg("ftc9773: Speed: %f, distance: %f", speed, inches);
             instr.startLoopInstrumentation();
-            robot.driveSystem.startDriveToPosition(inches);
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(speed, 0);
                 instr.updateLoopInstrumentation();
             }
-            robot.driveSystem.doneWithDriveToPosition();
+            robot.driveSystem.stop();
             instr.printLoopInstrumentation();
         }
     }
@@ -253,43 +247,42 @@ public class Navigation {
         //robot.beaconClaimObj.stopBeaconScanning();
     }
 
-    public void driveUntilAllianceBeacon(boolean driveBackwards, double motorSpeed, double degrees,
-                                         double maxDistance1, double maxDistance2) {
+    public void driveUntilAllianceBeacon(double motorSpeed, double degrees,
+                                         double distance1, double distance2) {
         // Determine the first and second colors
         double maxDistance=0.0;
-        BeaconClaim.BeaconColor color1 = robot.beaconClaimObj.getBeaconColor("first");
-        BeaconClaim.BeaconColor color2 = robot.beaconClaimObj.getBeaconColor("second");
-        if ((color1 == BeaconClaim.BeaconColor.RED) || (color2 == BeaconClaim.BeaconColor.BLUE)) {
+        boolean driveBackwards=false;
+        BeaconClaim.BeaconColor color = robot.beaconClaimObj.getBeaconColor();
+        if (color == BeaconClaim.BeaconColor.RED) {
             if (robot.autonomousActions.allianceColor.equalsIgnoreCase("red")) {
-                maxDistance = maxDistance2;
+                maxDistance = distance2;
             } else if (robot.autonomousActions.allianceColor.equalsIgnoreCase("blue")) {
-                maxDistance = maxDistance1;
+                maxDistance = distance1;
             }
-        } else if ((color1 == BeaconClaim.BeaconColor.BLUE) || (color2 == BeaconClaim.BeaconColor.RED)) {
+        } else if (color == BeaconClaim.BeaconColor.BLUE) {
             if (robot.autonomousActions.allianceColor.equalsIgnoreCase("red")) {
-                maxDistance = maxDistance1;
+                maxDistance = distance1;
             } else if (robot.autonomousActions.allianceColor.equalsIgnoreCase("blue")) {
-                maxDistance = maxDistance2;
+                maxDistance = distance2;
             }
+        } else { // If no color is detected don't waste time and move on to the next step
+            return;
         }
         LoopStatistics instr = new LoopStatistics();
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
-//        NavigationChecks.EncoderCheckForDistance distanceCheck = navChecks.new EncoderCheckForDistance(maxDistance);
-        NavigationChecks.CheckDrivesysBusy drivesysBusy = navChecks.new CheckDrivesysBusy();
-        navChecks.addNewCheck(drivesysBusy);
+        driveBackwards = maxDistance < 0 ? true : false;
+        NavigationChecks.EncoderCheckForDistance distanceCheck = navChecks.new EncoderCheckForDistance(maxDistance);
+        navChecks.addNewCheck(distanceCheck);
         if (navxMicro.navxIsWorking()) {
-            maxDistance = driveBackwards ? -maxDistance : maxDistance;
-            robot.driveSystem.startDriveToPosition(maxDistance);
             instr.startLoopInstrumentation();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) motorSpeed);
                 instr.updateLoopInstrumentation();
             }
-            robot.driveSystem.doneWithDriveToPosition();
             instr.printLoopInstrumentation();
-//            robot.driveSystem.stop();
+            robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
@@ -353,7 +346,8 @@ public class Navigation {
         }
     }
 
-    public void shiftRobot(double distance, double moveDistance, boolean isForward, double speed){
+    public void shiftRobot(double distance, double moveDistance, boolean isForward, double speed,
+                           boolean returnToSamePos){
         NavigationChecks navigationChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.TimeoutCheck timeoutCheck = navigationChecks.new TimeoutCheck(10000);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navigationChecks.new OpmodeInactiveCheck();
@@ -370,7 +364,7 @@ public class Navigation {
             DbgLog.msg("ftc9773: ShiftRobot: %s", "using Navx");
             NavigationChecks.CheckNavxWhileTurning checkNavxWhileTurning = navigationChecks.new CheckNavxWhileTurning(90);
             navigationChecks.addNewCheck(checkNavxWhileTurning);
-            navxMicro.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
+            navxMicro.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks, returnToSamePos);
             if ((navigationChecks.stopNavCriterion != null) &&
                     navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS){
                 double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
@@ -386,7 +380,7 @@ public class Navigation {
             curOpMode.telemetry.addData("ShiftRobot", "Not Using Navx");
             curOpMode.telemetry.update();
             DbgLog.msg("ftc9773: ShiftRobot: %s", "Not using Navx");
-            encoderNav.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks);
+            encoderNav.shiftRobot(distance, moveDistance, isForward, speed, navigationChecks, returnToSamePos);
             // We should not update the currentYaw with shift robot because the robot is supposed
             // to be in the same orientation in the ending position as in the starting position.
         }

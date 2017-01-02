@@ -190,6 +190,7 @@ public class FTCRobot {
             DbgLog.msg("ftc9773: Starting delay = %d seconds", startingDelay);
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
             navigation.initForPlay(); // Initialization after starting the robot
+            driveSystem.initForPlay(); // Initialization of drive system after starting the robot
             autonomousActions.doActions();
             driveSystem.stop();
             curOpMode.stop();

@@ -106,6 +106,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
         this.distBetweenWheels = distanceBetweenWheels; // 14.75 or 15.5;
         this.L1IsZero = this.L2IsZero = this.R1IsZero = this.R2IsZero = true;
+        this.L1Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         this.L2Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         this.R1Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         this.R2Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -207,30 +208,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     @Override
-    public void startDriveToPosition(double distanceInInches) {
-        double countsPerInch = motorCPR / wheel.getCircumference();
-        double targetCounts = countsPerInch * distanceInInches;
-
-        motorL1.setTargetPosition(getNonZeroCurrentPos(motorL1) + (int) targetCounts);
-        motorL2.setTargetPosition(getNonZeroCurrentPos(motorL2) + (int) targetCounts);
-        motorR1.setTargetPosition(getNonZeroCurrentPos(motorR1) + (int) targetCounts);
-        motorR2.setTargetPosition(getNonZeroCurrentPos(motorR2) + (int) targetCounts);
-
-        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
-    @Override
-    public boolean isBusy() {
-        return (motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy());
-    }
-
-    @Override
-    public void doneWithDriveToPosition() {
-        this.stop();
-        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    @Override
     public void turnDegrees(double degrees, float speed, NavigationChecks navExc) {
 
         double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
@@ -325,26 +302,34 @@ public class FourMotorSteeringDrive extends DriveSystem {
                 getNonZeroCurrentPos(motorL2), getNonZeroCurrentPos(motorR1), getNonZeroCurrentPos(motorR2));
     }
 
+    @Override
+    public void initForPlay() {
+        L1Timer.reset();
+        L2Timer.reset();
+        R1Timer.reset();
+        R2Timer.reset();
+    }
+
     public int getNonZeroCurrentPos(DcMotor motor){
         int curPos = motor.getCurrentPosition();
         boolean skipWhileLoop = false;
 //        DbgLog.msg("ftc9773: Motor = %s, curPos = %d, isZeroPos = %b", motor.toString(), curPos, motor==motorL1 ? L1IsZero : motor==motorR1 ? R1IsZero : motor==motorL2 ? L2IsZero : R2IsZero);
         if(motor==motorL1 && L1IsZero) {
-            DbgLog.msg("ftc9773: Motor = L1, curPos = %d, isZeroPos = %b", curPos, L1IsZero);
+//            DbgLog.msg("ftc9773: Motor = L1, curPos = %d, isZeroPos = %b", curPos, L1IsZero);
             if(L1Timer.milliseconds()>1000) L1IsZero = false;
             skipWhileLoop = true;}
         if(motor==motorL2 && L2IsZero) {
-            DbgLog.msg("ftc9773: Motor = L2, curPos = %d, isZeroPos = %b", curPos, L2IsZero);
+//            DbgLog.msg("ftc9773: Motor = L2, curPos = %d, isZeroPos = %b", curPos, L2IsZero);
             if(L2Timer.milliseconds()>1000) L2IsZero = false;
             skipWhileLoop = true;
         }
         if(motor==motorR1 && R1IsZero) {
-            DbgLog.msg("ftc9773: Motor = R1, curPos = %d, isZeroPos = %b",  curPos, R1IsZero);
+//            DbgLog.msg("ftc9773: Motor = R1, curPos = %d, isZeroPos = %b",  curPos, R1IsZero);
             if(R1Timer.milliseconds()>1000) R1IsZero = false;
             skipWhileLoop = true;
         }
         if(motor==motorR2 && R2IsZero) {
-            DbgLog.msg("ftc9773: Motor = R2, curPos = %d, isZeroPos = %b", curPos, R2IsZero);
+//            DbgLog.msg("ftc9773: Motor = R2, curPos = %d, isZeroPos = %b", curPos, R2IsZero);
             if(R2Timer.milliseconds()>1000) R2IsZero = false;
             skipWhileLoop = true;
         }
