@@ -57,7 +57,7 @@
   ],
   "testing4" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 12.0, "driveBackwards" : false, "motorSpeed" : 0.4}
+      "inches" : 12.0, "driveBackwards" : false, "motorSpeed" : 0.7}
   ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,

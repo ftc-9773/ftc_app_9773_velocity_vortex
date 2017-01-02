@@ -161,12 +161,13 @@ public class Navigation {
         // If navx is working, using navx's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
-//        NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
-        NavigationChecks.CheckDrivesysBusy drivesysBusy = navChecks.new CheckDrivesysBusy();
+        NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
+//        NavigationChecks.CheckDrivesysBusy drivesysBusy = navChecks.new CheckDrivesysBusy();
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
         LoopStatistics instr = new LoopStatistics();
-        navChecks.addNewCheck(drivesysBusy);
+//        navChecks.addNewCheck(drivesysBusy);
         navChecks.addNewCheck(check2);
+        navChecks.addNewCheck(encodercheck);
         inches = driveBackwards ? -inches : inches;
         if (navxMicro.navxIsWorking()) {
             DbgLog.msg("ftc9773: Navx is working");
@@ -186,6 +187,7 @@ public class Navigation {
                     robot.driveSystem.reverse();
                 }
             }
+
             DbgLog.msg("ftc9773: stop navigation condition met");
             instr.printLoopInstrumentation();
             robot.driveSystem.doneWithDriveToPosition();
