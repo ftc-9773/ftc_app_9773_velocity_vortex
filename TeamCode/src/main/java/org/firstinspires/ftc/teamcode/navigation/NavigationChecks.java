@@ -93,7 +93,7 @@ public class NavigationChecks {
                     navxMicro.getModifiedYaw());
             double diff = Math.abs(encoder_degreesTurned - navx_degreesTurned);
             if (diff > Math.abs(degreesToCheck)) {
-                DbgLog.msg("encoder degrees: %f, navx degrees: %f", encoder_degreesTurned, navx_degreesTurned);
+                DbgLog.msg("ftc9773: encoder degrees: %f, navx degrees: %f", encoder_degreesTurned, navx_degreesTurned);
                 return (true);
             } else {
                 return (false);
@@ -166,7 +166,7 @@ public class NavigationChecks {
             // Check for both magnitude and sign
             if ((Math.abs(distanceTravelled) >= Math.abs(distanceInInches)) &&
                     ((distanceTravelled / distanceInInches) > 0)) {
-                DbgLog.msg("distanceTravelled = %f", distanceTravelled);
+                DbgLog.msg("ftc9773: distanceTravelled = %f", distanceTravelled);
                 elapsedCounts.printCurrentEncoderCounts();
                 return (true);
             } else {

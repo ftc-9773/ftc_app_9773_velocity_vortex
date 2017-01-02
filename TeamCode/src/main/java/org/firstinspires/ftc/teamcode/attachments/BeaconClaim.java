@@ -99,7 +99,7 @@ public class BeaconClaim implements Attachment {
         try {
             if (buttonServo != null) {
                 if (buttonServoObj.getBoolean("needReverse")) {
-                    DbgLog.msg("Reversing the button servo");
+                    DbgLog.msg("ftc9773: Reversing the button servo");
                     buttonServo.setDirection(CRServo.Direction.REVERSE);
                 }
            }
@@ -108,7 +108,7 @@ public class BeaconClaim implements Attachment {
                 colorServo.scaleRange(colorServoObj.getDouble("scaleRangeMin"),
                         colorServoObj.getDouble("scaleRangeMax"));
                 if (colorServoObj.getBoolean("needReverse")) {
-                    DbgLog.msg("Reversing the color servo");
+                    DbgLog.msg("ftc9773: Reversing the color servo");
                     colorServo.setDirection(Servo.Direction.REVERSE);
                 }
                 colorServo.setPosition(1.0);
@@ -176,7 +176,7 @@ public class BeaconClaim implements Attachment {
 
     public void claimABeaconOld(int beaconId) {
         // Do different actions based on whether the beacon button has to be pressed once or twice.
-        DbgLog.msg("beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
+        DbgLog.msg("ftc9773: beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
         if (numPressesNeeded[beaconId-1] == 1) {
             activateButtonServo();
             deactivateButtonServo();
@@ -200,8 +200,8 @@ public class BeaconClaim implements Attachment {
         curOpMode.telemetry.addData("left: ", "%s", beaconColors[0].toString());
         curOpMode.telemetry.addData("right: ", "%s", beaconColors[1].toString());
         curOpMode.telemetry.update();
-        DbgLog.msg("left value = %s, right value = %s",beaconColors[0].toString(),beaconColors[1].toString());
-        //DbgLog.msg("color number = %x", colorSensor1.getI2cAddress().get7Bit());
+        DbgLog.msg("ftc9773: left value = %s, right value = %s",beaconColors[0].toString(),beaconColors[1].toString());
+        //DbgLog.msg("ftc9773: color number = %x", colorSensor1.getI2cAddress().get7Bit());
     }
 
     public void verifyBeaconServo() {
@@ -218,13 +218,13 @@ public class BeaconClaim implements Attachment {
     }
 
     public String checkBeaconColor() {
-        DbgLog.msg("red=%d, blue=%d, green=%d", colorSensor1.red(), colorSensor1.blue(),
+        DbgLog.msg("ftc9773: red=%d, blue=%d, green=%d", colorSensor1.red(), colorSensor1.blue(),
                 colorSensor1.green());
         return null;
     }
 
     public void setBeaconStatus(int beaconId, String allianceColor, int numBlues, int numReds) {
-        DbgLog.msg("setBeaconStatus: beaconID=%d, allianceColor=%s, numBlues=%d, numReds=%d",
+        DbgLog.msg("ftc9773: setBeaconStatus: beaconID=%d, allianceColor=%s, numBlues=%d, numReds=%d",
                 beaconId, allianceColor, numBlues, numReds);
         numBlueDetected[beaconId-1] = numBlues;
         numRedDetected[beaconId-1] = numReds;
@@ -240,7 +240,7 @@ public class BeaconClaim implements Attachment {
         } else {
             numPressesNeeded[beaconId-1] = 2;
         }
-        DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
+        DbgLog.msg("ftc9773: setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
     }
 
     public void startBeaconScanning() {
@@ -319,7 +319,7 @@ public class BeaconClaim implements Attachment {
     }
 
     public void printBeaconScanningData() {
-        DbgLog.msg("accumulatedRed = %f, accumulatedBlue=%f, firstTimeStamp=%f, lastTimeStamp=%f",
+        DbgLog.msg("ftc9773: accumulatedRed = %f, accumulatedBlue=%f, firstTimeStamp=%f, lastTimeStamp=%f",
                 accumulatedRedValue, accumulatedBlueValue,
                 firstDetectedTimeStamp, lastDetectedTimeStamp);
     }

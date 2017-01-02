@@ -60,7 +60,7 @@ public class TwoMotorDrive extends DriveSystem{
 
         @Override
         public void printCurrentEncoderCounts() {
-            DbgLog.msg("printCurrent...(): encoder counts: L=%d, R=%d",
+            DbgLog.msg("ftc9773: printCurrent...(): encoder counts: L=%d, R=%d",
                     motorL.getCurrentPosition(), motorR.getCurrentPosition());
         }
     }
@@ -71,7 +71,7 @@ public class TwoMotorDrive extends DriveSystem{
         this.motorR = motorR;
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeedCPS = maxSpeedCPS;
-        DbgLog.msg("max speed CPS = %d", maxSpeedCPS);
+        DbgLog.msg("ftc9773: max speed CPS = %d", maxSpeedCPS);
         motorL.setMaxSpeed(maxSpeedCPS);
         motorR.setMaxSpeed(maxSpeedCPS);
         this.wheel = wheel;
@@ -194,7 +194,7 @@ public class TwoMotorDrive extends DriveSystem{
 
     @Override
     public void printCurrentPosition() {
-        DbgLog.msg("L:%d, R:%d", motorL.getCurrentPosition(), motorR.getCurrentPosition());
+        DbgLog.msg("ftc9773: L:%d, R:%d", motorL.getCurrentPosition(), motorR.getCurrentPosition());
     }
 
     private void setDriveSysMode(DcMotor.RunMode runMode) {

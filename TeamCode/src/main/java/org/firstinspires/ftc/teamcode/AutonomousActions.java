@@ -53,7 +53,7 @@ public class AutonomousActions {
         int turnCounter = 0;
         while (((line = fileRW.getNextLine()) != null) && curOpMode.opModeIsActive()) {
             String[] lineElements = line.split(",");
-//            DbgLog.msg("lineElements length = %d", lineElements.length);
+//            DbgLog.msg("ftc9773: lineElements length = %d", lineElements.length);
             if(lineElements.length < 3){
                 continue;
             }
@@ -68,10 +68,10 @@ public class AutonomousActions {
                 }
                 if(lineElements.length > 3){
                     if(turnCounter == 0) {
-                        DbgLog.msg("Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
+                        DbgLog.msg("ftc9773: Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
                         robot.navigation.setRobotOrientation(Double.parseDouble(lineElements[3]),
                                 robot.navigation.turnMaxSpeed);
-                        DbgLog.msg("Reached target orientation");
+                        DbgLog.msg("ftc9773: Reached target orientation");
                     }
                     turnCounter++;
                 }
@@ -114,7 +114,7 @@ public class AutonomousActions {
                 break;
             }
             case "TurnDegrees": {
-                DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
+                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
                 double degrees = 0.0;
                 double speed = robot.navigation.turnMaxSpeed;
                 try {
@@ -126,7 +126,7 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 //robot.navigation.navxMicro.turnRobot(degrees, speed, navigationChecks);
-                DbgLog.msg("currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
+                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
                 break;
             }
             case "TurnUntilWhiteLine": {
@@ -200,7 +200,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DbgLog.msg("Degrees: %f, maxDistance1: %f, maxDistance2: %f, motorSpeed: %f, driveBackwards: %b",
+                DbgLog.msg("ftc9773: Degrees: %f, maxDistance1: %f, maxDistance2: %f, motorSpeed: %f, driveBackwards: %b",
                         degrees, maxDistance1, maxDistance2, motorSpeed, driveBackwards);
                 robot.navigation.driveUntilAllianceBeacon(driveBackwards, motorSpeed, degrees,
                         maxDistance1, maxDistance2);
@@ -235,7 +235,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DbgLog.msg("Degrees: %f, inches: %f, motorSpeed: %f, driveBackwards: %b", degrees, inches, motorSpeed, driveBackwards);
+                DbgLog.msg("ftc9773: Degrees: %f, inches: %f, motorSpeed: %f, driveBackwards: %b", degrees, inches, motorSpeed, driveBackwards);
                 robot.navigation.goStraightToDistance(inches, degrees, (float) motorSpeed, driveBackwards);
                 break;
             }
@@ -261,6 +261,7 @@ public class AutonomousActions {
                 double degrees = 0;
                 String termCondition = null;
                 double inches = 0.0;
+                double speed=0.5;
                 boolean driveUntilWhiteLine = false;
                 boolean driveBackwards = false;
                 try {
@@ -280,10 +281,10 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 Kp = robot.navigation.navxMicro.straightPID_kp;
-                DbgLog.msg("degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
+                DbgLog.msg("ftc9773: degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
                 if (driveUntilWhiteLine) {
                     while ((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
-                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
+                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) speed);
                     }
                     driveSystem.stop();
                 } else {
@@ -293,7 +294,7 @@ public class AutonomousActions {
                     elapsedCounts.reset();
                     while ((elapsedCounts.getDistanceTravelledInInches() < inches) &&
                             robot.curOpMode.opModeIsActive()) {
-                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees);
+                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) speed);
                     }
                     driveSystem.stop();
                 }
@@ -341,7 +342,7 @@ public class AutonomousActions {
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
                 distanceToShift = distanceFromWall - targetDistance;
-                DbgLog.msg("targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, isForward=%b",
+                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, isForward=%b",
                         targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, isForward);
                 // If we are already close enough to the wall, then do nothing.
                 if (distanceToShift > 0) {
@@ -367,22 +368,22 @@ public class AutonomousActions {
 
         String replayFile;
         String methodName;
-//        DbgLog.msg("Number of autonomous actions = %d", len);
+//        DbgLog.msg("ftc9773: Number of autonomous actions = %d", len);
         for (int i =0; i<len && curOpMode.opModeIsActive(); i++) {
-            DbgLog.msg("i=%d", i);
+            DbgLog.msg("ftc9773: i=%d", i);
             try {
                 actionObj = autoCfg.getAction(i);
                 String key = JsonReader.getRealKeyIgnoreCase(actionObj, "type");
                 if (actionObj.getString(key).equalsIgnoreCase("Replay")) {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     replayFile = this.replayFilesDir + actionObj.getString(key);
-                    DbgLog.msg("Replaying the file %s", replayFile);
+                    DbgLog.msg("ftc9773: Replaying the file %s", replayFile);
                     replayFileAction(replayFile);
                 }
                 else if (actionObj.getString(key).equalsIgnoreCase("Programmed")) {
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "value");
                     methodName = actionObj.getString(key);
-                    DbgLog.msg("Invoking method: %s", methodName);
+                    DbgLog.msg("ftc9773: Invoking method: %s", methodName);
                     invokeMethod(methodName,actionObj);
                 }
             } catch (JSONException e) {

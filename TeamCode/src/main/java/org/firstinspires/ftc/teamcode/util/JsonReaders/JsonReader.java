@@ -43,8 +43,8 @@ public class JsonReader {
             bufReader = new BufferedReader(fileReader);
         }
         catch (IOException except) {
-            DbgLog.error("Error while trying to open the json file %s", filePath);
-            DbgLog.error("%s", except.getMessage());
+            DbgLog.error("ftc9773: Error while trying to open the json file %s", filePath);
+            DbgLog.error("ftc9773: %s", except.getMessage());
         }
 
         // Read the file and append to the string builder
@@ -56,14 +56,14 @@ public class JsonReader {
             jsonStr = new String(strBuilder);
         }
         catch (IOException except) {
-            DbgLog.error("Error while reading the json file %s", filePath);
-            DbgLog.error("%s", except.getMessage());
+            DbgLog.error("ftc9773: Error while reading the json file %s", filePath);
+            DbgLog.error("ftc9773: %s", except.getMessage());
         }
         try {
             jsonRoot = new JSONObject(jsonStr);
         }
         catch (JSONException except) {
-            DbgLog.error("Error while parsing the json file.  Error message = %s",
+            DbgLog.error("ftc9773: Error while parsing the json file.  Error message = %s",
                     except.getMessage());
         }
         return;

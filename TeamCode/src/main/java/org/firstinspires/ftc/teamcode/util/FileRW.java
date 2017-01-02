@@ -38,7 +38,7 @@ public class FileRW {
             }
         }
         catch (IOException e){
-            DbgLog.error("An Exception was caught: %s", e.getMessage());
+            DbgLog.error("ftc9773: An Exception was caught: %s", e.getMessage());
         }
         if (write) {
             this.bufferedWriter = new BufferedWriter(fileWriter);
@@ -53,7 +53,7 @@ public class FileRW {
             bufferedWriter.newLine();
         }
         catch(IOException e){
-            DbgLog.error("An Exception was caught: %s", e.getMessage());
+            DbgLog.error("ftc9773: An Exception was caught: %s", e.getMessage());
         }
     }
 
@@ -64,10 +64,10 @@ public class FileRW {
         }
         catch(FileNotFoundException ex) {
             DbgLog.error(String.format(
-                    "Unable to open file '%s'", fileName));
+                    "ftc9773: Unable to open file '%s'", fileName));
         }
         catch (IOException e){
-            DbgLog.error(String.format("An IOException was caught : %s", e.getMessage()));
+            DbgLog.error(String.format("ftc9773: An IOException was caught : %s", e.getMessage()));
         }
 
         return data;

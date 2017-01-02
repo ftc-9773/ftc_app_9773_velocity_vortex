@@ -56,9 +56,8 @@
     "motorSpeed" : 0.25}
   ],
   "testing4" : [
-    {"type" : "Programmed", "value" : "testEncoders"},
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 10.0, "moveDistance" : 15.0, "isForward" : true,
-      "motorSpeed" : 0.25}
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
+      "inches" : 12.0, "driveBackwards" : true, "motorSpeed" : 0.4}
   ],
   "Beacons_1and2Red_Brooklyn" : [
     {"type" : "Programmed", "value" : "navxGoStraightPID", "degrees" : 0,
