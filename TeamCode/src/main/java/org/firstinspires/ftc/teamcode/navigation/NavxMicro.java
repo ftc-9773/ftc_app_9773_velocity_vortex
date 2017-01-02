@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.util.LoopStatistics;
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -148,6 +149,7 @@ public class NavxMicro {
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw, yawDiff;
+        LoopStatistics instr = new LoopStatistics();
         if (angle > 0 && angle < 360) {
             // Spin clockwise
             leftPower = speed;
@@ -174,8 +176,10 @@ public class NavxMicro {
         DbgLog.msg("ftc9773: raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                 navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
 
+        instr.startLoopInstrumentation();
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
+            instr.updateLoopInstrumentation();
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff < this.angleTolerance)
                 break;
@@ -184,6 +188,7 @@ public class NavxMicro {
 
         DbgLog.msg("ftc9773: angle = %f", angle);
         this.robot.driveSystem.stop();
+        instr.printLoopInstrumentation();
     }
 
     public void navxGoStraightPID(boolean driveBackwards, double degrees, float speed) {

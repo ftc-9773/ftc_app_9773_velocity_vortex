@@ -211,7 +211,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public boolean isBusy() {
-        return motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy();
+        return (motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy());
     }
 
     @Override
@@ -343,5 +343,11 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorL2.setMaxSpeed(2500);
         this.motorR1.setMaxSpeed(2500);
         this.motorR2.setMaxSpeed(2500);
+    }
+
+    public boolean motorControllerIsConnected() {
+        boolean connected = false;
+
+        return (connected);
     }
 }
