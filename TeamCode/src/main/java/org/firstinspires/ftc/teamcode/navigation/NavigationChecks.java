@@ -140,7 +140,7 @@ public class NavigationChecks {
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
 
         public EncoderCheckForDistance(double distanceInInches) {
-            this.distanceInInches = distanceInInches;
+            this.distanceInInches = Math.abs(distanceInInches);
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
             elapsedCounts.reset();
             navcheck = NavChecksSupported.CHECK_DISTANCE_TRAVELLED;
@@ -151,8 +151,7 @@ public class NavigationChecks {
             double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
             // Check for both magnitude and sign
             // Note: sign is always +ve anyways... need to change this code later
-            if ((Math.abs(distanceTravelled) >= Math.abs(distanceInInches)) &&
-                    ((distanceTravelled / distanceInInches) > 0)) {
+            if (Math.abs(distanceTravelled) >= Math.abs(distanceInInches)) {
                 DbgLog.msg("ftc9773: distanceTravelled = %f", distanceTravelled);
                 elapsedCounts.printCurrentEncoderCounts();
                 return (true);

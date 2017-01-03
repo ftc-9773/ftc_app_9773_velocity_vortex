@@ -28,10 +28,8 @@ public class Navigation {
     public NavxMicro navxMicro;
     public EncoderNavigation encoderNav;
     public ModernRoboticsI2cRangeSensor rangeSensor;
-    public double minDistance=15.0; // in cm
     public double lfMaxSpeed=1.0, straightDrMaxSpeed=1.0, turnMaxSpeed=1.0;
     public double driveSysTeleopMaxSpeed=1.0;
-    public FTCi2cDeviceState rangeSensorState;
 
     public enum SpinDirection {CLOCKWISE, COUNTERCLOCKWISE, NONE}
 

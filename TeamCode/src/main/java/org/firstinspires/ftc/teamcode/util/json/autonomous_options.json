@@ -34,15 +34,14 @@
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
       "driveBackwards" : false, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "printNavigationValues"},
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 3.0, "moveDistance" : 15.0, "isForward" : true,
+    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 3.0, "moveDistance" : 12.0, "isForward" : false,
       "motorSpeed" : 0.25, "returnToSamePos" : false},
     {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
-      "driveBackwards" : true, "motorSpeed" : 0.3},
+      "driveBackwards" : false, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "printNavigationValues"},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 5000},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : 2.0, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 10},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : -2.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
     {"type" : "Programmed", "value" : "setBeaconStatus"},
@@ -55,17 +54,17 @@
     {"type" : "Programmed", "value" : "GoStraightToWhiteLine", "degrees" : 0.0,
       "driveBackwards" : false, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "printNavigationValues"},
-    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 3.0, "moveDistance" : 15.0, "isForward" : true,
+    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 3.0, "moveDistance" : 15.0, "isForward" : false,
       "motorSpeed" : 0.25, "returnToSamePos" : false},
     {"type" : "Programmed", "value" : "printNavigationValues"},
-    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 5000},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
-      "inches" : -2.0, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 10},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : -2.0, "motorSpeed" : 0.3},
     {"type" : "Programmed", "value" : "printNavigationValues"},
     {"type" : "Programmed", "value" : "Sleep","milliSeconds": 100},
     {"type" : "Programmed", "value" : "setBeaconStatus"},
     {"type" : "Programmed", "value" : "DriveUntilAllianceBeacon", "degrees" : 0.0, "maxDistance1" : -1.0,
-      "maxDistance2" : 4.5, "motorSpeed" : 0.4}
+      "maxDistance2" : 4.5, "motorSpeed" : 0.4},
+    {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "testing3" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
@@ -323,6 +322,9 @@
   ],
   "partAccOnly" :[
     {"type" : "Programmed", "value" : "startPartAcc", "motorSpeed" : 1.0}
-
+  ],
+  "testShiftToWall" : [
+    {"type" : "Programmed", "value" : "shiftToWall", "targetDistance" : 24.0, "moveDistance" : 15.0, "isForward" : true,
+      "motorSpeed" : 0.25, "returnToSamePos" : true}
   ]
 }

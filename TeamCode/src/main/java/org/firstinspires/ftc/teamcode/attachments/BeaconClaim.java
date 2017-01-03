@@ -200,7 +200,7 @@ public class BeaconClaim implements Attachment {
         return null;
     }
 
-    public void setBeaconStatus(String allianceColor) {
+    public void setBeaconStatus() {
         beaconColor = (isBeaconBlue() ? BeaconColor.BLUE :
                 (isBeaconRed() ? BeaconColor.RED : BeaconColor.NONE));
     }

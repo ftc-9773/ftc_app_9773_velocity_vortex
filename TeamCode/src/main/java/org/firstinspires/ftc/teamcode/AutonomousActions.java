@@ -90,15 +90,8 @@ public class AutonomousActions {
                 robot.beaconClaimObj.claimABeacon();
                 break;
             }
-            case "claimAbeaconOld": {
-                int beaconId = 1;
-                try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
-                    beaconId = actionObj.getInt(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                robot.beaconClaimObj.claimABeaconOld(beaconId);
+            case "setBeaconStatus": {
+                robot.beaconClaimObj.setBeaconStatus();
                 break;
             }
             case "verifyBeaconColor": {
