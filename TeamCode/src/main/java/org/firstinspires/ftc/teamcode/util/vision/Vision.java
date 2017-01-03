@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.provider.Settings;
 import android.widget.ArrayAdapter;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.HINT;
 import com.vuforia.Matrix34F;
@@ -13,7 +14,7 @@ import com.vuforia.Vec3F;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.firstinspires.ftc.robotcontroller.internal.vision.*;
+//import org.firstinspires.ftc.robotcontroller.internal.vision.*;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -41,7 +42,7 @@ import java.util.Arrays;
  */
 
 public class Vision {
-    FrameGrabber frameGrabber=null;
+//    FrameGrabber frameGrabber=null;
     LinearOpMode curOpMode=null;
     FTCRobot robot=null;
     public String VUFORIA_LICENSE_KEY= "AbrtgIH/////AAAAAYXGG7tsoUbMqheoGcZNVXo2WXfiEHIwNSxiKDKqV4I8Z5iKsnnWyc9bu2wKiq2g2DICfNm/QLgt9SMJHGROCQgoA3bP38DUtYcOC4h5JwwoR6j0dTytoDJqNl4pR7EwO0BOBOmQPdqOejubaZWZpvNxUQnJBwtLKGGyMms+NPDgYZNCeSozTYuHYcWli+cl93GgfTwwm3j4yoxWMkUiQTa3yVQv7GewOn3KCnhaKsnZ84nkIlNkg1ees2K7u19zaiySu8Ielvi84AFAWS7rWXmDvcF95CbDKgeCJOd8V1tNQm5bwv+qcT8G1nA3gvmjeHVZMH5XXUR+A3YAD/5klU2OSmRBomj9FGYun5VjsAU+";
@@ -52,21 +53,21 @@ public class Vision {
     public Vision(LinearOpMode curOpMode, FTCRobot robot){
         this.curOpMode = curOpMode;
         this.robot = robot;
-        this.frameGrabber= FtcRobotControllerActivity.frameGrabber;
+//        this.frameGrabber= FtcRobotControllerActivity.frameGrabber;
         params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         params.vuforiaLicenseKey = VUFORIA_LICENSE_KEY;
-        params.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.TEAPOT;
+        params.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
         vuforia = new VuforiaLocalizerImplSubclass(params);
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
         beacons = vuforia.loadTrackablesFromAsset("FTC_2016-17");
         beacons.get(0).setName("Wheels");
         beacons.get(1).setName("Tools");
-        beacons.get(2).setName("Legos");
+        beacons.get(2).setName("Lego");
         beacons.get(3).setName("Gears");
     }
 
-    public BeaconColorResult.BeaconColor[] getVisionBeaconColors(){
+    /*public BeaconColorResult.BeaconColor[] getVisionBeaconColors(){
         frameGrabber.grabSingleFrame();
         while (!frameGrabber.isResultReady() && curOpMode.opModeIsActive()){
             curOpMode.sleep(5);
@@ -86,7 +87,7 @@ public class Vision {
 
 
         return results;
-    }
+    }*/
 
     public BeaconColorResult.BeaconColor[][] getBothBeaconColors(){
         BeaconColorResult.BeaconColor[][] beaconColors = new BeaconColorResult.BeaconColor[2][2];
@@ -101,9 +102,12 @@ public class Vision {
             VuforiaTrackable beacon = beacons.get(i);
             OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) beacon.getListener()).getRawPose();
 
-            BeaconColorResult result = null;
+            BeaconColorResult result;
+            Mat original = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4);
+            Utils.bitmapToMat(bitmap, original);
 
             if (pose != null){
+                DbgLog.msg("ftc9773: pose != null");
                 Matrix34F rawPose = new Matrix34F();
                 float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
                 rawPose.setData(poseData);
@@ -114,9 +118,6 @@ public class Vision {
                 corners[1] = Tool.projectPoint(vuforia.getCameraCalibration(), rawPose, new Vec3F(127,276,0)).getData(); //upper right
                 corners[2] = Tool.projectPoint(vuforia.getCameraCalibration(), rawPose, new Vec3F(127,92,0)).getData(); //lower right
                 corners[3] = Tool.projectPoint(vuforia.getCameraCalibration(), rawPose, new Vec3F(-127,92,0)).getData(); //lower left
-
-                Mat original = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4);
-                Utils.bitmapToMat(bitmap, original);
 
                 float x = Math.min(Math.min(corners[1][0], corners[3][0]), Math.min(corners[0][0], corners[2][0]));
                 float y = Math.min(Math.min(corners[1][1], corners[3][1]), Math.min(corners[0][1], corners[2][1]));
@@ -142,7 +143,10 @@ public class Vision {
                 Imgproc.resize(original, tmp2, tmp2.size(), 0, 0, 0);
                 Core.transpose(tmp2, frame);
             }
-
+            else{
+                BeaconProcessor imageProcessor = new BeaconProcessor();
+                result = imageProcessor.process(frameTime,original, true).getResult();
+            }
             BeaconColorResult beaconColorResult = result;
             beaconColors[i][0] = beaconColorResult.getLeftColor();
             beaconColors[i][1] = beaconColorResult.getRightColor();

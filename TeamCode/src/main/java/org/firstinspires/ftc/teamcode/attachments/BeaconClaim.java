@@ -196,11 +196,15 @@ public class BeaconClaim implements Attachment {
     }
 
     public void verifyBeaconColor(){
-        BeaconColor[] beaconColors = this.getLeftBeaconColor();
-        curOpMode.telemetry.addData("left: ", "%s", beaconColors[0].toString());
-        curOpMode.telemetry.addData("right: ", "%s", beaconColors[1].toString());
+        BeaconColor[] nearBeaconColors = this.getNearBeaconColor();
+        BeaconColor[] farBeaconColors = this.getFarBeaconColor();
+        curOpMode.telemetry.addData("Near Beacon left: ", "%s", nearBeaconColors[0].toString());
+        curOpMode.telemetry.addData("Near Beacon right: ", "%s", nearBeaconColors[1].toString());
+        curOpMode.telemetry.addData("Far Beacon left: ", "%s", farBeaconColors[0].toString());
+        curOpMode.telemetry.addData("Far Beacon right: ", "%s", farBeaconColors[1].toString());
         curOpMode.telemetry.update();
-        DbgLog.msg("ftc9773: left value = %s, right value = %s",beaconColors[0].toString(),beaconColors[1].toString());
+        DbgLog.msg("ftc9773: Near beacon: left value = %s, right value = %s",nearBeaconColors[0].toString(),nearBeaconColors[1].toString());
+        DbgLog.msg("ftc9773: Far beacon: left value = %s, right value = %s",farBeaconColors[0].toString(),farBeaconColors[1].toString());
         //DbgLog.msg("ftc9773: color number = %x", colorSensor1.getI2cAddress().get7Bit());
     }
 
@@ -274,7 +278,7 @@ public class BeaconClaim implements Attachment {
         }
     }
 
-    public BeaconColor[] getLeftBeaconColor() {
+    public BeaconColor[] getNearBeaconColor() {
         BeaconColor[] leftBeaconColors = new BeaconColor[2];
         BeaconColorResult.BeaconColor[][] visionBeaconColors = vision.getBothBeaconColors();
         if (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.RED) {
@@ -296,7 +300,7 @@ public class BeaconClaim implements Attachment {
         return leftBeaconColors;
     }
 
-    public BeaconColor[] getRightBeaconColor(){
+    public BeaconColor[] getFarBeaconColor(){
         BeaconColor[] rightBeaconColors = new BeaconColor[2];
         BeaconColorResult.BeaconColor[][] visionBeaconColors = vision.getBothBeaconColors();
         if (visionBeaconColors[1][0] == BeaconColorResult.BeaconColor.RED) {

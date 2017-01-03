@@ -240,7 +240,9 @@
     {"type" : "Programmed", "value" : "claimAbeacon"}
   ],
   "verifyBeaconColorOnly" : [
-    {"type" : "Programmed", "value" : "verifyBeaconColor"}
+    {"type" : "Programmed", "value" : "verifyBeaconColor"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 5000}
+
   ],
   "lineFollowTest" : [
     {"type" : "Programmed", "value" : "lineFollowProportional"}
