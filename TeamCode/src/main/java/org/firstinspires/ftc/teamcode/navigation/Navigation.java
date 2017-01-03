@@ -8,7 +8,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
-import org.firstinspires.ftc.teamcode.util.FTCi2cDeviceState;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 import org.firstinspires.ftc.teamcode.util.LoopStatistics;
@@ -66,7 +65,6 @@ public class Navigation {
 
         if (navOption.rangeSensorExists()) {
             this.rangeSensor = curOpMode.hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor1");
-            //this.rangeSensorState = new FTCi2cDeviceState((I2cDeviceSynch)rangeSensor);
         }
          else {
             this.rangeSensor = null;

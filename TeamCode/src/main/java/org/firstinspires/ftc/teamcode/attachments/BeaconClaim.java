@@ -4,12 +4,10 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
-import org.firstinspires.ftc.teamcode.util.FTCi2cDeviceState;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,22 +23,12 @@ public class BeaconClaim implements Attachment {
     private CRServo buttonServo=null;
     private Servo colorServo=null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
-    private I2cAddr i2cAddr=null;
-    public boolean[] beaconClaimed;
-    public int[] numBlueDetected;
-    public int[] numRedDetected;
-    public int[] numPressesNeeded;
-    FTCi2cDeviceState colorSensorState;
-    double accumulatedRedValue, accumulatedBlueValue;
-    double firstDetectedTimeStamp, lastDetectedTimeStamp;
-    ElapsedTime beaconScanTimer;
     public enum BeaconColor {RED, BLUE, NONE}
     public BeaconColor beaconColor;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
         this.robot = robot;
-        this.i2cAddr = new I2cAddr(0x04);
         String key;
         JSONObject beaconJsonObj=null;
         JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
@@ -78,8 +66,6 @@ public class BeaconClaim implements Attachment {
         if (coloSensor1Obj != null) {
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
             colorSensor1.enableLed(false);
-            // Create an FTCi2cDeviceState object for the color sensor
-            colorSensorState = new FTCi2cDeviceState(colorSensor1);
         }
         if (colorServoObj != null) {
             try {
@@ -143,29 +129,6 @@ public class BeaconClaim implements Attachment {
         buttonServo.setPower(0.0);
     }
 
-    public void enableColorSensor() {
-        colorSensorState.setEnabled(true);
-    }
-    public void disableColorSensor() {
-        colorSensorState.setEnabled(false);
-    }
-
-    public void claimABeaconOld(int beaconId) {
-        // Do different actions based on whether the beacon button has to be pressed once or twice.
-        DbgLog.msg("ftc9773: beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
-        if (numPressesNeeded[beaconId-1] == 1) {
-            activateButtonServo();
-            deactivateButtonServo();
-        } else if (numPressesNeeded[beaconId-1] == 2) {
-            activateButtonServo();
-            deactivateButtonServo();
-            curOpMode.sleep(5000);
-            activateButtonServo();
-            deactivateButtonServo();
-        }
-        curOpMode.sleep(100);
-    }
-
     public void claimABeacon() {
         activateButtonServo();
         curOpMode.sleep(50);
@@ -205,45 +168,8 @@ public class BeaconClaim implements Attachment {
                 (isBeaconRed() ? BeaconColor.RED : BeaconColor.NONE));
     }
 
-    public void startBeaconScanning() {
-        beaconScanTimer.reset();
-        accumulatedRedValue = accumulatedBlueValue = 0;
-        firstDetectedTimeStamp = Integer.MAX_VALUE;
-        lastDetectedTimeStamp = Integer.MIN_VALUE;
-        this.enableColorSensor();
-    }
-
-    public void stopBeaconScanning() {
-        this.disableColorSensor();
-    }
-
-    public void updateBeaconScanValues() {
-        double millis = beaconScanTimer.milliseconds();
-        if (this.isBeaconBlue()) {
-            accumulatedBlueValue += millis;
-            if (firstDetectedTimeStamp > millis) {
-                firstDetectedTimeStamp = millis;
-            } else if (lastDetectedTimeStamp < millis) {
-                lastDetectedTimeStamp = millis;
-            }
-        } else if (this.isBeaconRed()) {
-            accumulatedRedValue += millis;
-            if (firstDetectedTimeStamp > millis) {
-                firstDetectedTimeStamp = millis;
-            } else if (lastDetectedTimeStamp < millis) {
-                lastDetectedTimeStamp = millis;
-            }
-        }
-    }
-
     public BeaconColor getBeaconColor() {
         return (beaconColor);
-    }
-
-    public void printBeaconScanningData() {
-        DbgLog.msg("ftc9773: accumulatedRed = %f, accumulatedBlue=%f, firstTimeStamp=%f, lastTimeStamp=%f",
-                accumulatedRedValue, accumulatedBlueValue,
-                firstDetectedTimeStamp, lastDetectedTimeStamp);
     }
 
 }
