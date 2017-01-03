@@ -358,26 +358,36 @@ public class Navigation {
         }
     }
 
-    public void shiftRobot(double shiftDistance, double moveDistance, boolean isForward, double speed,
+    /**
+     *
+     * @param shiftDistance +ve => shift right, -ve => shift left
+     * @param moveDistance  +ve => move forward; -ve => move backward
+     * @param speed
+     * @param returnToSamePos
+     */
+    public void shiftRobot(double shiftDistance, double moveDistance, double speed,
                            boolean returnToSamePos){
-
+        boolean isForward = (moveDistance >= 0) ? true : false;
         double diagonal = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
         double angle = 90 - Math.toDegrees(Math.asin(moveDistance/diagonal));
         DbgLog.msg("ftc9773: shiftDistance=%f, diagonal=%f, moveDistance=%f, isForward=%b, speed=%f, angle=%f",
                 shiftDistance, diagonal, moveDistance, isForward, speed, angle);
-        if (isForward) {
-            if (shiftDistance < 0) {
-                angle *= -1;
-            }
-            // movedistance wil be negative when shifting by going forward
-            moveDistance = -moveDistance;
-        } else{
-            if (shiftDistance > 0){
-                angle *= -1;
-            }
-            diagonal = -diagonal;
-            // move distance will be +ve when shifting by going backwards
-        }
+
+        // diagonal should have the same sign as the moveDistance
+        diagonal *= Math.signum(moveDistance);
+        // If moveDistance and shiftDistance have opposite signs -- i.e. move forward & shift left
+        //  or move backward & shift right -- then turn counter clockwise, else turn clockwise
+        angle *= Math.signum(moveDistance) * Math.signum(shiftDistance);
+//        if (isForward) {
+//            if (shiftDistance < 0) {
+//                angle *= -1;
+//            }
+//        } else{
+//            if (shiftDistance > 0){
+//                angle *= -1;
+//            }
+//            diagonal = -diagonal;
+//        }
 
         // Step 1.  Turn the robot to move forward / backward
         double startingYaw = navxMicro.getModifiedYaw();

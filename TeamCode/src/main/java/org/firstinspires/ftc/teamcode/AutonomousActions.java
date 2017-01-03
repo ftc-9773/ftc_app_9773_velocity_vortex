@@ -288,18 +288,15 @@ public class AutonomousActions {
                 break;
             }
             case "shiftRobot": {
-                double distance = 0.0;
+                double shiftDistance = 0.0;
                 double moveDistance = 0.0;
                 double motorSpeed = 1.0;
-                boolean isForward = false;
                 boolean returnToSamePos=false;
                 try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance");
-                    distance = actionObj.getDouble(key);
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "shiftDistance");
+                    shiftDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
                     moveDistance = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "isForward");
-                    isForward = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "returnToSamePos");
                     returnToSamePos = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
@@ -307,14 +304,15 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                robot.navigation.shiftRobot(distance, moveDistance, isForward, motorSpeed, returnToSamePos);
+                DbgLog.msg("ftc9773: shiftDistance=%f, moveDistance=%f, motorSpeed=%f, returnToSamePos=%b",
+                        shiftDistance, moveDistance, motorSpeed, returnToSamePos);
+                robot.navigation.shiftRobot(shiftDistance, moveDistance, motorSpeed, returnToSamePos);
                 break;
             }
             case "shiftToWall": {
                 double targetDistance = 0.0;
                 double moveDistance = 0.0;
                 double motorSpeed = 1.0;
-                boolean isForward = false;
                 boolean returnToSamePos=false;
                 double distanceFromWall;
                 double distanceToShift;
@@ -323,8 +321,6 @@ public class AutonomousActions {
                     targetDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
                     moveDistance = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "isForward");
-                    isForward = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "returnToSamePos");
                     returnToSamePos = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
@@ -334,10 +330,10 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
-                distanceToShift = distanceFromWall - targetDistance;
-                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, isForward=%b, returnToSamePos=%b",
-                        targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, isForward, returnToSamePos);
-                robot.navigation.shiftRobot(-distanceToShift, moveDistance, isForward, motorSpeed, returnToSamePos);
+                distanceToShift = targetDistance - distanceFromWall;
+                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, returnToSamePos=%b",
+                        targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, returnToSamePos);
+                robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos);
                 // If we are already close enough to the wall, then do nothing.
 //                if (distanceToShift > 0) {
 //                    if (allianceColor.equalsIgnoreCase("red")) {
