@@ -350,7 +350,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
         if (skipWhileLoop) return curPos;
 
-       while(curPos==0){
+       while(curPos!=0){
            curOpMode.sleep(10);
            curPos = motor.getCurrentPosition();
         }
