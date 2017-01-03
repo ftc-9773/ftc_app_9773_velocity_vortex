@@ -154,6 +154,29 @@ public class Navigation {
         return (targetYaw);
     }
 
+    public void untiltRobot(boolean originallyGoingBackward, double degrees, float speed) {
+        NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
+        // Do not move more than 15 inches; this is the upper limit but not the absolute distance to travel
+        NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(15);
+        // Do not move for more than 5 seconds
+        NavigationChecks.TimeoutCheck timeoutCheck = navChecks.new TimeoutCheck(5000);
+        NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
+        navChecks.addNewCheck(encodercheck);
+        navChecks.addNewCheck(timeoutCheck);
+        navChecks.addNewCheck(opmodeCheck);
+        // For un-tilting, the robot has to move in the reverse direction of the original direction.
+        boolean driveBackwards = originallyGoingBackward ? false : true;
+
+        LoopStatistics instr = new LoopStatistics();
+        instr.startLoopInstrumentation();
+        // move until the robot tilt goes down below 3 degrees
+        while (!navChecks.stopNavigation() && (navxMicro.getPitch() > 3)) {
+            robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
+            instr.updateLoopInstrumentation();
+        }
+        instr.printLoopInstrumentation();
+    }
+
     public void goStraightToDistance(double inches, double degrees, float speed) {
         // First, disable the color sensor
 //        robot.beaconClaimObj.disableColorSensor();
@@ -178,15 +201,7 @@ public class Navigation {
                 instr.updateLoopInstrumentation();
                 if (tiltingCheck.stopNavigation()) {
                     DbgLog.msg("ftc9773: tilting detected");
-                    // Move backward for 15 inches; however if the robot was originally moving backwards,
-                    // then do not reverse the drive system again.
-                    if (!driveBackwards) {
-                        robot.driveSystem.reverse();
-                    }
-                    robot.driveSystem.driveToDistance(speed, 15);
-                    if (!driveBackwards) {
-                        robot.driveSystem.reverse();
-                    }
+                    this.untiltRobot(driveBackwards, degrees, speed);
                 }
             }
 
