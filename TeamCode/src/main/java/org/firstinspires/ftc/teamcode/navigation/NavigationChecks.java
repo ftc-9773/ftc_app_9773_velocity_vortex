@@ -150,6 +150,7 @@ public class NavigationChecks {
         public boolean stopNavigation() {
             double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
             // Check for both magnitude and sign
+            // Note: sign is always +ve anyways... need to change this code later
             if ((Math.abs(distanceTravelled) >= Math.abs(distanceInInches)) &&
                     ((distanceTravelled / distanceInInches) > 0)) {
                 DbgLog.msg("ftc9773: distanceTravelled = %f", distanceTravelled);
