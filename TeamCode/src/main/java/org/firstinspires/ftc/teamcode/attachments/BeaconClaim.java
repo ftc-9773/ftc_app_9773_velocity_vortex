@@ -166,6 +166,9 @@ public class BeaconClaim implements Attachment {
     public void setBeaconStatus() {
         beaconColor = (isBeaconBlue() ? BeaconColor.BLUE :
                 (isBeaconRed() ? BeaconColor.RED : BeaconColor.NONE));
+
+        DbgLog.msg("Beacon color detected: %s", (beaconColor == BeaconColor.RED) ? "red" :
+                ((beaconColor == BeaconColor.BLUE) ? "blue" : "none"));
     }
 
     public BeaconColor getBeaconColor() {

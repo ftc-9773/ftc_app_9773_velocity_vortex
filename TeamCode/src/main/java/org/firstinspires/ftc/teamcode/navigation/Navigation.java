@@ -86,8 +86,8 @@ public class Navigation {
 
     public void printNavigationValues() {
         DbgLog.msg("ftc9773: encoderYaw=%f, navxYaw=%f", encoderNav.getCurrentYaw(), navxMicro.getModifiedYaw());
-        DbgLog.msg("ftc9773: navxPitch=%f, RangeSensor value CM = %f, ods light detected=%f", navxMicro.getPitch(),
-                rangeSensor.getDistance(DistanceUnit.CM), lf.lightSensor.getLightDetected());
+        DbgLog.msg("ftc9773: navxPitch=%f, RangeSensor value inches = %f, ods light detected=%f", navxMicro.getPitch(),
+                rangeSensor.getDistance(DistanceUnit.INCH), lf.lightSensor.getLightDetected());
         DbgLog.msg("ftc9773: Drive system Encoder values:");
         robot.driveSystem.printCurrentPosition();
     }
@@ -334,6 +334,7 @@ public class Navigation {
         if (navxMicro.navxIsWorking()) {
             curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
             curOpMode.telemetry.update();
+            DbgLog.msg("ftc9773: Set Robot Orientation, Using Navx");
             // The difference between the encoder-based degrees and navx based degrees can easily
             // go upto 10 degrees even when navx is working well.  So, we should not have too low
             // value for the CheckWhileTurning constructor.  Ensure that we do not check for less
@@ -350,6 +351,7 @@ public class Navigation {
                 elapsedEncoderCounts.reset();
                 curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
                 curOpMode.telemetry.update();
+                DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Navx");
                 navigationChecks.removeCheck(check3);
                 encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
                 encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
@@ -365,6 +367,7 @@ public class Navigation {
             // First, do the encoder based turning.
             curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
             curOpMode.telemetry.update();
+            DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Navx");
             encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
             DbgLog.msg("ftc9773: currYaw: %f", encoderNav.getCurrentYaw());
@@ -382,15 +385,15 @@ public class Navigation {
                            boolean returnToSamePos){
         boolean isForward = (moveDistance >= 0) ? true : false;
         double diagonal = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
-        double angle = 90 - Math.toDegrees(Math.asin(moveDistance/diagonal));
-        DbgLog.msg("ftc9773: shiftDistance=%f, diagonal=%f, moveDistance=%f, isForward=%b, speed=%f, angle=%f",
-                shiftDistance, diagonal, moveDistance, isForward, speed, angle);
+        double angle = 90 - Math.toDegrees(Math.asin(Math.abs(moveDistance/diagonal)));
 
         // diagonal should have the same sign as the moveDistance
         diagonal *= Math.signum(moveDistance);
         // If moveDistance and shiftDistance have opposite signs -- i.e. move forward & shift left
         //  or move backward & shift right -- then turn counter clockwise, else turn clockwise
         angle *= Math.signum(moveDistance) * Math.signum(shiftDistance);
+        DbgLog.msg("ftc9773: shiftDistance=%f, diagonal=%f, moveDistance=%f, isForward=%b, speed=%f, angle=%f",
+                shiftDistance, diagonal, moveDistance, isForward, speed, angle);
 //        if (isForward) {
 //            if (shiftDistance < 0) {
 //                angle *= -1;
@@ -403,7 +406,7 @@ public class Navigation {
 //        }
 
         // Step 1.  Turn the robot to move forward / backward
-        double startingYaw = navxMicro.getModifiedYaw();
+        double startingYaw = (navxMicro.navxIsWorking() ? navxMicro.getModifiedYaw() : encoderNav.getCurrentYaw());
         double turningYaw = this.getTargetYaw(startingYaw, angle);
         DbgLog.msg("ftc9773: startingYaw=%f, turningYaw=%f", startingYaw, turningYaw);
         this.setRobotOrientation(turningYaw, speed);

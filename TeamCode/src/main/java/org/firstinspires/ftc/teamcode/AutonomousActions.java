@@ -4,6 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.AutonomousOptionsReader;
@@ -87,7 +88,9 @@ public class AutonomousActions {
     public void invokeMethod(String methodName, JSONObject actionObj) {
         switch (methodName) {
             case "claimAbeacon": {
-                robot.beaconClaimObj.claimABeacon();
+                if (robot.beaconClaimObj.beaconColor != BeaconClaim.BeaconColor.NONE) {
+                    robot.beaconClaimObj.claimABeacon();
+                }
                 break;
             }
             case "setBeaconStatus": {
