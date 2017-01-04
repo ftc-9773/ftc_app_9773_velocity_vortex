@@ -92,6 +92,7 @@ public class Vision {
     public BeaconColorResult.BeaconColor[][] getBothBeaconColors(){
         BeaconColorResult.BeaconColor[][] beaconColors = new BeaconColorResult.BeaconColor[2][2];
         beacons.activate();
+        curOpMode.sleep(1000);
         long frameTime = System.currentTimeMillis();
         Bitmap bitmap = null;
         if (vuforia.rgb != null){
