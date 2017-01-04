@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.FTCi2cDeviceState;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
-import org.firstinspires.ftc.teamcode.util.Vision;
+import org.firstinspires.ftc.teamcode.util.vision.Vision;
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -1,26 +1,28 @@
-package org.firstinspires.ftc.teamcode.util;
+/*
+ * Copyright (c) 2016 Robocracy 9773.
+ */
+
+package org.firstinspires.ftc.teamcode.util.vision;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcontroller.internal.vision.BeaconColorResult;
-import org.firstinspires.ftc.robotcontroller.internal.vision.ImageProcessorResult;
-import org.firstinspires.ftc.teamcode.FTCRobot;
-
 import org.firstinspires.ftc.robotcontroller.internal.vision.FrameGrabber;
+import org.firstinspires.ftc.robotcontroller.internal.vision.ImageProcessorResult;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.teamcode.FTCRobot;
 
 /**
  * Created by pb8xe_000 on 12/30/2016.
- */
-
-/*
- * Copyright (c) 2016 Robocracy 9773
  */
 
 public class Vision {
     FrameGrabber frameGrabber=null;
     LinearOpMode curOpMode=null;
     FTCRobot robot=null;
+    VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+    parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
 
     public Vision(LinearOpMode curOpMode, FTCRobot robot){
         this.curOpMode = curOpMode;
