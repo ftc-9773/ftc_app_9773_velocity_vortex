@@ -149,6 +149,7 @@ public class NavxMicro {
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw, yawDiff;
+        double min_angleToTurn=0.0;
         LoopStatistics instr = new LoopStatistics();
         if (angle > 0 && angle < 360) {
             // Spin clockwise
@@ -166,6 +167,7 @@ public class NavxMicro {
 
         // Note the current yaw value
         startingYaw = getModifiedYaw();
+        min_angleToTurn = Math.abs(angle) - angleTolerance;
         targetYaw = startingYaw + angle;
         if (targetYaw > 360) {
             targetYaw %= 360;
@@ -180,8 +182,8 @@ public class NavxMicro {
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
             instr.updateLoopInstrumentation();
-            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
-            if (yawDiff < this.angleTolerance)
+            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), startingYaw);
+            if (yawDiff > min_angleToTurn)
                 break;
             //DbgLog.msg("ftc9773: yawDiff=%f", yawDiff);
         }

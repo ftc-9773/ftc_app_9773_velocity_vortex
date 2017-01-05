@@ -211,6 +211,28 @@ public class AutonomousActions {
             case "keepParticles":
                 robot.particleObj.keepParticles();
                 break;
+            case "shootParticles": {
+                int numParticles=1;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "numberOfParticles");
+                    numParticles = actionObj.getInt(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                DbgLog.msg("ftc9773: shootParticles: numberOfParticles to shoot = %d", numParticles);
+                if (numParticles > 0) {
+                    robot.particleObj.releaseParticles();
+                    curOpMode.sleep(500);
+                    robot.particleObj.keepParticles();
+                    curOpMode.sleep(1200);
+                    if (numParticles > 1) {
+                        robot.particleObj.releaseParticles();
+                        curOpMode.sleep(1200);
+                        robot.particleObj.keepParticles();
+                    }
+                }
+                break;
+            }
             case "GoStraightToDistance": {
                 double inches = 0.0;
                 double motorSpeed = 0.0;

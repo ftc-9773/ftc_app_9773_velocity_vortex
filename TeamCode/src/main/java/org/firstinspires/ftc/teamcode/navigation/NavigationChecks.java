@@ -13,7 +13,7 @@ import java.util.List;
 public class NavigationChecks {
     public enum NavChecksSupported {CHECK_OPMODE_INACTIVE, CHECK_ROBOT_TILTING, CHECK_TIMEOUT,
         CHECK_WHITElINE, CHECK_DEGREES_TURNED, CHECK_DISTANCE_TRAVELLED,
-        CROSSCHECK_NAVX_WITH_ENCODERS, CHECK_DRIVESYS_BUSY}
+        CROSSCHECK_NAVX_WITH_ENCODERS, CHECK_NAVX_IS_WORKING}
     LinearOpMode curOpMode;
     FTCRobot robot;
     Navigation navigationObj;
@@ -47,6 +47,44 @@ public class NavigationChecks {
             if (timer.milliseconds() >= timeoutMillis) {
                 return (true);
             } else {
+                return (false);
+            }
+        }
+    }
+
+    public class CheckNavxIsWorking extends NavCheckBaseClass {
+        ElapsedTime timer;
+        NavxMicro navxMicro;
+        double prevYaw;
+        boolean firstCheck;
+        public CheckNavxIsWorking() {
+            navxMicro = navigationObj.navxMicro;
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            prevYaw = navxMicro.getModifiedYaw();
+            firstCheck = true;
+            navcheck = NavChecksSupported.CHECK_NAVX_IS_WORKING;
+        }
+
+        @Override
+        public void reset() {
+            timer.reset();
+            prevYaw = navxMicro.getModifiedYaw();
+        }
+
+        @Override
+        public boolean stopNavigation() {
+            double curYaw = navxMicro.getModifiedYaw();
+            // If there is no update in 200 milli second, declare navx failure
+            // For the first time check though, we may see > 200 msec difference due to the
+            // time gap between instantiating this object and actually using it.
+            if ((curYaw == prevYaw) && (timer.milliseconds() > 200) && !firstCheck) {
+                return (true);
+            } else {
+                // navx is working fine; just update the timer and prevYaw so the next
+                // check will be done correctly.
+                timer.reset();
+                prevYaw = curYaw;
+                firstCheck = false; // it is not a first time check anymore
                 return (false);
             }
         }

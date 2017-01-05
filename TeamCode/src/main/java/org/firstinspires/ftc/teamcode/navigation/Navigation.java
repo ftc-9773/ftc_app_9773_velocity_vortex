@@ -339,20 +339,25 @@ public class Navigation {
             // go upto 10 degrees even when navx is working well.  So, we should not have too low
             // value for the CheckWhileTurning constructor.  Ensure that we do not check for less
             // 30 degree deviation between the encoder-based and navx-based angles.
-            double degreesToCheck = Math.max(this.distanceBetweenAngles(targetYaw, curYaw) /2, 30);
-            NavigationChecks.CheckNavxWhileTurning check3 = navigationChecks.new
-                    CheckNavxWhileTurning(degreesToCheck);
-            navigationChecks.addNewCheck(check3);
+//            double degreesToCheck = Math.max(this.distanceBetweenAngles(targetYaw, curYaw) /2, 30);
+//            NavigationChecks.CheckNavxWhileTurning check3 = navigationChecks.new
+//                    CheckNavxWhileTurning(degreesToCheck);
+//            navigationChecks.addNewCheck(check3);
+            NavigationChecks.CheckNavxIsWorking navxCheck = navigationChecks.new CheckNavxIsWorking();
+            navigationChecks.addNewCheck(navxCheck);
             navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&
-                    (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS)){
+                    ((navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS)
+                    || (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CHECK_NAVX_IS_WORKING)))
+            {
                 double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
                 encoderNav.updateCurrentYaw(encoder_degreesTurned);
                 elapsedEncoderCounts.reset();
                 curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
                 curOpMode.telemetry.update();
                 DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Navx");
-                navigationChecks.removeCheck(check3);
+//                navigationChecks.removeCheck(check3);
+                navigationChecks.removeCheck(navxCheck);
                 encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
                 encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
                 encoderNav.updateCurrentYaw(encoder_degreesTurned);
