@@ -150,11 +150,24 @@ public class BeaconClaim implements Attachment {
     }
 
     public boolean isBeaconRed() {
-        return colorSensor1.red() > colorSensor1.blue();
+        int redValue = colorSensor1.red();
+        int blueValue = colorSensor1.blue();
+        if (redValue >= 3 && ((redValue - blueValue) >= 2)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isBeaconBlue() {
-        return colorSensor1.blue() > colorSensor1.red();
+        int redValue = colorSensor1.red();
+        int blueValue = colorSensor1.blue();
+        if (blueValue >= 3 && ((blueValue - redValue) >= 2)) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public String checkBeaconColor() {
@@ -167,7 +180,8 @@ public class BeaconClaim implements Attachment {
         beaconColor = (isBeaconBlue() ? BeaconColor.BLUE :
                 (isBeaconRed() ? BeaconColor.RED : BeaconColor.NONE));
 
-        DbgLog.msg("Beacon color detected: %s", (beaconColor == BeaconColor.RED) ? "red" :
+        DbgLog.msg("ftc9773: Beacon color values: red=%d, blue=%d", colorSensor1.red(), colorSensor1.blue());
+        DbgLog.msg("ftc9773: Beacon color detected: %s", (beaconColor == BeaconColor.RED) ? "red" :
                 ((beaconColor == BeaconColor.BLUE) ? "blue" : "none"));
     }
 

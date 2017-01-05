@@ -81,11 +81,11 @@
         "motor" : "Neverest20",
         "needReverse" : false,
         "fixedPositions" : false,
-        "maxSpeed" : 1.0,
+        "maxSpeed" : 2500,
         "__comment1" : "ramUpTime is in milli seconds",
         "rampUpTime" : 2000,
-        "minButton" : "gamepad2.right_stick_y",
-        "maxButton" : "gamepad2.right_stick_y"
+        "minButton" : "gamepad1.dpad_down",
+        "maxButton" : "gamepad1.dpad_up"
       }
     }
   },
