@@ -214,41 +214,6 @@ public class NavxMicro {
         }
     }
 
-    public void shiftRobot(double shiftDistance, double moveDistance, boolean isForward, double speed,
-                           NavigationChecks navigationChecks, boolean returnToSamePos){
-        double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
-        double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
-        DbgLog.msg("ftc9773: shiftDistance=%f, driveDistance=%f, moveDistance=%f, isForward=%b, speed=%f, angle=%f",
-                shiftDistance, driveDistance, moveDistance, isForward, speed, angle);
-
-        if (isForward){
-            if (shiftDistance < 0) {
-                angle *= -1;
-            }
-            double startingYaw = this.getModifiedYaw();
-            this.turnRobot(angle, speed, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, driveDistance);
-            navigationChecks.reset();
-            this.setRobotOrientation(startingYaw, speed, navigationChecks);
-            if (returnToSamePos) {
-                robot.driveSystem.driveToDistance((float) speed, -moveDistance);
-            }
-        }
-        else{
-            if (shiftDistance > 0){
-                angle *= -1;
-            }
-            double startingYaw = this.getModifiedYaw();
-            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -driveDistance);
-            navigationChecks.reset();
-            this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
-            if (returnToSamePos) {
-                robot.driveSystem.driveToDistance((float) speed, moveDistance);
-            }
-        }
-    }
-
     public void testNavxCalibrateConnection() {
         if (this.navx_device.isCalibrating()) {
             DbgLog.msg("ftc9773: Navx device is calibrating");
@@ -261,13 +226,5 @@ public class NavxMicro {
         } else {
             DbgLog.msg("ftc9773: Navx device is not connected");
         }
-    }
-
-    public void navx_go_straight () {
-        // ToDo
-        navXPIDController yawPIDController = new navXPIDController(navx_device, navXPIDController.navXTimestampedDataSource.YAW);
-
-        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, 3);
-
     }
 }
