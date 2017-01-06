@@ -68,6 +68,7 @@ public class NavigationChecks {
         @Override
         public void reset() {
             timer.reset();
+            firstCheck = true;
             prevYaw = navxMicro.getModifiedYaw();
         }
 
@@ -78,6 +79,7 @@ public class NavigationChecks {
             // For the first time check though, we may see > 200 msec difference due to the
             // time gap between instantiating this object and actually using it.
             if ((curYaw == prevYaw) && (timer.milliseconds() > 200) && !firstCheck) {
+                DbgLog.msg("ftc9773:  CheckNavxIsWorking:  navx got disconnected!");
                 return (true);
             } else {
                 // navx is working fine; just update the timer and prevYaw so the next
