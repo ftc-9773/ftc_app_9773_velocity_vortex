@@ -15,6 +15,10 @@
     {"type" : "Programmed", "value" : "DriveToDistance", "distance" : 4.0, "motorSpeed" : 0.5},
     {"type" : "Programmed", "value" : "reverseDriveSystem"}
   ],
+  "vuforiaTest" : [
+    {"type" : "Programmed", "value" : "verifyBeaconColor"},
+    {"type" : "Programmed", "value" : "Sleep","milliSeconds": 5000}
+  ],
   "testing2" : [
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0,
       "inches" : 5.0, "driveBackwards" : false, "motorSpeed" : 0.75},

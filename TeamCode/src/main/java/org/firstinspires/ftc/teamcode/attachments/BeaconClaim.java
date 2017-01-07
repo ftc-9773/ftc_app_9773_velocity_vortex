@@ -197,14 +197,14 @@ public class BeaconClaim implements Attachment {
 
     public void verifyBeaconColor(){
         BeaconColor[] nearBeaconColors = this.getNearBeaconColor();
-        BeaconColor[] farBeaconColors = this.getFarBeaconColor();
+//        BeaconColor[] farBeaconColors = this.getFarBeaconColor();
         curOpMode.telemetry.addData("Near Beacon left: ", "%s", nearBeaconColors[0].toString());
         curOpMode.telemetry.addData("Near Beacon right: ", "%s", nearBeaconColors[1].toString());
-        curOpMode.telemetry.addData("Far Beacon left: ", "%s", farBeaconColors[0].toString());
-        curOpMode.telemetry.addData("Far Beacon right: ", "%s", farBeaconColors[1].toString());
+//        curOpMode.telemetry.addData("Far Beacon left: ", "%s", farBeaconColors[0].toString());
+//        curOpMode.telemetry.addData("Far Beacon right: ", "%s", farBeaconColors[1].toString());
         curOpMode.telemetry.update();
         DbgLog.msg("ftc9773: Near beacon: left value = %s, right value = %s",nearBeaconColors[0].toString(),nearBeaconColors[1].toString());
-        DbgLog.msg("ftc9773: Far beacon: left value = %s, right value = %s",farBeaconColors[0].toString(),farBeaconColors[1].toString());
+//        DbgLog.msg("ftc9773: Far beacon: left value = %s, right value = %s",farBeaconColors[0].toString(),farBeaconColors[1].toString());
         //DbgLog.msg("ftc9773: color number = %x", colorSensor1.getI2cAddress().get7Bit());
     }
 
@@ -281,7 +281,7 @@ public class BeaconClaim implements Attachment {
     public BeaconColor[] getNearBeaconColor() {
         BeaconColor[] leftBeaconColors = new BeaconColor[2];
         BeaconColorResult.BeaconColor[][] visionBeaconColors = vision.getBothBeaconColors();
-        if (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.RED) {
+        if (visionBeaconColors[3][0] == BeaconColorResult.BeaconColor.RED) {
             leftBeaconColors[0] = BeaconColor.RED;
         } else if (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.BLUE) {
             leftBeaconColors[0] = BeaconColor.BLUE;
@@ -289,7 +289,7 @@ public class BeaconClaim implements Attachment {
                 (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.UNKNOWN)){
             leftBeaconColors[0] = BeaconColor.NONE;
         }
-        if (visionBeaconColors[0][1] == BeaconColorResult.BeaconColor.RED) {
+        if (visionBeaconColors[3][1] == BeaconColorResult.BeaconColor.RED) {
             leftBeaconColors[1] = BeaconColor.RED;
         } else if (visionBeaconColors[0][1] == BeaconColorResult.BeaconColor.BLUE) {
             leftBeaconColors[1] = BeaconColor.BLUE;
