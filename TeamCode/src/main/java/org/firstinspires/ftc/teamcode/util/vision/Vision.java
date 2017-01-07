@@ -1,21 +1,15 @@
 package org.firstinspires.ftc.teamcode.util.vision;
 
 import android.graphics.Bitmap;
-import android.provider.Settings;
-import android.widget.ArrayAdapter;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.HINT;
 import com.vuforia.Matrix34F;
 import com.vuforia.Tool;
-import com.vuforia.Vec2F;
 import com.vuforia.Vec3F;
 import com.vuforia.Vuforia;
 
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-//import org.firstinspires.ftc.robotcontroller.internal.vision.*;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
