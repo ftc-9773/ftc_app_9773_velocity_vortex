@@ -54,7 +54,7 @@
     {"type" : "programmed", "value" : "stopPartAcc"},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.4},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 3.0, "motorSpeed" : 0.75},
-    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : 35.0, "moveDistance" : 55.0,
+    {"type" : "Programmed", "value" : "shiftRobot", "shiftDistance" : 30.0, "moveDistance" : 55.0,
       "motorSpeed" : 0.75, "returnToSamePos" : false},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 180.0, "motorSpeed" : 0.4},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180, "inches" : -10.0, "motorSpeed" : 0.5},
