@@ -7,6 +7,10 @@ import org.json.JSONObject;
  * Created by pranavb on 10/15/16.
  */
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class DriveSysReader extends JsonReader {
     JSONObject driveSysObj;
     String driveSysName;
@@ -52,5 +56,16 @@ public class DriveSysReader extends JsonReader {
 
     public String getDriveSysName() {
         return driveSysName;
+    }
+
+    public int getMaxMotorSpeed(String autoOrTeleop) {
+        int maxMotorSpeed = 0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(driveSysObj, autoOrTeleop);
+            maxMotorSpeed = driveSysObj.getInt(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (maxMotorSpeed);
     }
 }

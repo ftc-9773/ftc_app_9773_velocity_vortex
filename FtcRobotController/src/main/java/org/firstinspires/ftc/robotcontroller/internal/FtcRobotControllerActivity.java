@@ -71,7 +71,6 @@ import com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity;
 import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.ProgrammingModeController;
 import com.qualcomm.ftccommon.Restarter;
-import org.firstinspires.ftc.ftccommon.external.SoundPlayingRobotMonitor;
 import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.ftccommon.configuration.EditParameters;
 import com.qualcomm.ftccommon.configuration.FtcLoadFileActivity;
@@ -90,6 +89,7 @@ import com.qualcomm.robotcore.wifi.NetworkConnectionFactory;
 import com.qualcomm.robotcore.wifi.NetworkType;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
+import org.firstinspires.ftc.ftccommon.external.SoundPlayingRobotMonitor;
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 import org.firstinspires.inspection.RcInspectionActivity;
 
@@ -179,8 +179,7 @@ public class FtcRobotControllerActivity extends Activity {
     if (this.eventLoop != null) {
       for (;;) {
         UsbDevice usbDevice = receivedUsbAttachmentNotifications.poll();
-        if (usbDevice == null)
-          break;
+        if (usbDevice == null) break;
         this.eventLoop.onUsbDeviceAttached(usbDevice);
       }
     }
@@ -203,7 +202,6 @@ public class FtcRobotControllerActivity extends Activity {
     eventLoop = null;
 
     setContentView(R.layout.activity_ftc_controller);
-
     context = this;
     utility = new Utility(this);
     appUtil.setThisApp(new PeerAppRobotController(context));
@@ -352,11 +350,7 @@ public class FtcRobotControllerActivity extends Activity {
     File directory = RobotConfigFileManager.CONFIG_FILES_DIR;
     File networkTypeFile = new File(directory, fileName);
     if (!networkTypeFile.exists()) {
-      if (Build.MODEL.equals(Device.MODEL_410C)) {
-        defaultNetworkType = NetworkType.SOFTAP;
-      } else {
-        defaultNetworkType = NetworkType.WIFIDIRECT;
-      }
+      defaultNetworkType = Build.MODEL.equals(Device.MODEL_410C) ? NetworkType.SOFTAP : NetworkType.WIFIDIRECT;
       writeNetworkTypeFile(NETWORK_TYPE_FILENAME, defaultNetworkType.toString());
     }
 
@@ -401,7 +395,7 @@ public class FtcRobotControllerActivity extends Activity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     int id = item.getItemId();
-
+    //TODO: make the ids into switch statements
     if (id == R.id.action_programming_mode) {
       if (cfgFileMgr.getActiveConfig().isNoConfig()) {
         // Tell the user they must configure the robot before starting programming mode.

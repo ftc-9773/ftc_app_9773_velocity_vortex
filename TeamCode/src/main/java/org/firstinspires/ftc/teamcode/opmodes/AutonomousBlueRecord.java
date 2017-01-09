@@ -8,6 +8,10 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 @Autonomous(name = "AutonomousBlueRecord", group = "TeleOp")
 public class AutonomousBlueRecord extends LinearOpMode {
     @Override
@@ -19,7 +23,9 @@ public class AutonomousBlueRecord extends LinearOpMode {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        FTCRobot robot = new FTCRobot(this, robotName);
+        // TODO: 12/31/16 Instead of passing a 3rd parameter Autonomous/Teleop, use annotations to detect
+        //     that FTCRobot is being instantiated for Autonomous or Teleop mode
+        FTCRobot robot = new FTCRobot(this, robotName, "Autonomous");
         robot.autonomousRecord(opmodeCfg, "blue");
     }
 }

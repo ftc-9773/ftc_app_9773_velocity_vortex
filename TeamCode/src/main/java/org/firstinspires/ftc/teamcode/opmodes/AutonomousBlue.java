@@ -11,6 +11,10 @@ import org.firstinspires.ftc.teamcode.navigation.LineFollow;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 @Autonomous(name = "AutonomousBlue", group = "Autonomous")
 public class AutonomousBlue extends LinearOpMode {
 
@@ -32,7 +36,9 @@ public class AutonomousBlue extends LinearOpMode {
             e.printStackTrace();
         }
 
-        robot = new FTCRobot(this, robotName);
+        // TODO: 12/31/16 Instead of passing a 3rd parameter Autonomous/Teleop, use annotations to detect
+        //     that FTCRobot is being instantiated for Autonomous or Teleop mode
+        robot = new FTCRobot(this, robotName, "Autonomous");
         robot.runAutonomous(autonomousOpt, "blue", startingDelay, startingPosition);
     }
 }

@@ -5,16 +5,31 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.DriveSysReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.MotorSpecsReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.WheelSpecsReader;
 
+import java.lang.annotation.Annotation;
+
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
 
 public abstract class DriveSystem {
     LinearOpMode curOpMode;
     FTCRobot robot;
     String driveSysType;
+
+    public interface ElapsedEncoderCounts {
+        public abstract void reset();
+        public abstract double getDistanceTravelledInInches();
+        public abstract double getDegreesTurned();
+        public abstract void printCurrentEncoderCounts();
+    }
+
 
     public DriveSystem(LinearOpMode curOpMode, FTCRobot robot, String driveSysType) {
         this.curOpMode = curOpMode;
@@ -29,7 +44,7 @@ public abstract class DriveSystem {
                                                 String driveSysName) {
         DriveSystem driveSys = null;
         DriveSysReader driveSysReader = new DriveSysReader(JsonReader.driveSystemsFile, driveSysName);
-        DbgLog.msg("driveSysName=%s", driveSysReader.getDriveSysName());
+        DbgLog.msg("ftc9773: driveSysName=%s", driveSysReader.getDriveSysName());
         WheelSpecsReader wheelSpecs = new WheelSpecsReader(JsonReader.wheelSpecsFile,
                 driveSysReader.getWheelType());
         if(driveSysName.equals("4Motor4WDSteering")||driveSysName.equals("4Motor6WDSteering")) {
@@ -55,13 +70,53 @@ public abstract class DriveSystem {
 
             Wheel wheel = new Wheel(wheel_type, wheelDiameter);
 
-            DbgLog.msg("wheel diameter = %f", wheel.diameter);
+            DbgLog.msg("ftc9773: wheel diameter = %f", wheel.diameter);
+            // Determine if autonomous or teleop
+            int maxSpeedCPS=4000; // = driveSysReader.getMaxMotorSpeed();
+            if (robot.autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("AutonomousMaxMotorSpeed");
+            } else if (robot.autoOrTeleop.equalsIgnoreCase("Teleop")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("TeleOpMaxMotorSpeed");
+            }
+            DbgLog.msg("ftc9773: maxSpeedCPS = %d", maxSpeedCPS);
             fourMotorSteeringDrive = new FourMotorSteeringDrive(fMotorL, rMotorL, fMotorR, rMotorR,
-                    1, 0, frictionCoeff, wheel, CPR);
+                    maxSpeedCPS, frictionCoeff, robot.distanceBetweenWheels, wheel, CPR);
             fourMotorSteeringDrive.curOpMode = curOpMode;
             fourMotorSteeringDrive.robot = robot;
             fourMotorSteeringDrive.driveSysType = driveSysName;
             driveSys = (DriveSystem) fourMotorSteeringDrive;
+        } else if (driveSysName.equalsIgnoreCase("2Motor2WDSteering")) {
+            int CPR = 0;
+            double wheelDiameter = 0.0;
+            double frictionCoeff = 1.0;
+            TwoMotorDrive twoMotorDrive;
+
+            String motorL_type = driveSysReader.getMotorType("motorL");
+            String wheel_type = driveSysReader.getWheelType();
+            MotorSpecsReader motorSpecs =
+                    new MotorSpecsReader(JsonReader.motorSpecsFile, motorL_type);
+            CPR = motorSpecs.getCPR();
+            wheelDiameter = wheelSpecs.getDiameter();
+            frictionCoeff = wheelSpecs.getFrictionCoeff();
+
+            DcMotor motorL = curOpMode.hardwareMap.dcMotor.get("motorL");
+            DcMotor motorR = curOpMode.hardwareMap.dcMotor.get("motorR");
+            Wheel wheel = new Wheel(wheel_type, wheelDiameter);
+
+            DbgLog.msg("ftc9773: wheel diameter = %f", wheel.diameter);
+            // Determine if autonomous or teleop
+            int maxSpeedCPS=4000; // = driveSysReader.getMaxMotorSpeed();
+            if (robot.autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("AutonomousMaxMotorSpeed");
+            } else if (robot.autoOrTeleop.equalsIgnoreCase("Teleop")) {
+                maxSpeedCPS = driveSysReader.getMaxMotorSpeed("TeleOpMaxMotorSpeed");
+            }
+            DbgLog.msg("ftc9773: maxSpeedCPS = %d", maxSpeedCPS);
+            twoMotorDrive = new TwoMotorDrive(motorL, motorR, maxSpeedCPS, frictionCoeff, wheel, CPR);
+            twoMotorDrive.curOpMode = curOpMode;
+            twoMotorDrive.robot = robot;
+            twoMotorDrive.driveSysType = driveSysName;
+            driveSys = (DriveSystem) twoMotorDrive;
         }
         return (driveSys);
     }
@@ -75,11 +130,16 @@ public abstract class DriveSystem {
     public void driveToDistance(float speed, double distanceInInches){return;}
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
+
+    public abstract void turnDegrees(double degrees, float speed, NavigationChecks navExc);
+
     public abstract void setMaxSpeed(float speed);
     public abstract void resumeMaxSpeed();
     public abstract void reverse();
+    public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
+    public abstract void printCurrentPosition();
+    public abstract void initForPlay();
 
-    public abstract void resetDistanceTravelled();
+    public void testEncoders(){return;}
 
-    public abstract double getDistanceTravelledInInches();
 }

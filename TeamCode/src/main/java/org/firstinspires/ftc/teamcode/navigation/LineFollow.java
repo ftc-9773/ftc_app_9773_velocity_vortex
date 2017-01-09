@@ -11,6 +11,11 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 /**
  * Created by Luke on 10/15/2016.
  */
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class LineFollow{
 
     OpticalDistanceSensor lightSensor;
@@ -40,9 +45,9 @@ public class LineFollow{
         this.Kp = 0.5;
         this.odsOffset = robot.distanceLeft / (robot.distanceLeft + robot.distanceRight);
         this.timoutNanoSec = (long) (lineFollowTimeOut * 1000000000L);
-        DbgLog.msg("sensorName=%s, lowSpeed=%f, highSpeed=%f, timeoutNanoSec=%d",
+        DbgLog.msg("ftc9773: sensorName=%s, lowSpeed=%f, highSpeed=%f, timeoutNanoSec=%d",
                 lightSensorName, lowSpeed, highSpeed, this.timoutNanoSec);
-        DbgLog.msg("Kp = %f, odsOffset=%f", this.Kp, this.odsOffset);
+        DbgLog.msg("ftc9773: Kp = %f, odsOffset=%f", this.Kp, this.odsOffset);
 //        this.white = -1;
 //        this.black = -1;
         prevLight = -1;
@@ -81,9 +86,9 @@ public class LineFollow{
         while((lightSensor.getLightDetected()<this.mid) && robot.curOpMode.opModeIsActive()
                 && ((System.nanoTime() - startTime) < (timeoutMillis*1000000))) {
             driveSystem.drive((float) 1.0, 0);
-            DbgLog.msg("light detected = %f", lightSensor.getLightDetected());
+            DbgLog.msg("ftc9773: light detected = %f", lightSensor.getLightDetected());
         }
-        DbgLog.msg("light detected = %f", lightSensor.getLightDetected());
+        DbgLog.msg("ftc9773: light detected = %f", lightSensor.getLightDetected());
         driveSystem.stop();
         driveSystem.resumeMaxSpeed();
     }
@@ -112,7 +117,7 @@ public class LineFollow{
             if (minLight > curLight) minLight = curLight;
             if (maxLight < curLight) maxLight = curLight;
             diffYaw = Math.abs(robot.navigation.navxMicro.getModifiedYaw() - initialYaw);
-            DbgLog.msg("diffYaw=%f, minLight=%f, maxLight=%f, curLight=%f", diffYaw,
+            DbgLog.msg("ftc9773: diffYaw=%f, minLight=%f, maxLight=%f, curLight=%f", diffYaw,
                     minLight, maxLight, curLight);
         }
         driveSystem.stop();
@@ -137,12 +142,12 @@ public class LineFollow{
         double rightCorrection = (1 - this.odsOffset) * correction;
         double leftPower = Range.clip(basePower - leftCorrection, -1.0, 1.0);
         double rightPower = Range.clip(basePower + rightCorrection, -1.0, 1.0);
-        DbgLog.msg("lightDetected = %f, error = %f, correction = %f, left correction = %f, right correction = %f, leftPower=%f, rightPower=%f",
+        DbgLog.msg("ftc9773: lightDetected = %f, error = %f, correction = %f, left correction = %f, right correction = %f, leftPower=%f, rightPower=%f",
                 light, error, correction, leftCorrection, rightCorrection, leftPower,rightPower);
         driveSystem.turnOrSpin(leftPower, rightPower);
 
-//        DbgLog.msg("lightDetected = %f", lightSensor.getLightDetected());
-//        DbgLog.msg("error=%f, correction=%f, leftPower=%f, rightPower=%f",
+//        DbgLog.msg("ftc9773: lightDetected = %f", lightSensor.getLightDetected());
+//        DbgLog.msg("ftc9773: error=%f, correction=%f, leftPower=%f, rightPower=%f",
 //                error, correction, leftPower, rightPower);
     }
 

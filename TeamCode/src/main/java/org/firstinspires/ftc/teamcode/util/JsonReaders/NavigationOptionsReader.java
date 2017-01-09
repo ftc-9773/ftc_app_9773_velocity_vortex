@@ -7,6 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class NavigationOptionsReader extends JsonReader {
     String navOptStr;
     public JSONObject navOptObj;
@@ -89,7 +93,7 @@ public class NavigationOptionsReader extends JsonReader {
             lfVarObj = lfObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(lfVarObj, variableName);
             value = lfVarObj.getDouble(key);
-            DbgLog.msg("getLFvariableDouble(): key = %s, value=%f", key, value);
+            DbgLog.msg("ftc9773: getLFvariableDouble(): key = %s, value=%f", key, value);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -4,6 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
@@ -23,6 +24,17 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Thread.sleep;
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
+/**
+ * Top-level robot class. This class contains all attachments, and calls both the TeleOp and Autonomous initialize/start
+ * methods/sequences. An object of this class is created in every opmode.
+ *
+ * @author pranavburugula
+ * @version 2.2
+ */
 public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;
@@ -36,27 +48,38 @@ public class FTCRobot {
     public ParticleRelease particleObj;
     public double distanceLeft;
     public double distanceRight;
+    public double distanceBetweenWheels;
+    public String autoOrTeleop;
 
-    public FTCRobot(LinearOpMode curOpMode, String robotName) {
+    /**
+     * Reads robots JSON file, initializes drive system and attachments.
+     * @param curOpMode Current running opmode, used for FTC libraries.
+     * @param robotName Name of the robot configuration to initialize.
+     * @param autoOrTeleop
+     */
+    public FTCRobot(LinearOpMode curOpMode, String robotName, String autoOrTeleop) {
         this.curOpMode = curOpMode;
+        this.autoOrTeleop = autoOrTeleop;
         RobotConfigReader robotConfig;
         robotConfig = new RobotConfigReader(JsonReader.baseDir+"robots.json",  robotName);
         String driveSysName = null;
         distanceLeft = robotConfig.getDistanceLeft();
         distanceRight = robotConfig.getDistanceRight();
+        distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
+        DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
 
         // Instantiate the Drive System
         try {
             driveSysName = robotConfig.getDriveSysName();
             if (driveSysName != null) {
-                DbgLog.msg("driveSysName = %s", driveSysName);
+                DbgLog.msg("ftc9773: driveSysName = %s", driveSysName);
                 driveSystem = DriveSystem.createDriveSystem(curOpMode, this, driveSysName);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if (driveSystem == null) {
-            DbgLog.error("Drivesystem not properly initialized");
+            DbgLog.error("ftc9773: Drivesystem not properly initialized");
         }
 
         // Create the objects for attachments
@@ -69,9 +92,15 @@ public class FTCRobot {
             navigation = null;
         }
 
-        DbgLog.msg("Done with robot initialization.  Current Voltage = %f", getVoltage());
+        DbgLog.msg("ftc9773: Done with robot initialization.  Current Voltage = %f", getVoltage());
+        DbgLog.msg("ftc9773: Applications external storage directory=%s",
+                curOpMode.hardwareMap.appContext.getExternalFilesDir(null));
     }
 
+    /**
+     * Iterates through listed attachments in robots JSON file, and initializes.
+     * @param attachments   Array of attachment names specified in robots JSON file
+     */
     private void createAttachments(String[] attachments) {
         JsonReader attachmentsReader = new JsonReader(JsonReader.attachments);
         JSONObject rootObj = attachmentsReader.jsonRoot;
@@ -81,38 +110,40 @@ public class FTCRobot {
                 case "BeaconClaim":
                     attachmentsArr[i] = new BeaconClaim(this, curOpMode, rootObj);
                     beaconClaimObj = (BeaconClaim) attachmentsArr[i];
-                    DbgLog.msg("beaconClaimObj created");
+                    DbgLog.msg("ftc9773: beaconClaimObj created");
                     break;
                 case "CapBallLift":
                     attachmentsArr[i] = new CapBallLift(this, curOpMode, rootObj);
                     capBallLiftObj = (CapBallLift) attachmentsArr[i];
-                    DbgLog.msg("capBallLiftObj created");
+                    DbgLog.msg("ftc9773: capBallLiftObj created");
                     break;
                 case "Harvester":
                     attachmentsArr[i] = new Harvester(this, curOpMode, rootObj);
                     harvesterObj = (Harvester) attachmentsArr[i];
-                    DbgLog.msg("harvesterObj created");
+                    DbgLog.msg("ftc9773: harvesterObj created");
                     break;
                 case "ParticleAccelerator":
                     attachmentsArr[i] = new ParticleAccelerator(this, curOpMode, rootObj);
                     partAccObj = (ParticleAccelerator) attachmentsArr[i];
-                    DbgLog.msg("partAccObj created");
+                    DbgLog.msg("ftc9773: partAccObj created");
                     break;
                 case "ParticleRelease":
                     attachmentsArr[i] = new ParticleRelease(this, curOpMode, rootObj);
                     particleObj = (ParticleRelease) attachmentsArr[i];
-                    DbgLog.msg("particleObj created");
+                    DbgLog.msg("ftc9773: particleObj created");
                     break;
             }
         }
     }
 
+    /**
+     * Main TeleOp method. Run from TeleOp opmode classes.
+     */
     public void runTeleOp(String allianceColor) {
         float speed;
         float direction;
 
         // Set the drive system teleop mode max speed
-        driveSystem.setMaxSpeed((float) navigation.driveSysTeleopMaxSpeed);
         curOpMode.waitForStart();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
@@ -142,6 +173,16 @@ public class FTCRobot {
         }
     }
 
+    /**
+     * Main autonomous method. Run from Autonomous opmode classes.
+     * <br/>
+     * This method does not actually run the Autonomous oppmode, rather it calls {@link AutonomousActions#doActions()},
+     * which parses the autonomous JSON configuration.
+     * @param autonomousOpt Name of the autonomous configuration as listed in the autonomous_options JSON file.
+     * @param allianceColor Current alliance color.
+     * @param startingDelay Amount of time, in seconds, the robot should wait before starting autonomous opmode. Used
+     *                      to coordinate with alliance partner, and prevent collision.
+     */
     public void runAutonomous(String autonomousOpt, String allianceColor,
                               long startingDelay, int startingPosition) {
         this.autonomousActions =
@@ -149,8 +190,10 @@ public class FTCRobot {
 
         try {
             curOpMode.waitForStart();
-            DbgLog.msg("Starting delay = %d seconds", startingDelay);
+            DbgLog.msg("ftc9773: Starting delay = %d seconds", startingDelay);
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
+            navigation.initForPlay(); // Initialization after starting the robot
+            driveSystem.initForPlay(); // Initialization of drive system after starting the robot
             autonomousActions.doActions();
             driveSystem.stop();
             curOpMode.stop();
@@ -160,6 +203,13 @@ public class FTCRobot {
         }
     }
 
+    /**
+     * Record method for the Record/Replay system. Directly writes the record data (processed gamepad values)
+     * into a .<!---->csv file.
+     * @param opmodeCfg {@link JsonReader} used in the recording opmode class.
+     * @param allianceColor Current alliance color.
+     * @throws InterruptedException
+     */
     public void autonomousRecord(JsonReader opmodeCfg, String allianceColor) throws InterruptedException {
         long clockCycle=5000;
         String recordFilePath, recordFileName=null;
@@ -181,8 +231,8 @@ public class FTCRobot {
         }
         recordFilePath = recordFilesDir + recordFileName;
 
-        DbgLog.msg("clock Cycle = %d nanoseconds", clockCycle);
-        DbgLog.msg("record filepath = %s", recordFilePath);
+        DbgLog.msg("ftc9773: clock Cycle = %d nanoseconds", clockCycle);
+        DbgLog.msg("ftc9773: record filepath = %s", recordFilePath);
 
         fileRW = new FileRW(recordFilePath, true);
         // First row is a header row.
@@ -240,20 +290,23 @@ public class FTCRobot {
                         Double.toString(direction));
             }
 
-//            DbgLog.msg(String.format("Speed: %f, Direction: %f", speed, direction));
+//            DbgLog.msg(String.format("ftc9773: Speed: %f, Direction: %f", speed, direction));
 
             if(curOpMode.gamepad1.a){
                 break;
             }
 
-            DbgLog.msg("prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
+            DbgLog.msg("ftc9773: prev_elapsedTime=%d, elapsedTime=%d", prev_elapsedTime, elapsedTime);
             prev_elapsedTime = elapsedTime;
             // sleep(5);
         }
-        DbgLog.msg("Is close executing?");
+        DbgLog.msg("ftc9773: Is close executing?");
         fileRW.close();
     }
 
+    /**
+     * @return  Current battery voltage.
+     */
     public double getVoltage() {
         return (curOpMode.hardwareMap.voltageSensor.iterator().next().getVoltage());
     }

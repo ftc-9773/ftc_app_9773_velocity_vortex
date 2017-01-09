@@ -7,6 +7,10 @@ import org.json.JSONObject;
 
 
 
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
 public class MotorSpecsReader extends JsonReader {
     JSONObject motorObj;
     String motorType;
