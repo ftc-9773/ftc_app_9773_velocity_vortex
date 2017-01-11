@@ -4,6 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
@@ -92,6 +93,8 @@ public class FTCRobot {
         }
 
         DbgLog.msg("ftc9773: Done with robot initialization.  Current Voltage = %f", getVoltage());
+        DbgLog.msg("ftc9773: Applications external storage directory=%s",
+                curOpMode.hardwareMap.appContext.getExternalFilesDir(null));
     }
 
     /**
@@ -190,6 +193,7 @@ public class FTCRobot {
             DbgLog.msg("ftc9773: Starting delay = %d seconds", startingDelay);
             if (startingDelay > 0) curOpMode.sleep(startingDelay * 1000);
             navigation.initForPlay(); // Initialization after starting the robot
+            driveSystem.initForPlay(); // Initialization of drive system after starting the robot
             autonomousActions.doActions();
             driveSystem.stop();
             curOpMode.stop();

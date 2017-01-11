@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.util.LoopStatistics;
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -148,6 +149,8 @@ public class NavxMicro {
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw, yawDiff;
+        double min_angleToTurn=0.0;
+        LoopStatistics instr = new LoopStatistics();
         if (angle > 0 && angle < 360) {
             // Spin clockwise
             leftPower = speed;
@@ -164,6 +167,7 @@ public class NavxMicro {
 
         // Note the current yaw value
         startingYaw = getModifiedYaw();
+        min_angleToTurn = Math.abs(angle) - angleTolerance;
         targetYaw = startingYaw + angle;
         if (targetYaw > 360) {
             targetYaw %= 360;
@@ -174,16 +178,19 @@ public class NavxMicro {
         DbgLog.msg("ftc9773: raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                 navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
 
+        instr.startLoopInstrumentation();
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
-            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
-            if (yawDiff < this.angleTolerance)
+            instr.updateLoopInstrumentation();
+            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), startingYaw);
+            if (yawDiff > min_angleToTurn)
                 break;
             //DbgLog.msg("ftc9773: yawDiff=%f", yawDiff);
         }
 
         DbgLog.msg("ftc9773: angle = %f", angle);
         this.robot.driveSystem.stop();
+        instr.printLoopInstrumentation();
     }
 
     public void navxGoStraightPID(boolean driveBackwards, double degrees, float speed) {
@@ -209,35 +216,6 @@ public class NavxMicro {
         }
     }
 
-    public void shiftRobot(double shiftDistance, double moveDistance, boolean isForward, double speed,
-                           NavigationChecks navigationChecks){
-        double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
-        double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
-
-        if (isForward){
-            if (shiftDistance < 0) {
-                angle *= -1;
-            }
-            double startingYaw = this.getModifiedYaw();
-            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, driveDistance);
-            navigationChecks.reset();
-            this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -moveDistance);
-        }
-        else{
-            if (shiftDistance > 0){
-                angle *= -1;
-            }
-            double startingYaw = this.getModifiedYaw();
-            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -driveDistance);
-            navigationChecks.reset();
-            this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, moveDistance);
-        }
-    }
-
     public void testNavxCalibrateConnection() {
         if (this.navx_device.isCalibrating()) {
             DbgLog.msg("ftc9773: Navx device is calibrating");
@@ -250,13 +228,5 @@ public class NavxMicro {
         } else {
             DbgLog.msg("ftc9773: Navx device is not connected");
         }
-    }
-
-    public void navx_go_straight () {
-        // ToDo
-        navXPIDController yawPIDController = new navXPIDController(navx_device, navXPIDController.navXTimestampedDataSource.YAW);
-
-        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, 3);
-
     }
 }

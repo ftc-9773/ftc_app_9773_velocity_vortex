@@ -9,7 +9,7 @@
         "__comment" : "The following 2 values have to be changed",
         "__scaleRangeMin" : 0.15,
         "__scaleRangeMax" : 0.549,
-        "needReverse" : false,
+        "needReverse" : true,
         "__fixedPositions" : true,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
@@ -26,7 +26,7 @@
       }
     },
     "sensors" : {
-      "__colorSensor1" : {
+      "colorSensor1" : {
         "sensorType" : "ColorSensor",
         "porttype" : "i2c",
         "portnum" : 5
@@ -81,11 +81,11 @@
         "motor" : "Neverest20",
         "needReverse" : false,
         "fixedPositions" : false,
-        "maxSpeed" : 1.0,
+        "maxSpeed" : 2500,
         "__comment1" : "ramUpTime is in milli seconds",
         "rampUpTime" : 2000,
-        "minButton" : "gamepad2.right_stick_y",
-        "maxButton" : "gamepad2.right_stick_y"
+        "minButton" : "gamepad1.dpad_down",
+        "maxButton" : "gamepad1.dpad_up"
       }
     }
   },

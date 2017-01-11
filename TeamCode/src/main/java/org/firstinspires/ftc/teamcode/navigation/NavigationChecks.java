@@ -13,7 +13,7 @@ import java.util.List;
 public class NavigationChecks {
     public enum NavChecksSupported {CHECK_OPMODE_INACTIVE, CHECK_ROBOT_TILTING, CHECK_TIMEOUT,
         CHECK_WHITElINE, CHECK_DEGREES_TURNED, CHECK_DISTANCE_TRAVELLED,
-        CROSSCHECK_NAVX_WITH_ENCODERS, CHECK_DRIVESYS_BUSY}
+        CROSSCHECK_NAVX_WITH_ENCODERS, CHECK_NAVX_IS_WORKING}
     LinearOpMode curOpMode;
     FTCRobot robot;
     Navigation navigationObj;
@@ -52,18 +52,44 @@ public class NavigationChecks {
         }
     }
 
-    public class CheckDrivesysBusy extends NavCheckBaseClass {
-        @Override
-        public boolean stopNavigation() {
-            if (!robot.driveSystem.isBusy()) {
-                return (true);
-            } else {
-                return (false);
-            }
+    public class CheckNavxIsWorking extends NavCheckBaseClass {
+        ElapsedTime timer;
+        NavxMicro navxMicro;
+        double prevYaw;
+        boolean firstCheck;
+        public CheckNavxIsWorking() {
+            navxMicro = navigationObj.navxMicro;
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            prevYaw = navxMicro.getModifiedYaw();
+            firstCheck = true;
+            navcheck = NavChecksSupported.CHECK_NAVX_IS_WORKING;
         }
 
         @Override
-        public void reset() { return;}
+        public void reset() {
+            timer.reset();
+            firstCheck = true;
+            prevYaw = navxMicro.getModifiedYaw();
+        }
+
+        @Override
+        public boolean stopNavigation() {
+            double curYaw = navxMicro.getModifiedYaw();
+            // If there is no update in 200 milli second, declare navx failure
+            // For the first time check though, we may see > 200 msec difference due to the
+            // time gap between instantiating this object and actually using it.
+            if ((curYaw == prevYaw) && (timer.milliseconds() > 200) && !firstCheck) {
+                DbgLog.msg("ftc9773:  CheckNavxIsWorking:  navx got disconnected!");
+                return (true);
+            } else {
+                // navx is working fine; just update the timer and prevYaw so the next
+                // check will be done correctly.
+                timer.reset();
+                prevYaw = curYaw;
+                firstCheck = false; // it is not a first time check anymore
+                return (false);
+            }
+        }
     }
 
     public class CheckNavxWhileTurning extends NavCheckBaseClass {
@@ -154,7 +180,7 @@ public class NavigationChecks {
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
 
         public EncoderCheckForDistance(double distanceInInches) {
-            this.distanceInInches = distanceInInches;
+            this.distanceInInches = Math.abs(distanceInInches);
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
             elapsedCounts.reset();
             navcheck = NavChecksSupported.CHECK_DISTANCE_TRAVELLED;
@@ -164,8 +190,8 @@ public class NavigationChecks {
         public boolean stopNavigation() {
             double distanceTravelled = elapsedCounts.getDistanceTravelledInInches();
             // Check for both magnitude and sign
-            if ((Math.abs(distanceTravelled) >= Math.abs(distanceInInches)) &&
-                    ((distanceTravelled / distanceInInches) > 0)) {
+            // Note: sign is always +ve anyways... need to change this code later
+            if (Math.abs(distanceTravelled) >= Math.abs(distanceInInches)) {
                 DbgLog.msg("ftc9773: distanceTravelled = %f", distanceTravelled);
                 elapsedCounts.printCurrentEncoderCounts();
                 return (true);

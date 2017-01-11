@@ -47,8 +47,9 @@ public class ParticleAccelerator implements Attachment{
             }
             key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj, "rampUpTime");
             rampUpTime = launcherMotorObj.getLong(key);
-            double maxSpeed = launcherMotorObj.getDouble("maxSpeed");
-            launcherMotor.setMaxSpeed((int)(launcherMotor.getMaxSpeed() * maxSpeed));
+            launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            int maxSpeed = launcherMotorObj.getInt("maxSpeed");
+//            launcherMotor.setMaxSpeed(maxSpeed);
             // Set the zero power behaviour to float sot hat the motor stops gradually
             // This is recommended for high speed low torque motors
             launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

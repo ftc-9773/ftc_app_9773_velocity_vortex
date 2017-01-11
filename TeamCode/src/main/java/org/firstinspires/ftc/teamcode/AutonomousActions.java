@@ -4,6 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.AutonomousOptionsReader;
@@ -87,18 +88,13 @@ public class AutonomousActions {
     public void invokeMethod(String methodName, JSONObject actionObj) {
         switch (methodName) {
             case "claimAbeacon": {
-                robot.beaconClaimObj.claimABeacon();
+                if (robot.beaconClaimObj.beaconColor != BeaconClaim.BeaconColor.NONE) {
+                    robot.beaconClaimObj.claimABeacon();
+                }
                 break;
             }
-            case "claimAbeaconOld": {
-                int beaconId = 1;
-                try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "BeaconId");
-                    beaconId = actionObj.getInt(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                robot.beaconClaimObj.claimABeaconOld(beaconId);
+            case "setBeaconStatus": {
+                robot.beaconClaimObj.setBeaconStatus();
                 break;
             }
             case "verifyBeaconColor": {
@@ -181,7 +177,6 @@ public class AutonomousActions {
                 break;
             }
             case "DriveUntilAllianceBeacon": {
-                boolean driveBackwards=false;
                 double motorSpeed=0.5;
                 double maxDistance1=8.0; // in inches
                 double maxDistance2=13.0; // in inches
@@ -195,14 +190,12 @@ public class AutonomousActions {
                     maxDistance2 = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     motorSpeed = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
-                    driveBackwards = actionObj.getBoolean(key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DbgLog.msg("ftc9773: Degrees: %f, maxDistance1: %f, maxDistance2: %f, motorSpeed: %f, driveBackwards: %b",
-                        degrees, maxDistance1, maxDistance2, motorSpeed, driveBackwards);
-                robot.navigation.driveUntilAllianceBeacon(driveBackwards, motorSpeed, degrees,
+                DbgLog.msg("ftc9773: Degrees: %f, maxDistance1: %f, maxDistance2: %f, motorSpeed: %f",
+                        degrees, maxDistance1, maxDistance2, motorSpeed);
+                robot.navigation.driveUntilAllianceBeacon(motorSpeed, degrees,
                         maxDistance1, maxDistance2);
                 break;
             }
@@ -218,11 +211,32 @@ public class AutonomousActions {
             case "keepParticles":
                 robot.particleObj.keepParticles();
                 break;
+            case "shootParticles": {
+                int numParticles=1;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "numberOfParticles");
+                    numParticles = actionObj.getInt(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                DbgLog.msg("ftc9773: shootParticles: numberOfParticles to shoot = %d", numParticles);
+                if (numParticles > 0) {
+                    robot.particleObj.releaseParticles();
+                    curOpMode.sleep(500);
+                    robot.particleObj.keepParticles();
+                    curOpMode.sleep(1200);
+                    if (numParticles > 1) {
+                        robot.particleObj.releaseParticles();
+                        curOpMode.sleep(1200);
+                        robot.particleObj.keepParticles();
+                    }
+                }
+                break;
+            }
             case "GoStraightToDistance": {
                 double inches = 0.0;
                 double motorSpeed = 0.0;
                 double degrees=0.0;
-                boolean driveBackwards = false;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
                     degrees = actionObj.getDouble(key);
@@ -230,13 +244,11 @@ public class AutonomousActions {
                     inches = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     motorSpeed = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "driveBackwards");
-                    driveBackwards = actionObj.getBoolean(key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DbgLog.msg("ftc9773: Degrees: %f, inches: %f, motorSpeed: %f, driveBackwards: %b", degrees, inches, motorSpeed, driveBackwards);
-                robot.navigation.goStraightToDistance(inches, degrees, (float) motorSpeed, driveBackwards);
+                DbgLog.msg("ftc9773: Degrees: %f, inches: %f, motorSpeed: %f", degrees, inches, motorSpeed);
+                robot.navigation.goStraightToDistance(inches, degrees, (float) motorSpeed);
                 break;
             }
             case "GoStraightToWhiteLine": {
@@ -301,30 +313,32 @@ public class AutonomousActions {
                 break;
             }
             case "shiftRobot": {
-                double distance = 0.0;
+                double shiftDistance = 0.0;
                 double moveDistance = 0.0;
                 double motorSpeed = 1.0;
-                boolean isForward = false;
+                boolean returnToSamePos=false;
                 try {
-                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "distance");
-                    distance = actionObj.getDouble(key);
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "shiftDistance");
+                    shiftDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
                     moveDistance = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "isForward");
-                    isForward = actionObj.getBoolean(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "returnToSamePos");
+                    returnToSamePos = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     motorSpeed = actionObj.getDouble(key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                robot.navigation.shiftRobot(distance, moveDistance, isForward, motorSpeed);
+                DbgLog.msg("ftc9773: shiftDistance=%f, moveDistance=%f, motorSpeed=%f, returnToSamePos=%b",
+                        shiftDistance, moveDistance, motorSpeed, returnToSamePos);
+                robot.navigation.shiftRobot(shiftDistance, moveDistance, motorSpeed, returnToSamePos);
                 break;
             }
             case "shiftToWall": {
                 double targetDistance = 0.0;
                 double moveDistance = 0.0;
                 double motorSpeed = 1.0;
-                boolean isForward = false;
+                boolean returnToSamePos=false;
                 double distanceFromWall;
                 double distanceToShift;
                 try{
@@ -332,8 +346,8 @@ public class AutonomousActions {
                     targetDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
                     moveDistance = actionObj.getDouble(key);
-                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "isForward");
-                    isForward = actionObj.getBoolean(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "returnToSamePos");
+                    returnToSamePos = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     motorSpeed = actionObj.getDouble(key);
                 }
@@ -341,19 +355,20 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
-                distanceToShift = distanceFromWall - targetDistance;
-                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, isForward=%b",
-                        targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, isForward);
+                distanceToShift = targetDistance - distanceFromWall;
+                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, returnToSamePos=%b",
+                        targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, returnToSamePos);
+                robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos);
                 // If we are already close enough to the wall, then do nothing.
-                if (distanceToShift > 0) {
-                    if (allianceColor.equalsIgnoreCase("red")) {
+//                if (distanceToShift > 0) {
+//                    if (allianceColor.equalsIgnoreCase("red")) {
                         // shift left
-                        robot.navigation.shiftRobot(-distanceToShift, moveDistance, isForward, motorSpeed);
-                    } else if (allianceColor.equalsIgnoreCase("blue")) {
-                        // shift right
-                        robot.navigation.shiftRobot(distanceToShift, moveDistance, isForward, motorSpeed);
-                    }
-                }
+//                        robot.navigation.shiftRobot(-distanceToShift, moveDistance, isForward, motorSpeed, returnToSamePos);
+//                    } else if (allianceColor.equalsIgnoreCase("blue")) {
+//                         shift right
+//                        robot.navigation.shiftRobot(distanceToShift, moveDistance, isForward, motorSpeed, returnToSamePos);
+//                    }
+//                }
                 break;
             }
             case "testEncoders":{
