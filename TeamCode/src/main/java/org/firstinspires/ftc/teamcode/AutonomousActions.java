@@ -341,7 +341,7 @@ public class AutonomousActions {
                 boolean returnToSamePos=false;
                 double distanceFromWall;
                 double distanceToShift;
-                try{
+                try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "targetDistance");
                     targetDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
@@ -350,8 +350,7 @@ public class AutonomousActions {
                     returnToSamePos = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     motorSpeed = actionObj.getDouble(key);
-                }
-                catch (JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
@@ -371,8 +370,33 @@ public class AutonomousActions {
 //                }
                 break;
             }
-            case "testEncoders":{
-                robot.driveSystem.testEncoders();
+            case "autoLiftPlacement":{//name may be changed
+                //todo: place the lift in ready position
+                //1. Move lift up a bit
+                //2. Lower fork
+                //3. Lower lift to ground
+            }
+            case "switchBool":{
+                try{
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "varName");
+                    DbgLog.msg(key);
+                    //todo: do something with varName to invoke the correct variable
+
+                    //if (variable varName is true){
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "trueMethod");
+                    if (!key.equals("switchBool")) {
+                        invokeMethod(key, actionObj);
+                    }
+                    //}
+                    //else{
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "falseMethod");
+                    if (!key.equals("switchBool")) {
+                        invokeMethod(key, actionObj);
+                    }
+                    //}
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

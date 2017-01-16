@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -70,10 +71,21 @@ public class CapBallLift implements  Attachment {
         }
     }
 
+    public void autoPlacement(){
+        long timeout = System.nanoTime();
+        while ((System.nanoTime() - timeout) < (250000000L)) {
+            liftMotor.setPower(0.25);
+        }
+        liftServo.setPosition(0);
+        timeout = System.nanoTime();
+        while ((System.nanoTime() - timeout) < (1000000000L)){
+            liftMotor.setPower(-0.25);
+        }
+    }
+
     @Override
     public void getAndApplyDScmd() {
         float power;
-
 
         power = -curOpMode.gamepad2.right_stick_y;
 
@@ -87,8 +99,8 @@ public class CapBallLift implements  Attachment {
         }
 
         if (liftServoCR != null) {
-            if (curOpMode.gamepad2.a) {
-                liftServoCR.setPower(-1);
+            if (liftServo!= null && curOpMode.gamepad2.a) {
+                autoPlacement();
             } else if (curOpMode.gamepad2.y) {
                 liftServoCR.setPower(1);
             } else {
@@ -96,9 +108,7 @@ public class CapBallLift implements  Attachment {
             }
         }
         if (liftServo != null) {
-            if (curOpMode.gamepad2.a) {
-                liftServo.setPosition(0);
-            } else if (curOpMode.gamepad2.y) {
+            if (curOpMode.gamepad2.y) {
                 liftServo.setPosition(1);
             }
         }
