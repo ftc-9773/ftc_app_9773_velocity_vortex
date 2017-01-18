@@ -65,7 +65,7 @@ public class ParticleRelease implements Attachment{
     public void getAndApplyDScmd() {
         if (curOpMode.gamepad1.a) {
             releaseParticles();
-            curOpMode.sleep(700);
+            curOpMode.sleep(500);
             keepParticles();
         }
         if (curOpMode.gamepad1.y) {
