@@ -35,6 +35,11 @@ public class NavxMicro {
     private DcMotor.ZeroPowerBehavior prev_zp=null;
     private NAVX_Status navxStatus;
 
+    private double lastAccelX = 0.0;
+    private double lastAccelY = 0.0;
+    private final double COLLISION_THRESHOLD = 0.5;
+
+
 
     public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, Navigation navigation, String dimName, int portNum,
                      double driveSysInitialPower, double angleTolerance, double straightPID_kp,
@@ -228,5 +233,20 @@ public class NavxMicro {
         } else {
             DbgLog.msg("ftc9773: Navx device is not connected");
         }
+    }
+
+    //update collision detection
+    public boolean detectCollision() {
+        double curAccelX = navx_device.getWorldLinearAccelX();
+        double curJerkX = curAccelX - lastAccelX;
+        lastAccelX = curAccelX;
+
+        double curAccelY = navx_device.getWorldLinearAccelY();
+        double curJerkY = curAccelY - lastAccelY;
+        lastAccelY = curAccelY;
+
+        boolean collisionIsDetected = lastAccelX > COLLISION_THRESHOLD || lastAccelY > COLLISION_THRESHOLD;
+        DbgLog.msg("collision is detected? %s", collisionIsDetected ? "COLLISION!!!!!!!!!" : "NO COLLISION");
+        return collisionIsDetected;
     }
 }

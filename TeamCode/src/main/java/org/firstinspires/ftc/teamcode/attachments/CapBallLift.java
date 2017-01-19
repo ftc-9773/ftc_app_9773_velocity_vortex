@@ -102,5 +102,6 @@ public class CapBallLift implements  Attachment {
                 liftServo.setPosition(1);
             }
         }
+
     }
 }
