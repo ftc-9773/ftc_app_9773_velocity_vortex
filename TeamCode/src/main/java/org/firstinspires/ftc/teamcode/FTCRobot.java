@@ -152,7 +152,7 @@ public class FTCRobot {
                 direction = curOpMode.gamepad1.right_stick_x;
             }
             else{
-                speed = curOpMode.gamepad1.left_stick_y;
+                speed = curOpMode.gamepad1.left_stick_y*0.6F;
                 direction = curOpMode.gamepad1.right_stick_x;
             }
             speed = (float) Range.clip(speed, -1.0, 1.0);
