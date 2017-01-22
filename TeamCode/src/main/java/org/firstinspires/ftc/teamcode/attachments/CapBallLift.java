@@ -72,13 +72,16 @@ public class CapBallLift implements  Attachment {
     }
 
     public void autoPlacement(){
+        DbgLog.msg("ftc9773: reached here 1");
         long timeout = System.nanoTime();
         while ((System.nanoTime() - timeout) < (250000000L)) {
+            DbgLog.msg("ftc9773: raising");
             liftMotor.setPower(0.25);
         }
         liftServo.setPosition(0);
         timeout = System.nanoTime();
         while ((System.nanoTime() - timeout) < (1000000000L)){
+            DbgLog.msg("ftc9773: lowering");
             liftMotor.setPower(-0.25);
         }
     }
@@ -100,8 +103,11 @@ public class CapBallLift implements  Attachment {
 
         if (liftServoCR != null) {
             if (liftServo!= null && curOpMode.gamepad2.a) {
+                DbgLog.msg("ftc9773: reached here 1");
                 autoPlacement();
+                DbgLog.msg("ftc9773: reached here 2");
             } else if (curOpMode.gamepad2.y) {
+                DbgLog.msg("ftc9773: reached here 3");
                 liftServoCR.setPower(1);
             } else {
                 liftServoCR.setPower(0.0);
