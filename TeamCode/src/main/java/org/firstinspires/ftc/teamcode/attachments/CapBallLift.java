@@ -74,7 +74,6 @@ public class CapBallLift implements  Attachment {
     public void getAndApplyDScmd() {
         float power;
 
-
         power = -curOpMode.gamepad2.right_stick_y;
 
         liftMotor.setPower(power);

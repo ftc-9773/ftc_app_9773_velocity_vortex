@@ -44,11 +44,7 @@ public class NavigationChecks {
 
         @Override
         public boolean stopNavigation() {
-            if (timer.milliseconds() >= timeoutMillis) {
-                return (true);
-            } else {
-                return (false);
-            }
+            return (timer.milliseconds() >= timeoutMillis);
         }
     }
 
@@ -75,7 +71,7 @@ public class NavigationChecks {
         @Override
         public boolean stopNavigation() {
             double curYaw = navxMicro.getModifiedYaw();
-            // If there is no update in 200 milli second, declare navx failure
+            // If there is NO UPDATE in 200 milli second, declare navx failure
             // For the first time check though, we may see > 200 msec difference due to the
             // time gap between instantiating this object and actually using it.
             if ((curYaw == prevYaw) && (timer.milliseconds() > 200) && !firstCheck) {
@@ -209,16 +205,33 @@ public class NavigationChecks {
     public class CheckForWhiteLine extends NavCheckBaseClass {
         @Override
         public boolean stopNavigation() {
-            if (navigationObj.lf.onWhiteLine()) {
-                return (true);
-            } else {
-                return (false);
-            }
+            return navigationObj.lf.onWhiteLine();
         }
 
         @Override
         public void reset() {
             return;
+        }
+    }
+
+    public class CollisionCheck extends NavCheckBaseClass{
+        NavxMicro navxMicro;
+        ElapsedTime timer;
+
+        public CollisionCheck(){
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            timer.reset();
+            navxMicro = navigationObj.navxMicro;
+        }
+
+        @Override
+        public boolean stopNavigation() {
+            return !navxMicro.detectCollision();
+        }
+
+        @Override
+        public void reset() {
+            timer.reset();
         }
     }
 

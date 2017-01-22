@@ -104,12 +104,7 @@ public class NavxMicro {
     }
 
     public boolean navxIsWorking() {
-        if (navxStatus == NAVX_Status.WORKING) {
-            return (true);
-        }
-        else {
-            return (false);
-        }
+        return navxStatus == NAVX_Status.WORKING;
     }
 
     public double getModifiedYaw() {
@@ -138,6 +133,9 @@ public class NavxMicro {
         } else {
             navxYaw = modifiedYaw;
         }
+
+        //OR:
+        //return modifiedYaw>180 ? modifiedYaw - 360 : modifiedYaw;
         return (navxYaw);
     }
 
