@@ -1,7 +1,6 @@
 {
   "testing1" : [
-    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270.0, "motorSpeed" : 0.4},
-    {"type" : "Programmed", "value" : "printNavigationValues"}
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 60, "motorSpeed" : 0.75}
   ],
   "testing2" : [
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 320.0, "motorSpeed" : 0.4},

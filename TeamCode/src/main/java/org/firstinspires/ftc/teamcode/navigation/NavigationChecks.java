@@ -224,7 +224,7 @@ public class NavigationChecks {
 
         @Override
         public boolean stopNavigation() {
-            return !navxMicro.detectCollision();
+            return navxMicro.detectCollision();
         }
 
         @Override

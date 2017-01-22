@@ -189,17 +189,21 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         NavigationChecks.CollisionCheck collisionCheck = navChecks.new CollisionCheck();
         LoopStatistics instr = new LoopStatistics();
+        DbgLog.msg("ftc9773: reached here 1");
         navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
         navChecks.addNewCheck(collisionCheck);
         boolean driveBackwards = inches < 0;
         if (navxMicro.navxIsWorking()) {
+            DbgLog.msg("ftc9773: reached here 2");
             DbgLog.msg("ftc9773: Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
             instr.startLoopInstrumentation();
+            DbgLog.msg("ftc9773: reached here 3");
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
+                DbgLog.msg("ftc9773: reached here 4");
                 instr.updateLoopInstrumentation();
                 if (tiltingCheck.stopNavigation()) {
                     DbgLog.msg("ftc9773: tilting detected");
@@ -213,6 +217,7 @@ public class Navigation {
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
+            DbgLog.msg("ftc9773: reached here 5");
             DbgLog.msg("ftc9773: Navx is not working");
             // Use purely encoder based navigation
             DbgLog.msg("ftc9773: Speed: %f, distance: %f", speed, inches);
@@ -221,12 +226,15 @@ public class Navigation {
                 speed = -speed;
             }
             instr.startLoopInstrumentation();
+            DbgLog.msg("ftc9773: reached here 6");
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(speed, 0);
                 instr.updateLoopInstrumentation();
+                DbgLog.msg("ftc9773: reached here 7");
             }
             robot.driveSystem.stop();
             instr.printLoopInstrumentation();
+            DbgLog.msg("ftc9773: reached here 8");
         }
     }
 
@@ -299,7 +307,7 @@ public class Navigation {
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
-        driveBackwards = distance < 0 ? true : false;
+        driveBackwards = distance < 0;
         NavigationChecks.EncoderCheckForDistance distanceCheck = navChecks.new EncoderCheckForDistance(distance);
         navChecks.addNewCheck(distanceCheck);
         if (navxMicro.navxIsWorking()) {
