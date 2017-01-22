@@ -142,6 +142,5 @@ public abstract class DriveSystem {
     public abstract void printCurrentPosition();
     public abstract void initForPlay();
 
-    public void testEncoders(){return;}
 
 }

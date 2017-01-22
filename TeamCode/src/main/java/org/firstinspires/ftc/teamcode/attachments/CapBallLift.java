@@ -24,6 +24,8 @@ public class CapBallLift implements  Attachment {
     DcMotor liftMotor;
     CRServo liftServoCR = null;
     Servo liftServo = null;
+    int liftMotorCounts= 0;
+    boolean lockLift = false;
 
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
@@ -66,6 +68,7 @@ public class CapBallLift implements  Attachment {
                 liftServo.setPosition(1);
             }
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -73,17 +76,18 @@ public class CapBallLift implements  Attachment {
 
     public void autoPlacement(){
         DbgLog.msg("ftc9773: reached here 1");
-        long timeout = System.nanoTime();
-        while ((System.nanoTime() - timeout) < (250000000L)) {
-            DbgLog.msg("ftc9773: raising");
-            liftMotor.setPower(0.25);
-        }
-        liftServo.setPosition(0);
-        timeout = System.nanoTime();
-        while ((System.nanoTime() - timeout) < (1000000000L)){
-            DbgLog.msg("ftc9773: lowering");
-            liftMotor.setPower(-0.25);
-        }
+        DbgLog.msg("ftc9773: unfolding");
+        liftServoCR.setPower(-1);
+        curOpMode.sleep(500);
+        liftServoCR.setPower(0);
+        DbgLog.msg("ftc9773: raising");
+        liftMotor.setPower(1);
+        curOpMode.sleep(900);
+        liftMotor.setPower(0);
+        DbgLog.msg("ftc9773: lowering");
+        liftMotor.setPower(-1);
+        curOpMode.sleep(900);
+        liftMotor.setPower(0);
     }
 
     @Override
@@ -92,21 +96,32 @@ public class CapBallLift implements  Attachment {
 
         power = -curOpMode.gamepad2.right_stick_y;
 
-        liftMotor.setPower(power);
+        if (!lockLift){
+            liftMotor.setPower(power);
+        }
 
         if(curOpMode.gamepad2.right_bumper){
-            liftMotor.setPower(0.05);
+            lockLift = true;
+            liftMotor.setTargetPosition(liftMotor.getCurrentPosition());
         }
-        if(curOpMode.gamepad2.left_bumper){
-            liftMotor.setPower(0);
+        if (curOpMode.gamepad2.left_bumper){
+            lockLift = false;
+            liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        if (lockLift){
+            if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
+                liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            liftMotor.setPower(1);
         }
 
+
         if (liftServoCR != null) {
-            if (liftServo!= null && curOpMode.gamepad2.a) {
+            if (liftServoCR!= null && curOpMode.gamepad2.a) {
                 DbgLog.msg("ftc9773: reached here 1");
                 autoPlacement();
                 DbgLog.msg("ftc9773: reached here 2");
-            } else if (curOpMode.gamepad2.y) {
+            } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
                 DbgLog.msg("ftc9773: reached here 3");
                 liftServoCR.setPower(1);
             } else {
