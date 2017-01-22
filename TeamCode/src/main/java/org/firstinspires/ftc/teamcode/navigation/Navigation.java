@@ -187,10 +187,12 @@ public class Navigation {
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
+        NavigationChecks.CollisionCheck collisionCheck = navChecks.new CollisionCheck();
         LoopStatistics instr = new LoopStatistics();
         navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
-        boolean driveBackwards = inches < 0 ? true : false;
+        navChecks.addNewCheck(collisionCheck);
+        boolean driveBackwards = inches < 0;
         if (navxMicro.navxIsWorking()) {
             DbgLog.msg("ftc9773: Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);

@@ -203,7 +203,7 @@ public class NavigationChecks {
     }
 
     public class CheckForWhiteLine extends NavCheckBaseClass {
-        //Need timer?
+
         @Override
         public boolean stopNavigation() {
             return navigationObj.lf.onWhiteLine();
