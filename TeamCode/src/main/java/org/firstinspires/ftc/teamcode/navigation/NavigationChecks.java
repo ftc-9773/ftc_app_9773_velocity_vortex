@@ -203,6 +203,7 @@ public class NavigationChecks {
     }
 
     public class CheckForWhiteLine extends NavCheckBaseClass {
+        //Need timer?
         @Override
         public boolean stopNavigation() {
             return navigationObj.lf.onWhiteLine();
@@ -216,22 +217,23 @@ public class NavigationChecks {
 
     public class CollisionCheck extends NavCheckBaseClass{
         NavxMicro navxMicro;
-        ElapsedTime timer;
+//        ElapsedTime timer;//needed?
 
         public CollisionCheck(){
-            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-            timer.reset();
+//            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+//            timer.reset();
             navxMicro = navigationObj.navxMicro;
         }
 
         @Override
         public boolean stopNavigation() {
+//            timer.reset(); //needed??????
             return !navxMicro.detectCollision();
         }
 
         @Override
         public void reset() {
-            timer.reset();
+            return;
         }
     }
 
