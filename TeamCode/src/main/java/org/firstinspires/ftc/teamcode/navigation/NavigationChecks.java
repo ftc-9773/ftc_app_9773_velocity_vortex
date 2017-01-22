@@ -217,17 +217,13 @@ public class NavigationChecks {
 
     public class CollisionCheck extends NavCheckBaseClass{
         NavxMicro navxMicro;
-//        ElapsedTime timer;//needed?
 
         public CollisionCheck(){
-//            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-//            timer.reset();
             navxMicro = navigationObj.navxMicro;
         }
 
         @Override
         public boolean stopNavigation() {
-//            timer.reset(); //needed??????
             return !navxMicro.detectCollision();
         }
 
