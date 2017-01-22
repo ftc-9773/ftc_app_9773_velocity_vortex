@@ -228,9 +228,7 @@ public class NavigationChecks {
         }
 
         @Override
-        public void reset() {
-            return;
-        }
+        public void reset() {}
     }
 
     public NavigationChecks(FTCRobot robot, LinearOpMode curOpMode, Navigation navigationObj) {
