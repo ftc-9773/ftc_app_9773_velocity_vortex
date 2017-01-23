@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by pranavb on 9/23/16.
@@ -84,5 +86,11 @@ public class FileRW {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getTimeStampedFileName(String fileName) {
+        String timestamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        String newFileName = fileName.concat(timestamp);
+        return (newFileName);
     }
 }

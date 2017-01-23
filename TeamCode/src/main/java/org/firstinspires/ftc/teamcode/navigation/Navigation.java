@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 import org.firstinspires.ftc.teamcode.util.LoopStatistics;
+import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.json.JSONObject;
 
 
@@ -29,6 +30,7 @@ public class Navigation {
     public ModernRoboticsI2cRangeSensor rangeSensor;
     public double lfMaxSpeed=1.0, straightDrMaxSpeed=1.0, turnMaxSpeed=1.0;
     public double driveSysTeleopMaxSpeed=1.0;
+
 
     public enum SpinDirection {CLOCKWISE, COUNTERCLOCKWISE, NONE}
 

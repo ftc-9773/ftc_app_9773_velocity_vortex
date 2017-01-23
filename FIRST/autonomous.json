@@ -1,9 +1,0 @@
-{
-  "autonomous" :
-  {
-    "startingDelay" : 10,
-    "startingPosition" : 24,
-    "autonomousActions" : ["shoot particles", "Claim Beacon 1", "Claim Beacon 2",
-      "push cap ball", "Park on corner vortex"]
-  }
-}

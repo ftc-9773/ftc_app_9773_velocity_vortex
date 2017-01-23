@@ -55,6 +55,18 @@ public class RobotConfigReader extends JsonReader {
         return (navigationOption);
     }
 
+    public String getString(String key) {
+        String value=null;
+        try {
+            key = JsonReader.getRealKeyIgnoreCase(robotObj, key);
+            value = robotObj.getString(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            DbgLog.error("ftc9773: key %s not found for the robot named %s!", key, robotName);
+        }
+        return (value);
+    }
+
     public String[] getAttachments() {
         int len = 0;
         String[] attachmentsArr = null;
@@ -74,6 +86,8 @@ public class RobotConfigReader extends JsonReader {
         return (attachmentsArr);
     }
 
+    // This method is deprecated as we are not doing line follow anymore
+    @Deprecated
     public double getDistanceLeft() {
         double value = 0.0;
         try {
@@ -86,6 +100,8 @@ public class RobotConfigReader extends JsonReader {
         return (value);
     }
 
+    // This method is deprecated as we are not doing line follow anymore
+    @Deprecated
     public double getDistanceRight() {
         double value = 0.0;
         try {

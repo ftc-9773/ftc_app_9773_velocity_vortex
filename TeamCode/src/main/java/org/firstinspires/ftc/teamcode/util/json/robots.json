@@ -43,5 +43,16 @@
     "distanceBetweenLeftAndODS":11,
     "distanceBetweenRightAndODS":4,
     "distanceBetweenWheels" : 15.5
+  },
+  "2017_2_5_Pleasantville_Robot" : {
+    "driveSystem": "4Motor6WDSteering",
+    "attachments": ["CapBallLift", "BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator"],
+    "navigation": "LineFollow_IMU_DriveSysEncoders",
+    "distanceBetweenLeftAndODS":11,
+    "distanceBetweenRightAndODS":4,
+    "distanceBetweenWheels" : 15.5,
+    "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime",
+    "rangeSensorLog" : "/sdcard/FIRST/team9773/logs/rangeSensor",
+    "navxLog" : "/sdcard/FIRST/team9773/logs/navxmicro"
   }
 }

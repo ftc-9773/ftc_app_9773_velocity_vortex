@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
+import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +51,7 @@ public class FTCRobot {
     public double distanceRight;
     public double distanceBetweenWheels;
     public String autoOrTeleop;
+    public RepetitiveActions repActions;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -67,6 +69,11 @@ public class FTCRobot {
         distanceRight = robotConfig.getDistanceRight();
         distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
         DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
+
+        // Initialize the Repetitive Actions object
+        repActions = new RepetitiveActions(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
+                robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"));
+        DbgLog.msg("ftc9773: Initialized the repetitiveActions object");
 
         // Instantiate the Drive System
         try {

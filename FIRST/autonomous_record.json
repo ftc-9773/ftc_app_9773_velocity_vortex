@@ -1,6 +1,0 @@
-{
-  "recordreplayFilesDir" : "/sdcard/FIRST/autonomous/red",
-  "__comment" : "recordreplayFilesDir : /sdcard/FIRST/autonomous/blue",
-  "recordFileName" : "startToBeacon1.csv",
-  "robotConfigFilePath" : "/sdcard/FIRST/robot_4motor_4wd.json"
-}

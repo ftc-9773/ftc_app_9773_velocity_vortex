@@ -229,4 +229,8 @@ public class NavxMicro {
             DbgLog.msg("ftc9773: Navx device is not connected");
         }
     }
+
+    public double getUpdateCount() {
+        return (navx_device.getUpdateCount());
+    }
 }
