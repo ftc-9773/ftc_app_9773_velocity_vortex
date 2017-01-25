@@ -178,10 +178,12 @@ public class NavxMicro {
         DbgLog.msg("ftc9773: raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                 navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
 
-        instr.startLoopInstrumentation();
+//        instr.startLoopInstrumentation();
+        robot.repActions.startActions();
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
-            instr.updateLoopInstrumentation();
+//            instr.updateLoopInstrumentation();
+            robot.repActions.repeatActions();
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), startingYaw);
             if (yawDiff > min_angleToTurn)
                 break;
@@ -190,7 +192,8 @@ public class NavxMicro {
 
         DbgLog.msg("ftc9773: angle = %f", angle);
         this.robot.driveSystem.stop();
-        instr.printLoopInstrumentation();
+//        instr.printLoopInstrumentation();
+        robot.repActions.printToConsole();
     }
 
     public void navxGoStraightPID(boolean driveBackwards, double degrees, float speed) {

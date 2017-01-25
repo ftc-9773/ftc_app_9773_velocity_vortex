@@ -202,9 +202,11 @@ public class FTCRobot {
             navigation.initForPlay(); // Initialization after starting the robot
             driveSystem.initForPlay(); // Initialization of drive system after starting the robot
             autonomousActions.doActions();
+            navigation.close();
             driveSystem.stop();
             curOpMode.stop();
         } catch (InterruptedException e) {
+            navigation.close();
             driveSystem.stop();
             curOpMode.stop();
         }
