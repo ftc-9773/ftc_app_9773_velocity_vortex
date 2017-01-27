@@ -233,7 +233,7 @@ public class RepetitiveActions {
             minDegrees = Double.MAX_VALUE;
             maxDegrees = totalDegrees = avgDegrees = 0.0;
             if (printEveryUpdate) {
-                String strToWrite = String.format("voltage, millis, iteration, degrees, updateCount");
+                String strToWrite = String.format("voltage, millis, iteration, yaw degrees, pitch, updateCount");
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -253,8 +253,9 @@ public class RepetitiveActions {
             updateCount = navxMicro.getUpdateCount();
             if (printEveryUpdate && (updateCount != prevUpdateCount)) {
                 numUpdates++;
-                String strToWrite = String.format("%f, %f, %d, %f, %f", robot.getVoltage(),
-                        timer.milliseconds(), iterationCount, curDegrees, updateCount);
+                String strToWrite = String.format("%f, %f, %d, %f, %f, %f", robot.getVoltage(),
+                        timer.milliseconds(), iterationCount, curDegrees, navxMicro.getPitch(),
+                        updateCount);
                 fileObj.fileWrite(strToWrite);
             }
         }
