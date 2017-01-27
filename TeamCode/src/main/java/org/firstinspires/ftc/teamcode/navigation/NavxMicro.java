@@ -66,7 +66,9 @@ public class NavxMicro {
         }
 
         // ToDo:  The should be done only in the autonomous mode.
-        navx_device.zeroYaw();
+        if (robot.autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+            navx_device.zeroYaw();
+        }
         DbgLog.msg("ftc9773: Current yaw = %f", getModifiedYaw());
 
         /* Configure the PID controller */
