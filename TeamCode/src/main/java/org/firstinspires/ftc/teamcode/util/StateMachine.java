@@ -24,16 +24,11 @@ public class StateMachine {
     public void transition(OpMode opMode){
         if(opMode.gamepad1.back){
             switch (state){
-                case TeleOp_BeaconClaim: state = State.EndGame_CapBall;
-                    opMode.telemetry.addData("Current State: ","Cap Ball");
-                    break;
-                case EndGame_CapBall: state = State.TeleOp_ShootParticles;
-                    opMode.telemetry.addData("Current State: ","Shoot Particles");
-                    break;
-                case TeleOp_ShootParticles: state = State.TeleOp_BeaconClaim;
-                    opMode.telemetry.addData("Current State: ","Beacon Claim");
-                    break;
+                case TeleOp_BeaconClaim: state = State.EndGame_CapBall; break;
+                case EndGame_CapBall: state = State.TeleOp_ShootParticles; break;
+                case TeleOp_ShootParticles: state = State.TeleOp_BeaconClaim; break;
             }
+            opMode.telemetry.addData("Current state: ","%s",state.name());
         }
 
     }
