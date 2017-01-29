@@ -27,7 +27,7 @@ public class StateMachine {
     public void transition(OpMode opMode){
         if(opMode.gamepad1.back){
             switch (state){
-                case TeleOp_BeaconClaim: state = State.EndGame_CapBall; break;
+                case TeleOp_BeaconClaim: state = timer.seconds()>120-40 ? State.EndGame_CapBall : State.TeleOp_ShootParticles; break;
                 case EndGame_CapBall: state = State.TeleOp_ShootParticles; break;
                 case TeleOp_ShootParticles: state = State.TeleOp_BeaconClaim; break;
             }
