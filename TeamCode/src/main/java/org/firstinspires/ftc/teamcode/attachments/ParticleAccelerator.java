@@ -76,10 +76,9 @@ public class ParticleAccelerator implements Attachment{
     
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad1.dpad_up) {
+        if(robot.driverStation.getParticleAccelCmd().activate)
             activateParticleAccelerator();
-        }
-        else if (curOpMode.gamepad1.dpad_down) {
+        else{
             deactivateParticleAccelerator();
         }
     }

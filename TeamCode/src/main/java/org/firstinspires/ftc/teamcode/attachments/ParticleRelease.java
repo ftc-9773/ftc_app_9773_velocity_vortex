@@ -63,13 +63,15 @@ public class ParticleRelease implements Attachment{
     
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad1.a) {
-            releaseParticles();
-            curOpMode.sleep(500);
-            keepParticles();
+        switch (robot.driverStation.getParticleReleaseCmd().status){
+            case RELEASE_WAIT_KEEP: takeParticles(); break;
+            case KEEP: keepParticles(); break;
         }
-        if (curOpMode.gamepad1.y) {
-            keepParticles();
-        }
+    }
+
+    public void takeParticles(){
+        releaseParticles();
+        curOpMode.sleep(500);
+        keepParticles();
     }
 }

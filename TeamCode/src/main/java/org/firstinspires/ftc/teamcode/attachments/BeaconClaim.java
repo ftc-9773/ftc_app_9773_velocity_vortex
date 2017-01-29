@@ -7,10 +7,16 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.DriveCommand;
+import org.firstinspires.ftc.teamcode.DriverStation;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static org.firstinspires.ftc.teamcode.DriveCommand.BeaconAction.IDLE;
+import static org.firstinspires.ftc.teamcode.DriveCommand.BeaconAction.PUSH;
+import static org.firstinspires.ftc.teamcode.DriveCommand.BeaconAction.RETRACT;
 
 
 /*
@@ -20,6 +26,7 @@ import org.json.JSONObject;
 public class BeaconClaim implements Attachment {
     private FTCRobot robot;
     private LinearOpMode curOpMode;
+
     private CRServo buttonServo=null;
     private Servo colorServo=null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
@@ -29,6 +36,7 @@ public class BeaconClaim implements Attachment {
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
         this.robot = robot;
+
         String key;
         JSONObject beaconJsonObj=null;
         JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
@@ -106,14 +114,10 @@ public class BeaconClaim implements Attachment {
     // This method should be called in the while(opModeIsActive) loop
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad2.x){
-            pushBeacon();
-        }
-        else if (curOpMode.gamepad2.b){
-            retractBeacon();
-        }
-        else {
-            idleBeacon();
+        switch (robot.driverStation.getBeaconCmd().beaconAction){
+            case RETRACT: retractBeacon(); break;
+            case PUSH: pushBeacon(); break;
+            case IDLE: idleBeacon(); break;
         }
     }
     public void pushBeacon(){

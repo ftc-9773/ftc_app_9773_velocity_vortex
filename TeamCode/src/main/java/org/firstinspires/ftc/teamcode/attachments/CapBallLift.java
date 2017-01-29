@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.DriveCommand;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
@@ -125,24 +126,16 @@ public class CapBallLift implements  Attachment {
 
         applyPower(power);
 
-        if(curOpMode.gamepad2.right_bumper){
-            lockLiftMotor();
+        switch (robot.driverStation.getCapBallLiftCmd().capBallLiftAction){
+            case LIFT_UNLOCK: unlockLiftMotor(); break;
+            case LIFT_LOCK: lockLiftMotor(); break;
         }
-        if (curOpMode.gamepad2.left_bumper){
-            unlockLiftMotor();
-        }
-
 
         if (liftServoCR != null) {
-            if (liftServoCR!= null && curOpMode.gamepad2.a) {
-                DbgLog.msg("ftc9773: reached here 1");
-                autoPlacement();
-                DbgLog.msg("ftc9773: reached here 2");
-            } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
-                DbgLog.msg("ftc9773: reached here 3");
-                foldFork();
-            } else {
-                idleFork();
+            switch (robot.driverStation.getCapBallLiftCmd().capBallLiftAction){
+                case FORK_AUTO_PLACEMENT: autoPlacement();break;
+                case FORK_FOLD: foldFork(); break;
+                case FORK_IDLE: idleFork(); break;
             }
         }
     }

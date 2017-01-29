@@ -18,12 +18,14 @@ import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
 import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
+import org.firstinspires.ftc.teamcode.util.StateMachine;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
+
 
 
 /*
@@ -50,10 +52,11 @@ public class FTCRobot {
     public ParticleRelease particleObj;
     public double distanceLeft;
     public double distanceRight;
-    public ElapsedTime timer;
     public double distanceBetweenWheels;
     public String autoOrTeleop;
     public RepetitiveActions repActions;
+    public StateMachine stateMachine;
+    public DriverStation driverStation;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -69,14 +72,15 @@ public class FTCRobot {
         String driveSysName = null;
         distanceLeft = robotConfig.getDistanceLeft();
         distanceRight = robotConfig.getDistanceRight();
-        timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
         DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
+        this.stateMachine = new StateMachine();
+        this.driverStation = new DriverStation(this,curOpMode);
 
         // Initialize the Repetitive Actions object
         repActions = new RepetitiveActions(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
                 robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"));
-        DbgLog.msg("ftc9773: Initialized the repetitiveActions object");
+        DbgLog.msg("ftc9773: Initialized the RepetitiveActions object");
 
         // Instantiate the Drive System
         try {
@@ -155,7 +159,7 @@ public class FTCRobot {
 
         // Set the drive system teleop mode max speed
         curOpMode.waitForStart();
-        timer.startTime();
+        stateMachine.initAfterStart();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {
@@ -176,11 +180,33 @@ public class FTCRobot {
             else if(curOpMode.gamepad1.b){
                 isReverse = false;
             }
-            for (Attachment anAttachment : attachmentsArr) {
-                anAttachment.getAndApplyDScmd();
-            }
-
+//            for (Attachment anAttachment : attachmentsArr) {
+//                anAttachment.getAndApplyDScmd();
+//            }
+            applyDSCmd();
             curOpMode.idle();
+        }
+    }
+
+    private void applyDSCmd(){
+        driverStation.getDSCmd();
+        switch(driverStation.command.capBallLiftCmd.capBallLiftAction){
+            case FORK_AUTO_PLACEMENT: capBallLiftObj.autoPlacement(); break;
+            case FORK_FOLD: capBallLiftObj.foldFork(); break;
+            case FORK_IDLE: capBallLiftObj.idleFork(); break;
+            case LIFT_LOCK: capBallLiftObj.lockLiftMotor(); break;
+            case LIFT_UNLOCK: capBallLiftObj.unlockLiftMotor(); break;
+        }
+        switch (driverStation.command.harvesterCmd.harvesterAction){
+            case INTAKE: harvesterObj.intake(); break;
+            case OUTPUT: harvesterObj.output(); break;
+            case IDLE: harvesterObj.idle(); break;
+        }
+        if(driverStation.command.particleAccelCmd.activate) partAccObj.activateParticleAccelerator();
+        else{partAccObj.deactivateParticleAccelerator();}
+        switch (driverStation.command.particleReleaseCmd.status){
+            case RELEASE_WAIT_KEEP: particleObj.takeParticles(); break;
+            case KEEP: particleObj.keepParticles(); break;
         }
     }
 

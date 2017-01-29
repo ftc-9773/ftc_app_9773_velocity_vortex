@@ -52,14 +52,10 @@ public class Harvester implements Attachment {
 
     @Override
     public void getAndApplyDScmd(){
-        if(curOpMode.gamepad2.dpad_down){
-            intake();
-        }
-        else if (curOpMode.gamepad2.dpad_up){
-            output();
-        }
-        else {
-            idle();
+        switch (robot.driverStation.getHarvesterCmd().harvesterAction){
+            case INTAKE: intake(); break;
+            case OUTPUT: output(); break;
+            case IDLE: idle(); break;
         }
     }
 

@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
-import org.firstinspires.ftc.teamcode.util.repetitiveActions;
+import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.json.JSONObject;
 
 
@@ -29,10 +29,10 @@ public class Navigation {
     public ModernRoboticsI2cRangeSensor rangeSensor;
     public double lfMaxSpeed=1.0, straightDrMaxSpeed=1.0, turnMaxSpeed=1.0;
     public double driveSysTeleopMaxSpeed=1.0;
-    private repetitiveActions.LoopRuntime driveToDistInstr, driveTillWhitelineInstr, turnRobotInstr;
-    private repetitiveActions.LoopRuntime driveTillBeaconInstr;
-    private repetitiveActions.NavxDegrees navxDegreesInstr;
-    private repetitiveActions.RangeSensorDistance rangeInstr;
+    private RepetitiveActions.LoopRuntime driveToDistInstr, driveTillWhitelineInstr, turnRobotInstr;
+    private RepetitiveActions.LoopRuntime driveTillBeaconInstr;
+    private RepetitiveActions.NavxDegrees navxDegreesInstr;
+    private RepetitiveActions.RangeSensorDistance rangeInstr;
 
 
     public enum SpinDirection {CLOCKWISE, COUNTERCLOCKWISE, NONE}
@@ -87,10 +87,10 @@ public class Navigation {
         // Instantiate the common instrumentation objects (declared as inner classes in RepetitiveActions class
         navxDegreesInstr = robot.repActions.new NavxDegrees(this.navxMicro, true);
         rangeInstr = robot.repActions.new RangeSensorDistance(this.rangeSensor, true);
-        driveToDistInstr = robot.repActions.new LoopRuntime(repetitiveActions.LoopType.DRIVE_TO_DISTANCE);
-        driveTillWhitelineInstr = robot.repActions.new LoopRuntime(repetitiveActions.LoopType.DRIVE_UNTIL_WHITELINE);
-        driveTillBeaconInstr = robot.repActions.new LoopRuntime(repetitiveActions.LoopType.DRIVE_TILL_BEACON);
-        turnRobotInstr = robot.repActions.new LoopRuntime(repetitiveActions.LoopType.TURN_ROBOT);
+        driveToDistInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_TO_DISTANCE);
+        driveTillWhitelineInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_UNTIL_WHITELINE);
+        driveTillBeaconInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_TILL_BEACON);
+        turnRobotInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.TURN_ROBOT);
     }
 
     public void printRangeSensorValue() {
