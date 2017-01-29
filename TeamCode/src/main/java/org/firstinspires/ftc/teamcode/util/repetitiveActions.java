@@ -18,7 +18,7 @@ import java.util.List;
  * Created by ftcrobocracy on 1/22/17.
  */
 
-public class RepetitiveActions {
+public class repetitiveActions {
     LinearOpMode curOpMode;
     FTCRobot robot;
     public enum RepActionID {LOOP_RUNTIME, RANGESENSOR_INCHES, NAVX_DEGREES}
@@ -285,7 +285,7 @@ public class RepetitiveActions {
         }
     }
 
-    public RepetitiveActions(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
+    public repetitiveActions(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
                              String rangeSensorLog, String navxLog) {
         this.robot = robot;
         this.curOpMode = curOpMode;
