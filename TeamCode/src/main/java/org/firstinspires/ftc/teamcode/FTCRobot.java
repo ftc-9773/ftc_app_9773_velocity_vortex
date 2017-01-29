@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
@@ -47,6 +48,7 @@ public class FTCRobot {
     public ParticleRelease particleObj;
     public double distanceLeft;
     public double distanceRight;
+    public ElapsedTime timer;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -60,6 +62,7 @@ public class FTCRobot {
         String driveSysName = null;
         distanceLeft = robotConfig.getDistanceLeft();
         distanceRight = robotConfig.getDistanceRight();
+        timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
         // Instantiate the Drive System
         try {
@@ -137,6 +140,7 @@ public class FTCRobot {
         // Set the drive system teleop mode max speed
         driveSystem.setMaxSpeed((float) navigation.driveSysTeleopMaxSpeed);
         curOpMode.waitForStart();
+        timer.startTime();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {
