@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.util.FileRW;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
 import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
+import org.firstinspires.ftc.teamcode.util.StateMachine;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,6 +53,7 @@ public class FTCRobot {
     public double distanceBetweenWheels;
     public String autoOrTeleop;
     public RepetitiveActions repActions;
+    public StateMachine stateMachine;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -99,9 +101,11 @@ public class FTCRobot {
             navigation = null;
         }
 
+        stateMachine = new StateMachine();
         DbgLog.msg("ftc9773: Done with robot initialization.  Current Voltage = %f", getVoltage());
         DbgLog.msg("ftc9773: Applications external storage directory=%s",
                 curOpMode.hardwareMap.appContext.getExternalFilesDir(null));
+
     }
 
     /**
@@ -152,6 +156,7 @@ public class FTCRobot {
 
         // Set the drive system teleop mode max speed
         curOpMode.waitForStart();
+        stateMachine.initAfterStart();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {

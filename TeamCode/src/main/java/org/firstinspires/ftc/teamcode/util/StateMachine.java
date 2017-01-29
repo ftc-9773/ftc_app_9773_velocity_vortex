@@ -22,7 +22,6 @@ public class StateMachine {
     public StateMachine(){
         state = State.TeleOp_ShootParticles;
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-        timer.reset();
     }
 
     public void transition(OpMode opMode){
@@ -38,4 +37,7 @@ public class StateMachine {
 
     public State getCurrentState(){return state;}
 
+    public void initAfterStart(){
+        this.timer.reset();
+    }
 }
