@@ -74,19 +74,47 @@ public class CapBallLift implements  Attachment {
     }
 
     public void autoPlacement(){
-        DbgLog.msg("ftc9773: reached here 1");
-        DbgLog.msg("ftc9773: unfolding");
-        liftServoCR.setPower(-1);
+        //Unfolding
+        unfoldFork();
         curOpMode.sleep(500);
+        idleFork();
+        //raising
+        applyPower(1);
+        curOpMode.sleep(900);
+        applyPower(0);
+        //lowering
+        applyPower(-1);
+        curOpMode.sleep(900);
+        applyPower(0);
+    }
+
+    public void applyPower(double power){
+        if (!lockLift){
+            liftMotor.setPower(power);
+        }
+        else if (lockLift){
+            if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
+                liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            liftMotor.setPower(1);
+        }
+    }
+    public void lockLiftMotor(){
+        lockLift = true;
+        liftMotor.setTargetPosition(liftMotor.getCurrentPosition());
+    }
+    public void unlockLiftMotor(){
+        lockLift = false;
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+    public void unfoldFork(){
+        liftServoCR.setPower(-1);
+    }
+    public void foldFork(){
+        liftServoCR.setPower(1);
+    }
+    public void idleFork(){
         liftServoCR.setPower(0);
-        DbgLog.msg("ftc9773: raising");
-        liftMotor.setPower(1);
-        curOpMode.sleep(900);
-        liftMotor.setPower(0);
-        DbgLog.msg("ftc9773: lowering");
-        liftMotor.setPower(-1);
-        curOpMode.sleep(900);
-        liftMotor.setPower(0);
     }
 
     @Override
@@ -95,23 +123,13 @@ public class CapBallLift implements  Attachment {
 
         power = -curOpMode.gamepad2.right_stick_y;
 
-        if (!lockLift){
-            liftMotor.setPower(power);
-        }
+        applyPower(power);
 
         if(curOpMode.gamepad2.right_bumper){
-            lockLift = true;
-            liftMotor.setTargetPosition(liftMotor.getCurrentPosition());
+            lockLiftMotor();
         }
         if (curOpMode.gamepad2.left_bumper){
-            lockLift = false;
-            liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-        if (lockLift){
-            if(liftMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-                liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            liftMotor.setPower(1);
+            unlockLiftMotor();
         }
 
 
@@ -122,14 +140,9 @@ public class CapBallLift implements  Attachment {
                 DbgLog.msg("ftc9773: reached here 2");
             } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
                 DbgLog.msg("ftc9773: reached here 3");
-                liftServoCR.setPower(1);
+                foldFork();
             } else {
-                liftServoCR.setPower(0.0);
-            }
-        }
-        if (liftServo != null) {
-            if (curOpMode.gamepad2.y) {
-                liftServo.setPosition(1);
+                idleFork();
             }
         }
     }
