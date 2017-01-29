@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
@@ -49,6 +50,7 @@ public class FTCRobot {
     public ParticleRelease particleObj;
     public double distanceLeft;
     public double distanceRight;
+    public ElapsedTime timer;
     public double distanceBetweenWheels;
     public String autoOrTeleop;
     public RepetitiveActions repActions;
@@ -67,6 +69,7 @@ public class FTCRobot {
         String driveSysName = null;
         distanceLeft = robotConfig.getDistanceLeft();
         distanceRight = robotConfig.getDistanceRight();
+        timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
         DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
 
@@ -152,6 +155,7 @@ public class FTCRobot {
 
         // Set the drive system teleop mode max speed
         curOpMode.waitForStart();
+        timer.startTime();
         boolean isReverse = false;
         while(curOpMode.opModeIsActive()){
             if(!isReverse) {

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util;
 //import android.support.annotation.TransitionRes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by michaelzhou on 12/30/16.
@@ -16,9 +17,12 @@ public class StateMachine {
     }
 
     State state;
+    ElapsedTime timer;
 
     public StateMachine(){
-        this.state = State.TeleOp_ShootParticles;
+        state = State.TeleOp_ShootParticles;
+        timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        timer.reset();
     }
 
     public void transition(OpMode opMode){
@@ -30,7 +34,6 @@ public class StateMachine {
             }
             opMode.telemetry.addData("Current state: ","%s",state.name());
         }
-
     }
 
     public State getCurrentState(){return state;}
