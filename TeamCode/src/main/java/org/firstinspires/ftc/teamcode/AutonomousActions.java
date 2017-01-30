@@ -28,6 +28,7 @@ public class AutonomousActions {
     AutonomousOptionsReader autoCfg;
     String replayFilesDir;
     DriveSystem driveSystem;
+    final double CM2INCHES = 0.3937;
 
 
     public AutonomousActions(FTCRobot robot, LinearOpMode curOpMode, String autoOption,
@@ -360,15 +361,17 @@ public class AutonomousActions {
                 catch (JSONException e){
                     e.printStackTrace();
                 }
-                distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
-                while (distanceFromWall > 100){
+                distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
+                while (distanceFromWall >= 255){
                     curOpMode.sleep(20);
-                    distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
+                    distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
                 }
-                distanceToShift = targetDistance - distanceFromWall;
-                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, returnToSamePos=%b",
+                distanceToShift = CM2INCHES * (targetDistance - distanceFromWall);
+                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
                         targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, returnToSamePos);
-                robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos, 0.0, 0.0);
+                double startingYaw = (allianceColor.equalsIgnoreCase("red") ? 0.0 : 180);
+                double endingYaw = startingYaw;
+                robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos, startingYaw, endingYaw);
                 // If we are already close enough to the wall, then do nothing.
 //                if (distanceToShift > 0) {
 //                    if (allianceColor.equalsIgnoreCase("red")) {

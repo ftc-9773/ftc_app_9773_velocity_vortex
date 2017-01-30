@@ -21,7 +21,7 @@ import java.util.List;
 public class RepetitiveActions {
     LinearOpMode curOpMode;
     FTCRobot robot;
-    public enum RepActionID {LOOP_RUNTIME, RANGESENSOR_INCHES, NAVX_DEGREES}
+    public enum RepActionID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
     private List<repActionBaseClass> repActions = new ArrayList<repActionBaseClass>();
     public String loopRuntimeLog, rangeSensorLog, navxLog;
@@ -121,7 +121,7 @@ public class RepetitiveActions {
         FileRW fileObj;
 
         public RangeSensorDistance(ModernRoboticsI2cRangeSensor rangeSensor, double runningAvgWeight, boolean printEveryUpdate) {
-            actionID = RepActionID.RANGESENSOR_INCHES;
+            actionID = RepActionID.RANGESENSOR_CM;
             iterationCount = 0;
             this.rangeSensor = rangeSensor;
             this.printEveryUpdate = printEveryUpdate;
@@ -150,7 +150,7 @@ public class RepetitiveActions {
             iterationCount = 0;
             timer.reset();
             if (printEveryUpdate) {
-                String strToWrite = String.format("voltage, millis, iteration, inches, runningAvg");
+                String strToWrite = String.format("voltage, millis, iteration, cm, runningAvg");
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -158,7 +158,7 @@ public class RepetitiveActions {
         @Override
         public void repeatAction() {
             iterationCount++;
-            double curDistance = rangeSensor.getDistance(DistanceUnit.INCH);
+            double curDistance = rangeSensor.getDistance(DistanceUnit.CM);
             if (curDistance >= 100) { return; }
             if (runningAvg <= 0.0) { runningAvg = curDistance; }
             if (curDistance < minDistance) { minDistance = curDistance; }

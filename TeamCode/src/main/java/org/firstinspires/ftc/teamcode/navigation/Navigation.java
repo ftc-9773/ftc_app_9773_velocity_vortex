@@ -102,8 +102,8 @@ public class Navigation {
 
     public void printNavigationValues() {
         DbgLog.msg("ftc9773: encoderYaw=%f, navxYaw=%f", encoderNav.getCurrentYaw(), navxMicro.getModifiedYaw());
-        DbgLog.msg("ftc9773: navxPitch=%f, RangeSensor value inches = %f, ods light detected=%f", navxMicro.getPitch(),
-                rangeSensor.getDistance(DistanceUnit.INCH), lf.lightSensor.getLightDetected());
+        DbgLog.msg("ftc9773: navxPitch=%f, RangeSensor value cm = %f, ods light detected=%f", navxMicro.getPitch(),
+                rangeSensor.getDistance(DistanceUnit.CM), lf.lightSensor.getLightDetected());
         DbgLog.msg("ftc9773: Drive system Encoder values:");
         robot.driveSystem.printCurrentPosition();
     }
