@@ -102,31 +102,49 @@ public class BeaconClaim implements Attachment {
         beaconColor = BeaconColor.NONE;
     }
 
+
     // method to activate or reset beacon claim attachment
     // This method should be called in the while(opModeIsActive) loop
     @Override
     public void getAndApplyDScmd() {
-       buttonServo.setPower(curOpMode.gamepad2.x ? -1.0 : curOpMode.gamepad2.b ? 1.0 : 0.0);
+        if (curOpMode.gamepad2.x){
+            pushBeacon();
+        }
+        else if (curOpMode.gamepad2.b){
+            retractBeacon();
+        }
+        else {
+            idleBeacon();
+        }
+    }
+    public void pushBeacon(){
+        buttonServo.setPower(-1.0);
+    }
+    public void retractBeacon(){
+        buttonServo.setPower(1.0);
+    }
+    public void idleBeacon(){
+        buttonServo.setPower(0.0);
     }
 
     public void activateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
-            buttonServo.setPower(1.0);
+        while (elapsedTime.milliseconds() < 1500 && curOpMode.opModeIsActive()) {
+            pushBeacon();
         }
 //        curOpMode.sleep(500);
-        buttonServo.setPower(0.0);
+        idleBeacon();
     }
 
     public void deactivateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
-            buttonServo.setPower(-1.0);
+        while (elapsedTime.milliseconds() < 1500 && curOpMode.opModeIsActive()) {
+            retractBeacon();
         }
 //        curOpMode.sleep(500);
-        buttonServo.setPower(0.0);
+        idleBeacon();
     }
 
     public void claimABeacon() {

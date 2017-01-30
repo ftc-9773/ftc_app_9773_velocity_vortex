@@ -361,6 +361,10 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
+                while (distanceFromWall > 100){
+                    curOpMode.sleep(20);
+                    distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.INCH);
+                }
                 distanceToShift = targetDistance - distanceFromWall;
                 DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, returnToSamePos=%b",
                         targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, returnToSamePos);
