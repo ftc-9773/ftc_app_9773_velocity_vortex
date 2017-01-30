@@ -133,6 +133,18 @@ public class NavigationOptionsReader extends JsonReader {
         return (value);
     }
 
+    public double getRangeSensorRunningAvgWeight() {
+        double value = 0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(rangeObj, "runningAvgWeight");
+            value = rangeObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
+
+    }
+
     public double getDoubleDriveSysEncVar(String varName) {
         double maxSpeed = 1.0;
         try {

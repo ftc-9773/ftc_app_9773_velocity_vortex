@@ -28,7 +28,8 @@
       "PID_maxSpeed" : 1.0
     },
     "RangeSensor" : {
-      "name": "rangeSensor1"
+      "name": "rangeSensor1",
+      "runningAvgWeight" : 0.5
     },
     "DriveSysEncoderVariables" : {
       "__Comment" : "These values are applicable when driving with RUN_USING_ENCODERS or RUN_TO_POSITION setting",

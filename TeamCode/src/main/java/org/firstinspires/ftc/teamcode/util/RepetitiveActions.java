@@ -120,7 +120,7 @@ public class RepetitiveActions {
         String logFile;
         FileRW fileObj;
 
-        public RangeSensorDistance(ModernRoboticsI2cRangeSensor rangeSensor, boolean printEveryUpdate) {
+        public RangeSensorDistance(ModernRoboticsI2cRangeSensor rangeSensor, double runningAvgWeight, boolean printEveryUpdate) {
             actionID = RepActionID.RANGESENSOR_INCHES;
             iterationCount = 0;
             this.rangeSensor = rangeSensor;
@@ -129,6 +129,7 @@ public class RepetitiveActions {
             maxDistance = totalDistance = avgDistance = 0.0;
             prevDistance = 0.0;
             runningAvg = 0.0;
+            this.runningAvgWeight = runningAvgWeight;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
             if (rangeSensorLog != null) {
@@ -149,7 +150,7 @@ public class RepetitiveActions {
             iterationCount = 0;
             timer.reset();
             if (printEveryUpdate) {
-                String strToWrite = String.format("voltage, millis, iteration, inches");
+                String strToWrite = String.format("voltage, millis, iteration, inches, runningAvg");
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -158,16 +159,15 @@ public class RepetitiveActions {
         public void repeatAction() {
             iterationCount++;
             double curDistance = rangeSensor.getDistance(DistanceUnit.INCH);
-            if (curDistance < minDistance) {
-                minDistance = curDistance;
-            }
-            if (curDistance > maxDistance) {
-                maxDistance = curDistance;
-            }
+            if (curDistance >= 100) { return; }
+            if (runningAvg <= 0.0) { runningAvg = curDistance; }
+            if (curDistance < minDistance) { minDistance = curDistance; }
+            if (curDistance > maxDistance) { maxDistance = curDistance; }
             totalDistance += curDistance;
+            runningAvg = curDistance * runningAvgWeight + (1 - runningAvgWeight) * runningAvg;
             if (printEveryUpdate && (curDistance != prevDistance)) {
-                String strToWrite = String.format("%f, %f, %d, %f", robot.getVoltage(),
-                        timer.milliseconds(), iterationCount, curDistance);
+                String strToWrite = String.format("%f, %f, %d, %f, %f", robot.getVoltage(),
+                        timer.milliseconds(), iterationCount, curDistance, runningAvg);
                 fileObj.fileWrite(strToWrite);
                 prevDistance = curDistance;
             }
@@ -176,15 +176,15 @@ public class RepetitiveActions {
         @Override
         public void printToConsole() {
             avgDistance = totalDistance / iterationCount;
-            DbgLog.msg("ftc9773: Starting time=%f, minDistance=%f, maxDistance=%f, avgDistance=%f, count=%d",
-                    timer.startTime(), minDistance, maxDistance, avgDistance, iterationCount);
+            DbgLog.msg("ftc9773: Starting time=%f, minDistance=%f, maxDistance=%f, avgDistance=%f, count=%d, runningAvg=%f",
+                    timer.startTime(), minDistance, maxDistance, avgDistance, iterationCount, runningAvg);
         }
 
         @Override
         public void writeToFile() {
             avgDistance = totalDistance / iterationCount;
-            fileObj.fileWrite(String.format("ftc9773: Starting time=%f, minDistance=%f, maxDistance=%f, avgDistance=%f, count=%d",
-                    timer.startTime(), minDistance, maxDistance, avgDistance, iterationCount));
+            fileObj.fileWrite(String.format("ftc9773: Starting time=%f, minDistance=%f, maxDistance=%f, avgDistance=%f, count=%d, runningAvg=%f",
+                    timer.startTime(), minDistance, maxDistance, avgDistance, iterationCount, runningAvg));
         }
 
         @Override

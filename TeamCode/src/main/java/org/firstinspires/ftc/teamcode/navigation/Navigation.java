@@ -41,6 +41,7 @@ public class Navigation {
     public Navigation(FTCRobot robot, LinearOpMode curOpMode, String navOptionStr) {
         this.robot = robot;
         this.curOpMode = curOpMode;
+        double rangeSensorRunningAvg=0.0;
 
         NavigationOptionsReader navOption = new NavigationOptionsReader(JsonReader.navigationFile,
                 navOptionStr);
@@ -71,6 +72,7 @@ public class Navigation {
 
         if (navOption.rangeSensorExists()) {
             this.rangeSensor = curOpMode.hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor1");
+            rangeSensorRunningAvg = navOption.getRangeSensorRunningAvgWeight();
         }
          else {
             this.rangeSensor = null;
@@ -87,7 +89,7 @@ public class Navigation {
 
         // Instantiate the common instrumentation objects (declared as inner classes in RepetitiveActions class
         navxDegreesInstr = robot.repActions.new NavxDegrees(this.navxMicro, true);
-        rangeInstr = robot.repActions.new RangeSensorDistance(this.rangeSensor, true);
+        rangeInstr = robot.repActions.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, true);
         driveToDistInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_TO_DISTANCE);
         driveTillWhitelineInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_UNTIL_WHITELINE);
         driveTillBeaconInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_TILL_BEACON);
