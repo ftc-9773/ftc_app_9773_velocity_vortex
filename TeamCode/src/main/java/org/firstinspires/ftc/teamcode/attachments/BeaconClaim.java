@@ -102,6 +102,7 @@ public class BeaconClaim implements Attachment {
         beaconColor = BeaconColor.NONE;
     }
 
+
     // method to activate or reset beacon claim attachment
     // This method should be called in the while(opModeIsActive) loop
     @Override
@@ -117,10 +118,10 @@ public class BeaconClaim implements Attachment {
         }
     }
     public void pushBeacon(){
-        buttonServo.setPower(1.0);
+        buttonServo.setPower(-1.0);
     }
     public void retractBeacon(){
-        buttonServo.setPower(-1.0);
+        buttonServo.setPower(1.0);
     }
     public void idleBeacon(){
         buttonServo.setPower(0.0);
@@ -129,7 +130,7 @@ public class BeaconClaim implements Attachment {
     public void activateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
+        while (elapsedTime.milliseconds() < 1500 && curOpMode.opModeIsActive()) {
             pushBeacon();
         }
 //        curOpMode.sleep(500);
@@ -139,7 +140,7 @@ public class BeaconClaim implements Attachment {
     public void deactivateButtonServo() {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
+        while (elapsedTime.milliseconds() < 1500 && curOpMode.opModeIsActive()) {
             retractBeacon();
         }
 //        curOpMode.sleep(500);
