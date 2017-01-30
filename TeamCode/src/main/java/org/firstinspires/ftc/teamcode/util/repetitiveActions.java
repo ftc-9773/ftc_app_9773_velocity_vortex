@@ -113,6 +113,8 @@ public class RepetitiveActions {
         public ModernRoboticsI2cRangeSensor rangeSensor;
         ElapsedTime timer;
         private double minDistance, maxDistance, totalDistance, avgDistance;
+        public double runningAvg;
+        public double runningAvgWeight;
         private double prevDistance;
         boolean printEveryUpdate=true;
         String logFile;
@@ -126,6 +128,7 @@ public class RepetitiveActions {
             minDistance = Double.MAX_VALUE;
             maxDistance = totalDistance = avgDistance = 0.0;
             prevDistance = 0.0;
+            runningAvg = 0.0;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
             if (rangeSensorLog != null) {
@@ -266,6 +269,14 @@ public class RepetitiveActions {
             DbgLog.msg("ftc9773: Starting time=%f, minDegrees=%f, maxDegrees=%f, avgDegreese=%f, " +
                     "count=%d, updateCount=%f",
                     timer.startTime(), minDegrees, maxDegrees, avgDegrees, iterationCount, updateCount);
+            DbgLog.msg("2 Sensor Rate (Hz)...", Byte.toString(navxMicro.navx_device.getActualUpdateRate()));
+            DbgLog.msg("3 Transfer Rate (Hz).", Integer.toString(navxMicro.navx_device.getCurrentTransferRate()));
+            DbgLog.msg("4 Delivvered Rate (Hz)", Integer.toString(navxMicro.navx_perfmon.getDeliveredRateHz()));
+            DbgLog.msg("5 Missed Samples.....", Integer.toString(navxMicro.navx_perfmon.getNumMissedSensorTimestampedSamples()));
+            DbgLog.msg("6 Duplicate Samples..", Integer.toString(navxMicro.navx_device.getDuplicateDataCount()));
+            DbgLog.msg("7 Sensor deltaT (ms).", Long.toString(navxMicro.navx_perfmon.getLastSensorTimestampDeltaMS()));
+            DbgLog.msg("8 System deltaT (ms).", Long.toString(navxMicro.navx_perfmon.getLastSystemTimestampDeltaMS()));
+
         }
 
         @Override
