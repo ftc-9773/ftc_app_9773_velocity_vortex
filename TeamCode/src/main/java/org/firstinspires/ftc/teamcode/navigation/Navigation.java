@@ -404,12 +404,32 @@ public class Navigation {
             // value for the CheckWhileTurning constructor.  Ensure that we do not check for less
             // 30 degree deviation between the encoder-based and navx-based angles.
 //            double degreesToCheck = Math.max(this.distanceBetweenAngles(targetYaw, curYaw) /2, 30);
-//            NavigationChecks.CheckNavxWhileTurning check3 = navigationChecks.new
-//                    CheckNavxWhileTurning(degreesToCheck);
+//            NavigationChecks.CrossCheckNavxWhileTurning check3 = navigationChecks.new
+//                    CrossCheckNavxWhileTurning(degreesToCheck);
 //            navigationChecks.addNewCheck(check3);
             NavigationChecks.CheckNavxIsWorking navxCheck = navigationChecks.new CheckNavxIsWorking();
             navigationChecks.addNewCheck(navxCheck);
-            navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
+            NavigationChecks.CheckNavxTargetYawReached targetYawCheck = navigationChecks.new CheckNavxTargetYawReached(targetYaw);
+            navigationChecks.addNewCheck(targetYawCheck);
+            SpinDirection cwccw = getSpinDirection(navxMicro.getModifiedYaw(), targetYaw);
+            double leftPower=0.0, rightPower=0.0;
+            if (cwccw == SpinDirection.CLOCKWISE) {
+                leftPower = motorSpeed;
+                rightPower = -motorSpeed;
+            }
+            if (cwccw == SpinDirection.COUNTERCLOCKWISE) {
+                leftPower = -motorSpeed;
+                rightPower = motorSpeed;
+            }
+            DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
+            robot.repActions.startActions();
+            while (!navigationChecks.stopNavigation()) {
+                robot.driveSystem.turnOrSpin(leftPower, rightPower);
+                robot.repActions.repeatActions();
+            }
+            this.robot.driveSystem.stop();
+            robot.repActions.printToConsole();
+//            navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&
                     ((navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS)
                     || (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CHECK_NAVX_IS_WORKING)))
@@ -427,7 +447,7 @@ public class Navigation {
                 encoderNav.updateCurrentYaw(encoder_degreesTurned);
                 // Set the navx status again
                 navxMicro.setNavxStatus();
-            } else if (navigationChecks.stopNavCriterion == null) {
+            } else if (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CHECK_TARGET_YAW_NAVX) {
                 // navx worked without any problems; Set the encoderNav's currentYaw to the navx yaw value
                 encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
             }
@@ -453,7 +473,7 @@ public class Navigation {
      * @param returnToSamePos
      */
     public void shiftRobot(double shiftDistance, double moveDistance, double speed,
-                           boolean returnToSamePos){
+                           boolean returnToSamePos, double startingYaw, double endingYaw){
         boolean isForward = (moveDistance >= 0) ? true : false;
         double diagonal = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
         double angle = 90 - Math.toDegrees(Math.asin(Math.abs(moveDistance/diagonal)));
@@ -465,26 +485,20 @@ public class Navigation {
         angle *= Math.signum(moveDistance) * Math.signum(shiftDistance);
         DbgLog.msg("ftc9773: shiftDistance=%f, diagonal=%f, moveDistance=%f, isForward=%b, speed=%f, angle=%f",
                 shiftDistance, diagonal, moveDistance, isForward, speed, angle);
-//        if (isForward) {
-//            if (shiftDistance < 0) {
-//                angle *= -1;
-//            }
-//        } else{
-//            if (shiftDistance > 0){
-//                angle *= -1;
-//            }
-//            diagonal = -diagonal;
-//        }
 
         // Step 1.  Turn the robot to move forward / backward
-        double startingYaw = (navxMicro.navxIsWorking() ? navxMicro.getModifiedYaw() : encoderNav.getCurrentYaw());
+        if (startingYaw < 0)
+            startingYaw = (navxMicro.navxIsWorking() ? navxMicro.getModifiedYaw() : encoderNav.getCurrentYaw());
         double turningYaw = this.getTargetYaw(startingYaw, angle);
         DbgLog.msg("ftc9773: startingYaw=%f, turningYaw=%f", startingYaw, turningYaw);
         this.setRobotOrientation(turningYaw, speed);
         // Step 2:  Drive to diagonal distance
         this.goStraightToDistance(diagonal, turningYaw, (float)speed);
         //Step 3: Turn to the original orientation again
-        this.setRobotOrientation(startingYaw, speed);
+        if (endingYaw >= 0 && endingYaw <= 360)
+            this.setRobotOrientation(endingYaw, speed);
+        else
+            this.setRobotOrientation(startingYaw, speed);
         // Step 4:  return to the same position is specified
         if (returnToSamePos) {
             this.goStraightToDistance(moveDistance, startingYaw, (float)speed);

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
+import com.kauailabs.navx.ftc.navXPerformanceMonitor;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,8 +24,8 @@ public class NavxMicro {
     Navigation navigation;
 
     private enum NAVX_Status {STATUS_NOT_SET, WORKING, NOT_WORKING}
-    private AHRS navx_device;
-    private double angleTolerance = 0.0;
+    public AHRS navx_device;
+    public double angleTolerance = 0.0;
     private double driveSysInitialPower = 0.0;
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
     navXPIDController yawPIDController=null;
@@ -34,6 +35,7 @@ public class NavxMicro {
     private double pid_minSpeed=-1.0, pid_maxSpeed=1.0;
     private DcMotor.ZeroPowerBehavior prev_zp=null;
     private NAVX_Status navxStatus;
+    public navXPerformanceMonitor navx_perfmon;
 
 
     public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, Navigation navigation, String dimName, int portNum,
@@ -85,6 +87,12 @@ public class NavxMicro {
 
         // navxStatus is set after the play button is pressed. It is not set during the init stage.
         this.navxStatus = NAVX_Status.STATUS_NOT_SET;
+
+        navx_perfmon = new navXPerformanceMonitor(navx_device);
+    }
+
+    public void initAfterStart() {
+        navx_device.registerCallback(navx_perfmon);
     }
 
     public void setNavxStatus() {
@@ -138,21 +146,47 @@ public class NavxMicro {
         return (navxYaw);
     }
 
-    public void setRobotOrientation(double targetAngle, double speed, NavigationChecks navigationChecks) {
+    public void setRobotOrientation(double targetYaw, double speed, NavigationChecks navigationChecks) {
         // The orientation is with respect to the initial autonomous starting position
         // The initial orientation of the robot at the beginning of the autonomous period
         // is '0'. targetAngle is between 0 to 360 degrees.
         double curYaw = getModifiedYaw();
-        double diff = targetAngle - curYaw;
+        double yawDiff;
+        double diff = targetYaw - curYaw;
         double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
-        turnRobot(angleToTurn, speed, navigationChecks);
+//        turnRobot(angleToTurn, speed, navigationChecks);
+        double rightPower, leftPower;
+        if (angleToTurn > 0 && angleToTurn < 360) {
+            // Spin clockwise
+            leftPower = speed;
+            rightPower = -1 * leftPower;
+        }
+        else if (angleToTurn < 0 && angleToTurn > -360) {
+            // Spin counter clockwise
+            rightPower = speed;
+            leftPower = -1 * rightPower;
+        } else {
+            DbgLog.msg("ftc9773: angle %f is invalid!", angleToTurn);
+            return;
+        }
+        DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
+        robot.repActions.startActions();
+        while (!navigationChecks.stopNavigation()) {
+            this.robot.driveSystem.turnOrSpin(leftPower, rightPower);
+            robot.repActions.repeatActions();
+            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
+            if (yawDiff <= angleTolerance)
+                break;
+        }
+        this.robot.driveSystem.stop();
+        robot.repActions.printToConsole();
     }
 
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw, yawDiff;
         double min_angleToTurn=0.0;
-        LoopStatistics instr = new LoopStatistics();
+//        LoopStatistics instr = new LoopStatistics();
         if (angle > 0 && angle < 360) {
             // Spin clockwise
             leftPower = speed;

@@ -316,6 +316,8 @@ public class AutonomousActions {
                 double shiftDistance = 0.0;
                 double moveDistance = 0.0;
                 double motorSpeed = 1.0;
+                double startingYaw = 0.0;
+                double endingYaw = 0.0;
                 boolean returnToSamePos=false;
                 try {
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "shiftDistance");
@@ -326,12 +328,16 @@ public class AutonomousActions {
                     returnToSamePos = actionObj.getBoolean(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
                     motorSpeed = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "startingYaw");
+                    startingYaw = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "endingYaw");
+                    endingYaw = actionObj.getDouble(key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DbgLog.msg("ftc9773: shiftDistance=%f, moveDistance=%f, motorSpeed=%f, returnToSamePos=%b",
-                        shiftDistance, moveDistance, motorSpeed, returnToSamePos);
-                robot.navigation.shiftRobot(shiftDistance, moveDistance, motorSpeed, returnToSamePos);
+                DbgLog.msg("ftc9773: shiftDistance=%f, moveDistance=%f, motorSpeed=%f, startingYaw=%f, endingYaw=%f, returnToSamePos=%b",
+                        shiftDistance, moveDistance, motorSpeed, startingYaw, endingYaw, returnToSamePos);
+                robot.navigation.shiftRobot(shiftDistance, moveDistance, motorSpeed, returnToSamePos, startingYaw, endingYaw);
                 break;
             }
             case "shiftToWall": {
@@ -358,7 +364,7 @@ public class AutonomousActions {
                 distanceToShift = targetDistance - distanceFromWall;
                 DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f, distanceToShift=%f, motorSpeed=%f, returnToSamePos=%b",
                         targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, returnToSamePos);
-                robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos);
+                robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos, 0.0, 0.0);
                 // If we are already close enough to the wall, then do nothing.
 //                if (distanceToShift > 0) {
 //                    if (allianceColor.equalsIgnoreCase("red")) {
