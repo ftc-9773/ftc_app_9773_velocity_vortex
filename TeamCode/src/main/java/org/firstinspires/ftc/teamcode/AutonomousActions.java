@@ -90,7 +90,13 @@ public class AutonomousActions {
         switch (methodName) {
             case "claimAbeacon": {
                 if (robot.beaconClaimObj.beaconColor != BeaconClaim.BeaconColor.NONE) {
-                    robot.beaconClaimObj.claimABeacon();
+                    // Get the range sensor value and pass it on to method
+                    double distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
+                    while (distanceFromWall >= 255){
+                        curOpMode.sleep(20);
+                        distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
+                    }
+                    robot.beaconClaimObj.claimABeacon(distanceFromWall);
                 }
                 break;
             }
@@ -269,6 +275,31 @@ public class AutonomousActions {
                 robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards);
                 break;
             }
+            case "GoStriaghtTillNavxIsStable" : {
+                double inches = 0.0;
+                double motorSpeed = 0.0;
+                double degrees=0.0;
+                double degreeTolerance=2.0;
+                int numUpdatesToSettle = 5;
+                try {
+                    String key = JsonReader.getRealKeyIgnoreCase(actionObj, "degrees");
+                    degrees = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "degreeTolerance");
+                    degreeTolerance = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "inches");
+                    inches = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "motorSpeed");
+                    motorSpeed = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "numUpdatesToSettle");
+                    numUpdatesToSettle = actionObj.getInt(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                DbgLog.msg("ftc9773: Degrees: %f, inches: %f, motorSpeed: %f", degrees, inches, motorSpeed);
+                robot.navigation.goStraightTillNavxIsStable(inches, degrees, (float)degreeTolerance,
+                        (float) motorSpeed, numUpdatesToSettle);
+                break;
+            }
             case "navxGoStraightPID": {
                 double Kp = 0.005;
                 double degrees = 0;
@@ -342,15 +373,18 @@ public class AutonomousActions {
                 break;
             }
             case "shiftToWall": {
-                double targetDistance = 0.0;
+                double targetDistance = 0.0; // in cm
                 double moveDistance = 0.0;
                 double motorSpeed = 1.0;
                 boolean returnToSamePos=false;
-                double distanceFromWall;
-                double distanceToShift;
+                double distanceFromWall; // in cm
+                double distTolerance=2.0; // in cm
+                double distanceToShift=0.0;
                 try{
                     String key = JsonReader.getRealKeyIgnoreCase(actionObj, "targetDistance");
                     targetDistance = actionObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(actionObj, "distTolerance");
+                    distTolerance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "moveDistance");
                     moveDistance = actionObj.getDouble(key);
                     key = JsonReader.getRealKeyIgnoreCase(actionObj, "returnToSamePos");
@@ -366,22 +400,20 @@ public class AutonomousActions {
                     curOpMode.sleep(20);
                     distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
                 }
-                distanceToShift = CM2INCHES * (targetDistance - distanceFromWall);
-                DbgLog.msg("ftc9773: targetDistance=%f, moveDistance=%f, distanceFromWall=%f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
-                        targetDistance, moveDistance, distanceFromWall, distanceToShift, motorSpeed, returnToSamePos);
-                double startingYaw = (allianceColor.equalsIgnoreCase("red") ? 0.0 : 180);
-                double endingYaw = startingYaw;
-                robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos, startingYaw, endingYaw);
-                // If we are already close enough to the wall, then do nothing.
-//                if (distanceToShift > 0) {
-//                    if (allianceColor.equalsIgnoreCase("red")) {
-                        // shift left
-//                        robot.navigation.shiftRobot(-distanceToShift, moveDistance, isForward, motorSpeed, returnToSamePos);
-//                    } else if (allianceColor.equalsIgnoreCase("blue")) {
-//                         shift right
-//                        robot.navigation.shiftRobot(distanceToShift, moveDistance, isForward, motorSpeed, returnToSamePos);
-//                    }
-//                }
+                if (Math.abs(targetDistance - distanceFromWall) > distTolerance) {
+                    distanceToShift = CM2INCHES * (targetDistance - distanceFromWall);
+                    DbgLog.msg("ftc9773: targetDistance=%f cm, moveDistance=%f, distanceFromWall=%f cm, tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
+                            targetDistance, moveDistance, distanceFromWall, distTolerance,
+                            distanceToShift, motorSpeed, returnToSamePos);
+                    double startingYaw = (allianceColor.equalsIgnoreCase("red") ? 0.0 : 180);
+                    double endingYaw = startingYaw;
+                    robot.navigation.shiftRobot(distanceToShift, moveDistance, motorSpeed, returnToSamePos, startingYaw, endingYaw);
+                } else {
+                    DbgLog.msg("ftc9773: No need to shift; current distance from wall is within the tolerance!");
+                    DbgLog.msg("ftc9773: targetDistance=%f cm, moveDistance=%f, distanceFromWall=%f cm, tolerance = %f cm, distanceToShift=%f inches, motorSpeed=%f, returnToSamePos=%b",
+                            targetDistance, moveDistance, distanceFromWall, distTolerance,
+                            distanceToShift, motorSpeed, returnToSamePos);
+                }
                 break;
             }
             case "testEncoders":{

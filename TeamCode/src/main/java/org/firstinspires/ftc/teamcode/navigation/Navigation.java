@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
-import org.firstinspires.ftc.teamcode.util.LoopStatistics;
 import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.json.JSONObject;
 
@@ -208,11 +207,61 @@ public class Navigation {
         robot.repActions.removeAction(driveToDistInstr);
     }
 
+    public void goStraightTillNavxIsStable(double inches, double degrees, double degreeTolerance,
+                                           float speed, int numUpdatesToSettle) {
+        // Before measuring the distance using range sensor, we should wait until the robot settles
+        // on a path roughly parallel to the wall.  This can be done by waiting until numUpdatesToSettle
+        // number of consecutive navx readings have been within the tolerance of degreeTolerance.
+        if (navxMicro.navxIsWorking()) {
+            NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
+            NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
+            NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
+            navChecks.addNewCheck(opmodeCheck);
+            navChecks.addNewCheck(encodercheck);
+            robot.repActions.addAction(rangeInstr);
+            robot.repActions.addAction(driveToDistInstr);
+            RepetitiveActions.NavxYawMonitor yawMonitor = robot.repActions.new NavxYawMonitor(this, navxMicro,
+                    degrees, degreeTolerance, numUpdatesToSettle);
+            robot.repActions.addAction(yawMonitor);
+
+            boolean driveBackwards = inches < 0 ? true : false;
+
+            DbgLog.msg("ftc9773: Navx is working");
+            NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
+            navChecks.addNewCheck(tiltingCheck);
+            robot.repActions.addAction(navxDegreesInstr);
+            robot.repActions.startActions();
+            while (!navChecks.stopNavigation()) {
+                robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
+                robot.repActions.repeatActions();
+                if (yawMonitor.targetYawReachedAndStable) {
+                    // remove the yaw monitor,
+                    // reset rangeSensorDtistance repeat action,
+                    // get running average over 100 milli seconds,
+                    // determine the spin angle based on the distance from wall,
+                    // spin the robot and continue the while loop
+                    yawMonitor.printToConsole();
+                    robot.repActions.removeAction(yawMonitor);
+                    break;
+                }
+                if (tiltingCheck.stopNavigation()) {
+                    DbgLog.msg("ftc9773: tilting detected");
+                    this.untiltRobot(driveBackwards, degrees, speed);
+                }
+            }
+            robot.driveSystem.stop();
+            robot.repActions.printToConsole();
+            robot.repActions.writeToFile();
+            robot.repActions.removeAction(navxDegreesInstr);
+            robot.repActions.removeAction(rangeInstr);
+            robot.repActions.removeAction(driveToDistInstr);
+        } else {
+            // call regular goStraightToDistance
+            goStraightToDistance(inches, degrees, speed);
+        }
+    }
+
     public void goStraightToDistance(double inches, double degrees, float speed) {
-        // First, disable the color sensor
-//        robot.beaconClaimObj.disableColorSensor();
-//        DbgLog.msg("Disabled color sensor");
-        //rangeSensorState.setEnabled(false);
         // If navx is working, using navx's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
@@ -220,7 +269,6 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
-//        LoopStatistics instr = new LoopStatistics();
         robot.repActions.addAction(rangeInstr);
         robot.repActions.addAction(driveToDistInstr);
         boolean driveBackwards = inches < 0 ? true : false;
@@ -229,11 +277,9 @@ public class Navigation {
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
             robot.repActions.addAction(navxDegreesInstr);
-//            instr.startLoopInstrumentation();
             robot.repActions.startActions();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
-//                instr.updateLoopInstrumentation();
                 robot.repActions.repeatActions();
                 if (tiltingCheck.stopNavigation()) {
                     DbgLog.msg("ftc9773: tilting detected");
@@ -241,8 +287,6 @@ public class Navigation {
                 }
             }
             robot.driveSystem.stop();
-            DbgLog.msg("ftc9773: stop navigation condition met");
-//            instr.printLoopInstrumentation();
             robot.repActions.printToConsole();
             robot.repActions.writeToFile();
             robot.repActions.removeAction(navxDegreesInstr);
@@ -493,14 +537,14 @@ public class Navigation {
             startingYaw = (navxMicro.navxIsWorking() ? navxMicro.getModifiedYaw() : encoderNav.getCurrentYaw());
         double turningYaw = this.getTargetYaw(startingYaw, angle);
         DbgLog.msg("ftc9773: startingYaw=%f, turningYaw=%f", startingYaw, turningYaw);
-        this.setRobotOrientation(turningYaw, speed);
+        this.setRobotOrientation(turningYaw, turnMaxSpeed);
         // Step 2:  Drive to diagonal distance
         this.goStraightToDistance(diagonal, turningYaw, (float)speed);
         //Step 3: Turn to the original orientation again
         if (endingYaw >= 0 && endingYaw <= 360)
-            this.setRobotOrientation(endingYaw, speed);
+            this.setRobotOrientation(endingYaw, turnMaxSpeed);
         else
-            this.setRobotOrientation(startingYaw, speed);
+            this.setRobotOrientation(startingYaw, turnMaxSpeed);
         // Step 4:  return to the same position is specified
         if (returnToSamePos) {
             this.goStraightToDistance(moveDistance, startingYaw, (float)speed);

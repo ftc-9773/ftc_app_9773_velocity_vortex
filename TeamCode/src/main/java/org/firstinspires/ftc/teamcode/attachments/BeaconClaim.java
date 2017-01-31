@@ -25,6 +25,7 @@ public class BeaconClaim implements Attachment {
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     public enum BeaconColor {RED, BLUE, NONE}
     public BeaconColor beaconColor;
+    public double curLengthExtended;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
@@ -100,6 +101,7 @@ public class BeaconClaim implements Attachment {
             e.printStackTrace();
         }
         beaconColor = BeaconColor.NONE;
+        curLengthExtended = 0.0;
     }
 
 
@@ -127,30 +129,36 @@ public class BeaconClaim implements Attachment {
         buttonServo.setPower(0.0);
     }
 
-    public void activateButtonServo() {
+    public void activateButtonServo(double timeToExtend) {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1500 && curOpMode.opModeIsActive()) {
+        while (elapsedTime.milliseconds() < timeToExtend && curOpMode.opModeIsActive()) {
             pushBeacon();
         }
 //        curOpMode.sleep(500);
         idleBeacon();
     }
 
-    public void deactivateButtonServo() {
+    public void deactivateButtonServo(double timeToExtend) {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1500 && curOpMode.opModeIsActive()) {
+        while (elapsedTime.milliseconds() < timeToExtend && curOpMode.opModeIsActive()) {
             retractBeacon();
         }
 //        curOpMode.sleep(500);
         idleBeacon();
     }
 
-    public void claimABeacon() {
-        activateButtonServo();
+    public void claimABeacon(double distanceFromWall) {
+        double lengthToExtend = distanceFromWall - curLengthExtended;
+        lengthToExtend =  (lengthToExtend < 0) ? 2 : lengthToExtend;
+        // Based on tests, it takes 200 milliseconds per 1 cm of extension
+        double timeToExtend = lengthToExtend * 200;
+        DbgLog.msg("ftc9773: timeToExtend=%f millis, lengthToExtend=%f cm",
+                timeToExtend, lengthToExtend);
+        activateButtonServo(timeToExtend);
         curOpMode.sleep(50);
-        deactivateButtonServo();
+        deactivateButtonServo(timeToExtend);
     }
 
     public void verifyBeaconColor(){
@@ -163,8 +171,8 @@ public class BeaconClaim implements Attachment {
     }
 
     public void verifyBeaconServo() {
-        activateButtonServo();
-        deactivateButtonServo();
+        activateButtonServo(1000);
+        deactivateButtonServo(1000);
     }
 
     public boolean isBeaconRed() {

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.navigation;
 
-import android.util.Log;
-
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.kauailabs.navx.ftc.navXPerformanceMonitor;
@@ -10,9 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FTCRobot;
-import org.firstinspires.ftc.teamcode.util.LoopStatistics;
 
 /*
  * Copyright (c) 2016 Robocracy 9773

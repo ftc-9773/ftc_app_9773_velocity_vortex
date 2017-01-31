@@ -4,9 +4,11 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
 
 import java.text.SimpleDateFormat;
@@ -21,7 +23,7 @@ import java.util.List;
 public class RepetitiveActions {
     LinearOpMode curOpMode;
     FTCRobot robot;
-    public enum RepActionID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES}
+    public enum RepActionID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
     private List<repActionBaseClass> repActions = new ArrayList<repActionBaseClass>();
     public String loopRuntimeLog, rangeSensorLog, navxLog;
@@ -146,6 +148,7 @@ public class RepetitiveActions {
         public void startAction() {
             minDistance = Double.MAX_VALUE;
             maxDistance = totalDistance = avgDistance = 0.0;
+            runningAvg = 0.0;
             prevDistance = 0.0;
             iterationCount = 0;
             timer.reset();
@@ -194,6 +197,14 @@ public class RepetitiveActions {
                 this.fileObj.close();
             }
         }
+
+        public double getRunningAvg() {
+            return (runningAvg);
+        }
+
+        public double getElapsedTime() {
+            return (timer.milliseconds());
+        }
     }
 
     public class NavxDegrees extends repActionBaseClass {
@@ -202,7 +213,7 @@ public class RepetitiveActions {
         ElapsedTime timer;
         boolean printEveryUpdate=true;
         double minDegrees, maxDegrees, totalDegrees, avgDegrees;
-        int numUpdates;
+        public int numUpdates;
         String logFile;
         FileRW fileObj;
 
@@ -293,6 +304,75 @@ public class RepetitiveActions {
                 DbgLog.msg("ftc9773: RepetitiveActions: Closing navxDegrees fileobj");
                 this.fileObj.close();
             }
+        }
+    }
+
+    public class NavxYawMonitor extends repActionBaseClass {
+        double yawToMonitor, tolerance;
+        NavxMicro navxMicro;
+        Navigation navigation;
+        int numUpdatesToCheck, totalUpdatesChecked;
+        int numWithinRange;
+        double updateCount, prevUpdateCount;
+        public boolean targetYawReachedAndStable;
+
+        public NavxYawMonitor(Navigation navigation, NavxMicro navxMicro, double yawToMonitor,
+                              double tolerance, int numUpdatesToCheck) {
+            actionID = RepActionID.NAVX_YAW_MONITOR;
+            this.navigation = navigation;
+            this.navxMicro = navxMicro;
+            this.yawToMonitor = yawToMonitor;
+            this.tolerance = tolerance;
+            this.numUpdatesToCheck = numUpdatesToCheck;
+            numWithinRange = 0;
+            updateCount = prevUpdateCount =0;
+            totalUpdatesChecked = 0;
+            targetYawReachedAndStable = false;
+            DbgLog.msg("ftc9773: yawToMonitor = %f, tolerance=%f, numUpdatesToCheck=%d",
+                    yawToMonitor, tolerance, numUpdatesToCheck);
+        }
+
+        @Override
+        public void startAction() {
+            numWithinRange = 0;
+            updateCount = prevUpdateCount =0;
+            totalUpdatesChecked = 0;
+            targetYawReachedAndStable = false;
+        }
+
+        @Override
+        public void repeatAction() {
+            double curYaw = navxMicro.getModifiedYaw();
+            prevUpdateCount = updateCount;
+            updateCount = navxMicro.getUpdateCount();
+            if (updateCount != prevUpdateCount) {
+                totalUpdatesChecked++;
+                if (navigation.distanceBetweenAngles(curYaw, yawToMonitor) <= tolerance) {
+                    numWithinRange++;
+                } else {
+                    numWithinRange--;
+                }
+                numWithinRange = Range.clip(numWithinRange, 0, numUpdatesToCheck);
+                if (numWithinRange >= numUpdatesToCheck) {
+                    targetYawReachedAndStable = true;
+                }
+            }
+        }
+
+        @Override
+        public void printToConsole() {
+            DbgLog.msg("ftc9773: totalupdatesChecked = %d, numWithinRange=%d, targetYawReached=%b",
+                    totalUpdatesChecked, numWithinRange, targetYawReachedAndStable);
+        }
+
+        @Override
+        public void writeToFile() {
+            return;
+        }
+
+        @Override
+        public void closeLog() {
+            return;
         }
     }
 
