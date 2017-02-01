@@ -166,16 +166,16 @@ public class NavxMicro {
             return;
         }
         DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
-        robot.repActions.startActions();
+        robot.instrumentation.reset();
         while (!navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower, rightPower);
-            robot.repActions.repeatActions();
+            robot.instrumentation.addInstrData();
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
             if (yawDiff <= angleTolerance)
                 break;
         }
         this.robot.driveSystem.stop();
-        robot.repActions.printToConsole();
+        robot.instrumentation.printToConsole();
     }
 
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
@@ -211,11 +211,11 @@ public class NavxMicro {
                 navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
 
 //        instr.startLoopInstrumentation();
-        robot.repActions.startActions();
+        robot.instrumentation.reset();
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
 //            instr.updateLoopInstrumentation();
-            robot.repActions.repeatActions();
+            robot.instrumentation.addInstrData();
             yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), startingYaw);
             if (yawDiff > min_angleToTurn)
                 break;
@@ -225,7 +225,7 @@ public class NavxMicro {
         DbgLog.msg("ftc9773: angle = %f", angle);
         this.robot.driveSystem.stop();
 //        instr.printLoopInstrumentation();
-        robot.repActions.printToConsole();
+        robot.instrumentation.printToConsole();
     }
 
     public void navxGoStraightPID(boolean driveBackwards, double degrees, float speed) {

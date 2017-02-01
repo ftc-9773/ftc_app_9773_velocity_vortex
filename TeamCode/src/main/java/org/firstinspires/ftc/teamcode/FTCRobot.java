@@ -4,7 +4,6 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
@@ -13,10 +12,11 @@ import org.firstinspires.ftc.teamcode.attachments.ParticleAccelerator;
 import org.firstinspires.ftc.teamcode.attachments.ParticleRelease;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
+import org.firstinspires.ftc.teamcode.util.BackgroundTasks;
 import org.firstinspires.ftc.teamcode.util.FileRW;
+import org.firstinspires.ftc.teamcode.util.Instrumentation;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
-import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,7 +51,8 @@ public class FTCRobot {
     public double distanceRight;
     public double distanceBetweenWheels;
     public String autoOrTeleop;
-    public RepetitiveActions repActions;
+    public Instrumentation instrumentation;
+    public BackgroundTasks backgroundTasks;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -70,10 +71,13 @@ public class FTCRobot {
         distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
         DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
 
-        // Initialize the Repetitive Actions object
-        repActions = new RepetitiveActions(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
+        // Initialize the Instrumentation object
+        instrumentation = new Instrumentation(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
                 robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"));
-        DbgLog.msg("ftc9773: Initialized the repetitiveActions object");
+        DbgLog.msg("ftc9773: Initialized the Instrumentation object");
+
+        // Initialize the BackgroundTasks object
+        backgroundTasks = new BackgroundTasks(this, curOpMode);
 
         // Instantiate the Drive System
         try {

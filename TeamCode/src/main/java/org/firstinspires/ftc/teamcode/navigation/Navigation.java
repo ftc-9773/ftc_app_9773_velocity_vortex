@@ -8,9 +8,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
+import org.firstinspires.ftc.teamcode.util.BackgroundTasks;
+import org.firstinspires.ftc.teamcode.util.Instrumentation;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
-import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.json.JSONObject;
 
 
@@ -29,10 +30,10 @@ public class Navigation {
     public ModernRoboticsI2cRangeSensor rangeSensor;
     public double lfMaxSpeed=1.0, straightDrMaxSpeed=1.0, turnMaxSpeed=1.0;
     public double driveSysTeleopMaxSpeed=1.0;
-    private RepetitiveActions.LoopRuntime driveToDistInstr, driveTillWhitelineInstr, turnRobotInstr;
-    private RepetitiveActions.LoopRuntime driveTillBeaconInstr;
-    private RepetitiveActions.NavxDegrees navxDegreesInstr;
-    private RepetitiveActions.RangeSensorDistance rangeInstr;
+    private Instrumentation.LoopRuntime driveToDistInstr, driveTillWhitelineInstr, turnRobotInstr;
+    private Instrumentation.LoopRuntime driveTillBeaconInstr;
+    private Instrumentation.NavxDegrees navxDegreesInstr;
+    private Instrumentation.RangeSensorDistance rangeInstr;
 
 
     public enum SpinDirection {CLOCKWISE, COUNTERCLOCKWISE, NONE}
@@ -86,13 +87,13 @@ public class Navigation {
 
         this.encoderNav = new EncoderNavigation(robot, robot.driveSystem, curOpMode, this);
 
-        // Instantiate the common instrumentation objects (declared as inner classes in RepetitiveActions class
-        navxDegreesInstr = robot.repActions.new NavxDegrees(this.navxMicro, true);
-        rangeInstr = robot.repActions.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, true);
-        driveToDistInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_TO_DISTANCE);
-        driveTillWhitelineInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_UNTIL_WHITELINE);
-        driveTillBeaconInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.DRIVE_TILL_BEACON);
-        turnRobotInstr = robot.repActions.new LoopRuntime(RepetitiveActions.LoopType.TURN_ROBOT);
+        // Instantiate the common instrumentation objects (declared as inner classes in Instrumentation class
+        navxDegreesInstr = robot.instrumentation.new NavxDegrees(this.navxMicro, true);
+        rangeInstr = robot.instrumentation.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, true);
+        driveToDistInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TO_DISTANCE);
+        driveTillWhitelineInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_UNTIL_WHITELINE);
+        driveTillBeaconInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TILL_BEACON);
+        turnRobotInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.TURN_ROBOT);
     }
 
     public void printRangeSensorValue() {
@@ -191,20 +192,20 @@ public class Navigation {
         // For un-tilting, the robot has to move in the reverse direction of the original direction.
         boolean driveBackwards = originallyGoingBackward ? false : true;
 
-        robot.repActions.addAction(driveToDistInstr);
-        robot.repActions.startActions();
+        robot.instrumentation.addAction(driveToDistInstr);
+        robot.instrumentation.reset();
 //        LoopStatistics instr = new LoopStatistics();
 //        instr.startLoopInstrumentation();
         // move until the robot tilt goes down below 3 degrees
         while (!navChecks.stopNavigation() && (navxMicro.getPitch() > 3)) {
             robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
 //            instr.updateLoopInstrumentation();
-            robot.repActions.repeatActions();
+            robot.instrumentation.addInstrData();
         }
 //        instr.printLoopInstrumentation();
-        robot.repActions.printToConsole();
-        robot.repActions.writeToFile();
-        robot.repActions.removeAction(driveToDistInstr);
+        robot.instrumentation.printToConsole();
+        robot.instrumentation.writeToFile();
+        robot.instrumentation.removeAction(driveToDistInstr);
     }
 
     public void goStraightTillNavxIsStable(double inches, double degrees, double degreeTolerance,
@@ -218,22 +219,22 @@ public class Navigation {
             NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
             navChecks.addNewCheck(opmodeCheck);
             navChecks.addNewCheck(encodercheck);
-            robot.repActions.addAction(rangeInstr);
-            robot.repActions.addAction(driveToDistInstr);
-            RepetitiveActions.NavxYawMonitor yawMonitor = robot.repActions.new NavxYawMonitor(this, navxMicro,
+            robot.instrumentation.addAction(rangeInstr);
+            robot.instrumentation.addAction(driveToDistInstr);
+            Instrumentation.NavxYawMonitor yawMonitor = robot.instrumentation.new NavxYawMonitor(this, navxMicro,
                     degrees, degreeTolerance, numUpdatesToSettle);
-            robot.repActions.addAction(yawMonitor);
+            robot.instrumentation.addAction(yawMonitor);
 
             boolean driveBackwards = inches < 0 ? true : false;
 
             DbgLog.msg("ftc9773: Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
-            robot.repActions.addAction(navxDegreesInstr);
-            robot.repActions.startActions();
+            robot.instrumentation.addAction(navxDegreesInstr);
+            robot.instrumentation.reset();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
-                robot.repActions.repeatActions();
+                robot.instrumentation.addInstrData();
                 if (yawMonitor.targetYawReachedAndStable) {
                     // remove the yaw monitor,
                     // reset rangeSensorDtistance repeat action,
@@ -241,7 +242,7 @@ public class Navigation {
                     // determine the spin angle based on the distance from wall,
                     // spin the robot and continue the while loop
                     yawMonitor.printToConsole();
-                    robot.repActions.removeAction(yawMonitor);
+                    robot.instrumentation.removeAction(yawMonitor);
                     break;
                 }
                 if (tiltingCheck.stopNavigation()) {
@@ -250,11 +251,11 @@ public class Navigation {
                 }
             }
             robot.driveSystem.stop();
-            robot.repActions.printToConsole();
-            robot.repActions.writeToFile();
-            robot.repActions.removeAction(navxDegreesInstr);
-            robot.repActions.removeAction(rangeInstr);
-            robot.repActions.removeAction(driveToDistInstr);
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
+            robot.instrumentation.removeAction(navxDegreesInstr);
+            robot.instrumentation.removeAction(rangeInstr);
+            robot.instrumentation.removeAction(driveToDistInstr);
         } else {
             // call regular goStraightToDistance
             goStraightToDistance(inches, degrees, speed);
@@ -269,27 +270,27 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
         navChecks.addNewCheck(encodercheck);
-        robot.repActions.addAction(rangeInstr);
-        robot.repActions.addAction(driveToDistInstr);
+        robot.instrumentation.addAction(rangeInstr);
+        robot.instrumentation.addAction(driveToDistInstr);
         boolean driveBackwards = inches < 0 ? true : false;
         if (navxMicro.navxIsWorking()) {
             DbgLog.msg("ftc9773: Navx is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
-            robot.repActions.addAction(navxDegreesInstr);
-            robot.repActions.startActions();
+            robot.instrumentation.addAction(navxDegreesInstr);
+            robot.instrumentation.reset();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, speed);
-                robot.repActions.repeatActions();
+                robot.instrumentation.addInstrData();
                 if (tiltingCheck.stopNavigation()) {
                     DbgLog.msg("ftc9773: tilting detected");
                     this.untiltRobot(driveBackwards, degrees, speed);
                 }
             }
             robot.driveSystem.stop();
-            robot.repActions.printToConsole();
-            robot.repActions.writeToFile();
-            robot.repActions.removeAction(navxDegreesInstr);
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
+            robot.instrumentation.removeAction(navxDegreesInstr);
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
@@ -301,19 +302,19 @@ public class Navigation {
                 speed = -speed;
             }
 //            instr.startLoopInstrumentation();
-            robot.repActions.startActions();
+            robot.instrumentation.reset();
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(speed, 0);
 //                instr.updateLoopInstrumentation();
-                robot.repActions.repeatActions();
+                robot.instrumentation.addInstrData();
             }
             robot.driveSystem.stop();
 //            instr.printLoopInstrumentation();
-            robot.repActions.printToConsole();
-            robot.repActions.writeToFile();
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
         }
-        robot.repActions.removeAction(rangeInstr);
-        robot.repActions.removeAction(driveToDistInstr);
+        robot.instrumentation.removeAction(rangeInstr);
+        robot.instrumentation.removeAction(driveToDistInstr);
     }
 
     public void goStraightToWhiteLine(double degrees, float motorSpeed, boolean driveBackwards) {
@@ -322,26 +323,27 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck check2 = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(check1);
         navChecks.addNewCheck(check2);
-//        LoopStatistics instr = new LoopStatistics();
-        robot.repActions.addAction(driveTillWhitelineInstr);
-        robot.repActions.addAction(navxDegreesInstr);
-        // Start beacon color scanning
-        //robot.beaconClaimObj.startBeaconScanning();
+        robot.instrumentation.addAction(driveTillWhitelineInstr);
+        robot.instrumentation.addAction(navxDegreesInstr);
+
+        // Determine the distance from wall and see if beaconServo needs to be pre-extended
+        double distFromWall = rangeSensor.getDistance(DistanceUnit.CM);
+        BackgroundTasks.BeaconServoExtender beaconServoExtender =
+                robot.backgroundTasks.new BeaconServoExtender(robot.beaconClaimObj, 800);
+        beaconServoExtender.setTaskParams((distFromWall-4), 800);
+        beaconServoExtender.startTask();
         if (navxMicro.navxIsWorking()) {
             NavigationChecks.CheckRobotTilting check3 = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(check3);
-//            instr.startLoopInstrumentation();
-            robot.repActions.startActions();
+            robot.instrumentation.reset();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, motorSpeed);
-//                instr.updateLoopInstrumentation();
-                robot.repActions.repeatActions();
-                //robot.beaconClaimObj.updateBeaconScanValues();
+                robot.instrumentation.addInstrData();
+                beaconServoExtender.continueTask();
             }
             robot.driveSystem.stop();
-//            instr.printLoopInstrumentation();
-            robot.repActions.printToConsole();
-            robot.repActions.writeToFile();
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
         } else {
@@ -349,27 +351,22 @@ public class Navigation {
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
-//            instr.startLoopInstrumentation();
-            robot.repActions.startActions();
+            robot.instrumentation.reset();
             while (!navChecks.stopNavigation()) {
                 robot.driveSystem.drive(motorSpeed, 0);
-//                instr.updateLoopInstrumentation();
-                robot.repActions.repeatActions();
-                //robot.beaconClaimObj.updateBeaconScanValues();
+                robot.instrumentation.addInstrData();
+                beaconServoExtender.continueTask();
             }
             robot.driveSystem.stop();
-//            instr.printLoopInstrumentation();
-            robot.repActions.printToConsole();
-            robot.repActions.writeToFile();
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
             if (driveBackwards) {
                 robot.driveSystem.reverse();
             }
         }
-        robot.repActions.removeAction(driveTillWhitelineInstr);
-        robot.repActions.removeAction(navxDegreesInstr);
-        // Print the first and second scanned values for information purpose only
-        //robot.beaconClaimObj.printBeaconScanningData();
-        //robot.beaconClaimObj.stopBeaconScanning();
+        beaconServoExtender.endTask();
+        robot.instrumentation.removeAction(driveTillWhitelineInstr);
+        robot.instrumentation.removeAction(navxDegreesInstr);
     }
 
     public void driveUntilAllianceBeacon(double motorSpeed, double degrees,
@@ -394,9 +391,9 @@ public class Navigation {
             return;
         }
 //        LoopStatistics instr = new LoopStatistics();
-        robot.repActions.addAction(driveTillBeaconInstr);
-        robot.repActions.addAction(navxDegreesInstr);
-        robot.repActions.addAction(rangeInstr);
+        robot.instrumentation.addAction(driveTillBeaconInstr);
+        robot.instrumentation.addAction(navxDegreesInstr);
+        robot.instrumentation.addAction(rangeInstr);
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
@@ -405,15 +402,15 @@ public class Navigation {
         navChecks.addNewCheck(distanceCheck);
         if (navxMicro.navxIsWorking()) {
 //            instr.startLoopInstrumentation();
-            robot.repActions.startActions();
+            robot.instrumentation.reset();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) motorSpeed);
 //                instr.updateLoopInstrumentation();
-                robot.repActions.repeatActions();
+                robot.instrumentation.addInstrData();
             }
 //            instr.printLoopInstrumentation();
-            robot.repActions.printToConsole();
-            robot.repActions.writeToFile();
+            robot.instrumentation.printToConsole();
+            robot.instrumentation.writeToFile();
             robot.driveSystem.stop();
             // Update the encoderNav's current yaw with that of navxMicro
             encoderNav.setCurrentYaw(navxMicro.getModifiedYaw());
@@ -434,8 +431,8 @@ public class Navigation {
         NavigationChecks.OpmodeInactiveCheck check2 = navigationChecks.new OpmodeInactiveCheck();
         navigationChecks.addNewCheck(check2);
 
-        robot.repActions.addAction(navxDegreesInstr);
-        robot.repActions.addAction(turnRobotInstr);
+        robot.instrumentation.addAction(navxDegreesInstr);
+        robot.instrumentation.addAction(turnRobotInstr);
 
         DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
         elapsedEncoderCounts.reset();
@@ -468,13 +465,13 @@ public class Navigation {
                 rightPower = motorSpeed;
             }
             DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
-            robot.repActions.startActions();
+            robot.instrumentation.reset();
             while (!navigationChecks.stopNavigation()) {
                 robot.driveSystem.turnOrSpin(leftPower, rightPower);
-                robot.repActions.repeatActions();
+                robot.instrumentation.addInstrData();
             }
             this.robot.driveSystem.stop();
-            robot.repActions.printToConsole();
+            robot.instrumentation.printToConsole();
 //            navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&
                     ((navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS)
@@ -507,8 +504,8 @@ public class Navigation {
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
             DbgLog.msg("ftc9773: currYaw: %f", encoderNav.getCurrentYaw());
         }
-        robot.repActions.removeAction(navxDegreesInstr);
-        robot.repActions.removeAction(turnRobotInstr);
+        robot.instrumentation.removeAction(navxDegreesInstr);
+        robot.instrumentation.removeAction(turnRobotInstr);
     }
 
     /**

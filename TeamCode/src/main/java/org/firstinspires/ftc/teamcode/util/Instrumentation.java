@@ -20,25 +20,25 @@ import java.util.List;
  * Created by ftcrobocracy on 1/22/17.
  */
 
-public class RepetitiveActions {
+public class Instrumentation {
     LinearOpMode curOpMode;
     FTCRobot robot;
-    public enum RepActionID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
+    public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
-    private List<repActionBaseClass> repActions = new ArrayList<repActionBaseClass>();
+    private List<InstrBaseClass> instrObjects = new ArrayList<InstrBaseClass>();
     public String loopRuntimeLog, rangeSensorLog, navxLog;
 
-    public class repActionBaseClass {
-        public RepActionID actionID;
+    public class InstrBaseClass {
+        public InstrumentationID instrID;
         public int iterationCount;
-        public void startAction() {return;}
-        public void repeatAction() {return;}
+        public void reset() {return;}
+        public void addInstrData() {return;}
         public void writeToFile() {return;}
         public void printToConsole() {return;}
         public void closeLog() {return;}
     }
 
-    public class LoopRuntime extends repActionBaseClass {
+    public class LoopRuntime extends InstrBaseClass {
         ElapsedTime timer;
         double minTime, maxTime, avgTime, totalTime;
         LoopType loopType;
@@ -46,7 +46,7 @@ public class RepetitiveActions {
         FileRW fileObj;
 
         public LoopRuntime(LoopType loopType) {
-            actionID = RepActionID.LOOP_RUNTIME;
+            instrID = InstrumentationID.LOOP_RUNTIME;
             this.loopType = loopType;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
@@ -64,7 +64,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void startAction() {
+        public void reset() {
             timer.reset();
             minTime = Integer.MAX_VALUE;
             maxTime = avgTime = totalTime = 0.0;
@@ -72,7 +72,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void repeatAction() {
+        public void addInstrData() {
             double millis = timer.milliseconds();
             timer.reset();
             if (minTime > millis) {
@@ -105,13 +105,13 @@ public class RepetitiveActions {
         @Override
         public void closeLog() {
             if (this.fileObj != null) {
-                DbgLog.msg("ftc9773: RepetitiveActions: Closing loopRuntime fileobj");
+                DbgLog.msg("ftc9773: Instrumentation: Closing loopRuntime fileobj");
                 this.fileObj.close();
             }
         }
     }
 
-    public class RangeSensorDistance extends repActionBaseClass {
+    public class RangeSensorDistance extends InstrBaseClass {
         public ModernRoboticsI2cRangeSensor rangeSensor;
         ElapsedTime timer;
         private double minDistance, maxDistance, totalDistance, avgDistance;
@@ -123,7 +123,7 @@ public class RepetitiveActions {
         FileRW fileObj;
 
         public RangeSensorDistance(ModernRoboticsI2cRangeSensor rangeSensor, double runningAvgWeight, boolean printEveryUpdate) {
-            actionID = RepActionID.RANGESENSOR_CM;
+            instrID = InstrumentationID.RANGESENSOR_CM;
             iterationCount = 0;
             this.rangeSensor = rangeSensor;
             this.printEveryUpdate = printEveryUpdate;
@@ -145,7 +145,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void startAction() {
+        public void reset() {
             minDistance = Double.MAX_VALUE;
             maxDistance = totalDistance = avgDistance = 0.0;
             runningAvg = 0.0;
@@ -159,7 +159,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void repeatAction() {
+        public void addInstrData() {
             iterationCount++;
             double curDistance = rangeSensor.getDistance(DistanceUnit.CM);
             if (curDistance >= 100) { return; }
@@ -193,7 +193,7 @@ public class RepetitiveActions {
         @Override
         public void closeLog() {
             if (this.fileObj != null) {
-                DbgLog.msg("ftc9773: RepetitiveActions: Closing rangeSensor fileobj");
+                DbgLog.msg("ftc9773: Instrumentation: Closing rangeSensor fileobj");
                 this.fileObj.close();
             }
         }
@@ -207,7 +207,7 @@ public class RepetitiveActions {
         }
     }
 
-    public class NavxDegrees extends repActionBaseClass {
+    public class NavxDegrees extends InstrBaseClass {
         NavxMicro navxMicro;
         double updateCount, prevUpdateCount;
         ElapsedTime timer;
@@ -218,7 +218,7 @@ public class RepetitiveActions {
         FileRW fileObj;
 
         public NavxDegrees(NavxMicro navxMicro, boolean printEveryUpdate) {
-            actionID = RepActionID.NAVX_DEGREES;
+            instrID = InstrumentationID.NAVX_DEGREES;
             iterationCount = 0;
             this.navxMicro = navxMicro;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -239,7 +239,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void startAction() {
+        public void reset() {
             timer.reset();
             updateCount = prevUpdateCount = 0;
             iterationCount = 0;
@@ -253,7 +253,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void repeatAction() {
+        public void addInstrData() {
             double curDegrees = navxMicro.getModifiedYaw();
             iterationCount++;
             if (curDegrees < minDegrees) {
@@ -301,13 +301,13 @@ public class RepetitiveActions {
         @Override
         public void closeLog() {
             if (this.fileObj != null) {
-                DbgLog.msg("ftc9773: RepetitiveActions: Closing navxDegrees fileobj");
+                DbgLog.msg("ftc9773: Instrumentation: Closing navxDegrees fileobj");
                 this.fileObj.close();
             }
         }
     }
 
-    public class NavxYawMonitor extends repActionBaseClass {
+    public class NavxYawMonitor extends InstrBaseClass {
         double yawToMonitor, tolerance;
         NavxMicro navxMicro;
         Navigation navigation;
@@ -318,7 +318,7 @@ public class RepetitiveActions {
 
         public NavxYawMonitor(Navigation navigation, NavxMicro navxMicro, double yawToMonitor,
                               double tolerance, int numUpdatesToCheck) {
-            actionID = RepActionID.NAVX_YAW_MONITOR;
+            instrID = InstrumentationID.NAVX_YAW_MONITOR;
             this.navigation = navigation;
             this.navxMicro = navxMicro;
             this.yawToMonitor = yawToMonitor;
@@ -333,7 +333,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void startAction() {
+        public void reset() {
             numWithinRange = 0;
             updateCount = prevUpdateCount =0;
             totalUpdatesChecked = 0;
@@ -341,7 +341,7 @@ public class RepetitiveActions {
         }
 
         @Override
-        public void repeatAction() {
+        public void addInstrData() {
             double curYaw = navxMicro.getModifiedYaw();
             prevUpdateCount = updateCount;
             updateCount = navxMicro.getUpdateCount();
@@ -376,8 +376,8 @@ public class RepetitiveActions {
         }
     }
 
-    public RepetitiveActions(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
-                             String rangeSensorLog, String navxLog) {
+    public Instrumentation(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
+                           String rangeSensorLog, String navxLog) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.loopRuntimeLog = loopRuntimeLog;
@@ -385,40 +385,40 @@ public class RepetitiveActions {
         this.navxLog = navxLog;
     }
 
-    public void addAction(repActionBaseClass action) {
-        this.repActions.add(action);
+    public void addAction(InstrBaseClass action) {
+        this.instrObjects.add(action);
     }
 
-    public void removeAction(repActionBaseClass action) {
-        this.repActions.remove(action);
+    public void removeAction(InstrBaseClass action) {
+        this.instrObjects.remove(action);
     }
 
-    public void startActions() {
-        for (repActionBaseClass a: this.repActions) {
-            a.startAction();
+    public void reset() {
+        for (InstrBaseClass a: this.instrObjects) {
+            a.reset();
         }
     }
 
-    public void repeatActions() {
-        for (repActionBaseClass a: this.repActions) {
-            a.repeatAction();
+    public void addInstrData() {
+        for (InstrBaseClass a: this.instrObjects) {
+            a.addInstrData();
         }
     }
 
     public void printToConsole() {
-        for (repActionBaseClass a: this.repActions) {
+        for (InstrBaseClass a: this.instrObjects) {
             a.printToConsole();
         }
     }
 
     public void writeToFile() {
-        for (repActionBaseClass a: this.repActions) {
+        for (InstrBaseClass a: this.instrObjects) {
             a.writeToFile();
         }
     }
 
     public void closeLog() {
-        for (repActionBaseClass a: this.repActions) {
+        for (InstrBaseClass a: this.instrObjects) {
             a.closeLog();
         }
     }

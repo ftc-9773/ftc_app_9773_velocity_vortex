@@ -25,7 +25,8 @@ public class BeaconClaim implements Attachment {
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     public enum BeaconColor {RED, BLUE, NONE}
     public BeaconColor beaconColor;
-    public double curLengthExtended;
+
+    private double curLength;
     double buttonServoSpeed; // units: cm per second
     double strokeLength; // units: cm
 
@@ -116,9 +117,12 @@ public class BeaconClaim implements Attachment {
             e.printStackTrace();
         }
         beaconColor = BeaconColor.NONE;
-        curLengthExtended = 0.0;
+        curLength = 0.0;
     }
 
+    public double getCurLength() {
+        return curLength;
+    }
 
     // method to activate or reset beacon claim attachment
     // This method should be called in the while(opModeIsActive) loop
@@ -152,8 +156,8 @@ public class BeaconClaim implements Attachment {
         }
 //        curOpMode.sleep(500);
         idleBeacon();
-        curLengthExtended += (timeToExtend * buttonServoSpeed);
-        curLengthExtended = (curLengthExtended > strokeLength) ? strokeLength : curLengthExtended;
+        curLength += (timeToExtend * buttonServoSpeed);
+        curLength = (curLength > strokeLength) ? strokeLength : curLength;
     }
 
     public void deactivateButtonServo(double timeToExtend) {
@@ -164,8 +168,8 @@ public class BeaconClaim implements Attachment {
         }
 //        curOpMode.sleep(500);
         idleBeacon();
-        curLengthExtended -= (timeToExtend * buttonServoSpeed);
-        curLengthExtended = (curLengthExtended < 0) ? 0 : curLengthExtended;
+        curLength -= (timeToExtend * buttonServoSpeed);
+        curLength = (curLength < 0) ? 0 : curLength;
     }
 
     public void extendByLength(double lengthToExtend) {
@@ -177,8 +181,8 @@ public class BeaconClaim implements Attachment {
         }
 //        curOpMode.sleep(500);
         idleBeacon();
-        curLengthExtended += lengthToExtend;
-        curLengthExtended = (curLengthExtended > strokeLength) ? strokeLength : curLengthExtended;
+        curLength += lengthToExtend;
+        curLength = (curLength > strokeLength) ? strokeLength : curLength;
     }
 
     public void retractByLength(double lengthToRetract) {
@@ -190,12 +194,12 @@ public class BeaconClaim implements Attachment {
         }
 //        curOpMode.sleep(500);
         idleBeacon();
-        curLengthExtended -= (timeToExtend * buttonServoSpeed);
-        curLengthExtended = (curLengthExtended < 0) ? 0 : curLengthExtended;
+        curLength -= (timeToExtend * buttonServoSpeed);
+        curLength = (curLength < 0) ? 0 : curLength;
     }
 
     public void claimABeacon(double distanceFromWall) {
-        double lengthToExtend = distanceFromWall - curLengthExtended;
+        double lengthToExtend = distanceFromWall - curLength;
         lengthToExtend =  (lengthToExtend < 0) ? 2 : lengthToExtend;
 
         double timeToExtend = lengthToExtend * (1000 / buttonServoSpeed);
