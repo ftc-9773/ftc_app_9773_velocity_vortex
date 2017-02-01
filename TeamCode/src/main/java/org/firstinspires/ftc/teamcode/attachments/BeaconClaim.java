@@ -26,6 +26,8 @@ public class BeaconClaim implements Attachment {
     public enum BeaconColor {RED, BLUE, NONE}
     public BeaconColor beaconColor;
     public double curLengthExtended;
+    double buttonServoSpeed; // units: cm per second
+    double strokeLength; // units: cm
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
@@ -63,6 +65,20 @@ public class BeaconClaim implements Attachment {
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
+
+            try {
+                key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "speed");
+                buttonServoSpeed = buttonServoObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "strokeLength");
+                strokeLength = buttonServoObj.getDouble(key);
+            } catch (JSONException e) {
+                // Based on tests, it takes 200 milliseconds per 1 cm of extension
+                buttonServoSpeed = 5.0; // default value = 5 cm per second
+                strokeLength = 15.0; // Just in case the JSON reader failed, set the default in 15 cm
+                e.printStackTrace();
+            }
+            DbgLog.msg("ftc9773: buttonServoSpeed=%f, strokeLength=%f",
+                    buttonServoSpeed, strokeLength);
         }
         if (coloSensor1Obj != null) {
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
@@ -75,7 +91,6 @@ public class BeaconClaim implements Attachment {
                 e.printStackTrace();
             }
         }
-
 
         // Set the MIN and MAX positions for servos
         try {
@@ -137,23 +152,53 @@ public class BeaconClaim implements Attachment {
         }
 //        curOpMode.sleep(500);
         idleBeacon();
+        curLengthExtended += (timeToExtend * buttonServoSpeed);
+        curLengthExtended = (curLengthExtended > strokeLength) ? strokeLength : curLengthExtended;
     }
 
     public void deactivateButtonServo(double timeToExtend) {
         ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         elapsedTime.reset();
-        while (elapsedTime.milliseconds() < timeToExtend && curOpMode.opModeIsActive()) {
+        while ((elapsedTime.milliseconds() < timeToExtend) && curOpMode.opModeIsActive()) {
             retractBeacon();
         }
 //        curOpMode.sleep(500);
         idleBeacon();
+        curLengthExtended -= (timeToExtend * buttonServoSpeed);
+        curLengthExtended = (curLengthExtended < 0) ? 0 : curLengthExtended;
+    }
+
+    public void extendByLength(double lengthToExtend) {
+        double timeToExtend = (lengthToExtend / buttonServoSpeed) * 1000;
+        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        elapsedTime.reset();
+        while ((elapsedTime.milliseconds() < timeToExtend) && curOpMode.opModeIsActive()) {
+            pushBeacon();
+        }
+//        curOpMode.sleep(500);
+        idleBeacon();
+        curLengthExtended += lengthToExtend;
+        curLengthExtended = (curLengthExtended > strokeLength) ? strokeLength : curLengthExtended;
+    }
+
+    public void retractByLength(double lengthToRetract) {
+        double timeToExtend = (lengthToRetract / buttonServoSpeed) * 1000;
+        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        elapsedTime.reset();
+        while (elapsedTime.milliseconds() < timeToExtend && curOpMode.opModeIsActive()) {
+            pushBeacon();
+        }
+//        curOpMode.sleep(500);
+        idleBeacon();
+        curLengthExtended -= (timeToExtend * buttonServoSpeed);
+        curLengthExtended = (curLengthExtended < 0) ? 0 : curLengthExtended;
     }
 
     public void claimABeacon(double distanceFromWall) {
         double lengthToExtend = distanceFromWall - curLengthExtended;
         lengthToExtend =  (lengthToExtend < 0) ? 2 : lengthToExtend;
-        // Based on tests, it takes 200 milliseconds per 1 cm of extension
-        double timeToExtend = lengthToExtend * 200;
+
+        double timeToExtend = lengthToExtend * (1000 / buttonServoSpeed);
         DbgLog.msg("ftc9773: timeToExtend=%f millis, lengthToExtend=%f cm",
                 timeToExtend, lengthToExtend);
         activateButtonServo(timeToExtend);

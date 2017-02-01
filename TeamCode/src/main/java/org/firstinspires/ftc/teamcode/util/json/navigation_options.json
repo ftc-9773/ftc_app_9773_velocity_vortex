@@ -21,8 +21,8 @@
       "portnum": 5,
       "driveSysInitialPower": 0.25,
       "driveSysTargetPower": 0.5,
-      "angleTolerance": 5.0,
-      "straightPID_kp" : 0.05,
+      "angleTolerance": 2.0,
+      "straightPID_kp" : 0.025,
       "turnPID_kp" : 0.005,
       "PID_minSpeed" : -1.0,
       "PID_maxSpeed" : 1.0

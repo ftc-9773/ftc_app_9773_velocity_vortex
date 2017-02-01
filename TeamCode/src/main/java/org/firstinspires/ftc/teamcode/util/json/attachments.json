@@ -11,6 +11,10 @@
         "__scaleRangeMax" : 0.549,
         "needReverse" : true,
         "__fixedPositions" : true,
+        "__comment_speed" : "speed is in the units of centimeters per second",
+        "speed" : 5.0,
+        "__comment_strokeLength" : "strokeLength is in the units of cm",
+        "strokeLength" : 15.0,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
       },
