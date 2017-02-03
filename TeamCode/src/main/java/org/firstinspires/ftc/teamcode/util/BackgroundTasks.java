@@ -18,7 +18,7 @@ public class BackgroundTasks {
     LinearOpMode curOpMode;
     FTCRobot robot;
     public enum TaskID {MONIOTR_YAW, BEACON_CLAIM}
-    public enum BeaconClaimOperation {EXTEND, RETRACT, NONE}
+
     public List<BackgroundTasksBaseClass> backgrndObjects = new ArrayList<BackgroundTasksBaseClass>();
 
     public class BackgroundTasksBaseClass {
@@ -36,20 +36,20 @@ public class BackgroundTasks {
         private ElapsedTime timer;
         private double targetLength, startingLength;
         private double timeout; // in milli seconds
-        private BeaconClaimOperation operation;
+        private BeaconClaim.BeaconClaimOperation operation;
 
         public BeaconServoExtender(BeaconClaim beaconClaimObj, double targetLength, double timeout) {
             this.beaconClaimObj = beaconClaimObj;
             this.timeout = timeout;
             this.targetLength = targetLength;
-            this.operation = BeaconClaimOperation.NONE;
+            this.operation = BeaconClaim.BeaconClaimOperation.NONE;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         }
 
         public BeaconServoExtender(BeaconClaim beaconClaimObj, double timeout) {
             this.beaconClaimObj = beaconClaimObj;
             this.timeout = timeout;
-            this.operation = BeaconClaimOperation.NONE;
+            this.operation = BeaconClaim.BeaconClaimOperation.NONE;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         }
 
@@ -58,11 +58,13 @@ public class BackgroundTasks {
             timer.reset();
             this.startingLength = beaconClaimObj.getCurLength();
             if (startingLength < targetLength) {
-                operation = BeaconClaimOperation.EXTEND;
+                operation = BeaconClaim.BeaconClaimOperation.EXTEND;
+                DbgLog.msg("ftc9773: Trying to extend the beacon servo from %f cm to %f cm ", startingLength, targetLength);
             } else if (startingLength > targetLength) {
-                operation = BeaconClaimOperation.RETRACT;
+                operation = BeaconClaim.BeaconClaimOperation.RETRACT;
+                DbgLog.msg("ftc9773: Trying to retract the beacon servo from %f cm to %f cm ", startingLength, targetLength);
             } else {
-                operation = BeaconClaimOperation.NONE;
+                operation = BeaconClaim.BeaconClaimOperation.NONE;
             }
         }
 
@@ -74,17 +76,19 @@ public class BackgroundTasks {
         @Override
         public void continueTask() {
             if (timer.milliseconds() < timeout) {
-                if ((operation == BeaconClaimOperation.EXTEND) &&
+                if ((operation == BeaconClaim.BeaconClaimOperation.EXTEND) &&
                         (beaconClaimObj.getCurLength() <= targetLength)) {
                     beaconClaimObj.pushBeacon();
                     iterationCount++;
-                } else if ((operation == BeaconClaimOperation.RETRACT) &&
+                } else if ((operation == BeaconClaim.BeaconClaimOperation.RETRACT) &&
                         (beaconClaimObj.getCurLength() >= targetLength)) {
                     beaconClaimObj.retractBeacon();
                     iterationCount++;
                 } else {
                     beaconClaimObj.idleBeacon();
                 }
+            } else {
+                beaconClaimObj.idleBeacon();
             }
         }
 
@@ -98,7 +102,7 @@ public class BackgroundTasks {
             timer.reset();
             startingLength = targetLength = 0;
             timeout = 0;
-            this.operation = BeaconClaimOperation.NONE;
+            this.operation = BeaconClaim.BeaconClaimOperation.NONE;
         }
 
         @Override

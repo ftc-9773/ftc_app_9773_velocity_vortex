@@ -325,13 +325,14 @@ public class Navigation {
         navChecks.addNewCheck(check2);
         robot.instrumentation.addAction(driveTillWhitelineInstr);
         robot.instrumentation.addAction(navxDegreesInstr);
-
-        // Determine the distance from wall and see if beaconServo needs to be pre-extended
+        // Determine the distance from wall and see if beaconServo needs to be retracted
+        // It might have been pre-extended before.
         double distFromWall = rangeSensor.getDistance(DistanceUnit.CM);
         BackgroundTasks.BeaconServoExtender beaconServoExtender =
                 robot.backgroundTasks.new BeaconServoExtender(robot.beaconClaimObj, 800);
-        beaconServoExtender.setTaskParams((distFromWall-4), 800);
+        beaconServoExtender.setTaskParams((distFromWall-6), 800);
         beaconServoExtender.startTask();
+
         if (navxMicro.navxIsWorking()) {
             NavigationChecks.CheckRobotTilting check3 = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(check3);
@@ -400,6 +401,12 @@ public class Navigation {
         driveBackwards = distance < 0 ? true : false;
         NavigationChecks.EncoderCheckForDistance distanceCheck = navChecks.new EncoderCheckForDistance(distance);
         navChecks.addNewCheck(distanceCheck);
+        // Determine the distance from wall and see if beaconServo needs to be pre-extended
+        double distFromWall = rangeSensor.getDistance(DistanceUnit.CM);
+        BackgroundTasks.BeaconServoExtender beaconServoExtender =
+                robot.backgroundTasks.new BeaconServoExtender(robot.beaconClaimObj, 800);
+        beaconServoExtender.setTaskParams((distFromWall-4), 800);
+        beaconServoExtender.startTask();
         if (navxMicro.navxIsWorking()) {
 //            instr.startLoopInstrumentation();
             robot.instrumentation.reset();
@@ -407,6 +414,7 @@ public class Navigation {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) motorSpeed);
 //                instr.updateLoopInstrumentation();
                 robot.instrumentation.addInstrData();
+                beaconServoExtender.continueTask();
             }
 //            instr.printLoopInstrumentation();
             robot.instrumentation.printToConsole();
@@ -417,6 +425,7 @@ public class Navigation {
         } else {
             robot.driveSystem.driveToDistance((float)motorSpeed, distance);
         }
+        beaconServoExtender.endTask();
     }
 
     public void setRobotOrientation(double targetYaw, double motorSpeed) {

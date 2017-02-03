@@ -12,11 +12,18 @@
         "needReverse" : true,
         "__fixedPositions" : true,
         "__comment_speed" : "speed is in the units of centimeters per second",
-        "speed" : 5.0,
+        "speed" : 6,
         "__comment_strokeLength" : "strokeLength is in the units of cm",
         "strokeLength" : 15.0,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
+      },
+      "buttonServoLinear" : {
+        "motorType" : "servo",
+        "motor" : "Actuonix L16-140-35-6-R",
+        "__comment" : "For linearServo, min position=40, max position=200",
+        "scaleRangeMin" : 0.157,
+        "scaleRangeMax" : 0.784
       },
       "__colorServo_unused" : {
         "motorType" : "servo",

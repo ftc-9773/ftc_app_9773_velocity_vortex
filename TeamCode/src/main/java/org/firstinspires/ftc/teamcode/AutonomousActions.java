@@ -96,6 +96,7 @@ public class AutonomousActions {
                         curOpMode.sleep(20);
                         distanceFromWall = robot.navigation.rangeSensor.getDistance(DistanceUnit.CM);
                     }
+                    DbgLog.msg("ftc9773: Distance from wall = %f", distanceFromWall);
                     robot.beaconClaimObj.claimABeacon(distanceFromWall);
                 }
                 break;

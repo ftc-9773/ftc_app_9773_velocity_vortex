@@ -280,13 +280,13 @@ public class Instrumentation {
             DbgLog.msg("ftc9773: Starting time=%f, minDegrees=%f, maxDegrees=%f, avgDegreese=%f, " +
                     "count=%d, updateCount=%f",
                     timer.startTime(), minDegrees, maxDegrees, avgDegrees, iterationCount, updateCount);
-            DbgLog.msg("2 Sensor Rate (Hz)...", Byte.toString(navxMicro.navx_device.getActualUpdateRate()));
-            DbgLog.msg("3 Transfer Rate (Hz).", Integer.toString(navxMicro.navx_device.getCurrentTransferRate()));
-            DbgLog.msg("4 Delivvered Rate (Hz)", Integer.toString(navxMicro.navx_perfmon.getDeliveredRateHz()));
-            DbgLog.msg("5 Missed Samples.....", Integer.toString(navxMicro.navx_perfmon.getNumMissedSensorTimestampedSamples()));
-            DbgLog.msg("6 Duplicate Samples..", Integer.toString(navxMicro.navx_device.getDuplicateDataCount()));
-            DbgLog.msg("7 Sensor deltaT (ms).", Long.toString(navxMicro.navx_perfmon.getLastSensorTimestampDeltaMS()));
-            DbgLog.msg("8 System deltaT (ms).", Long.toString(navxMicro.navx_perfmon.getLastSystemTimestampDeltaMS()));
+            DbgLog.msg("2 Sensor Rate (Hz)...%d", navxMicro.navx_device.getActualUpdateRate());
+            DbgLog.msg("3 Transfer Rate (Hz). %d", navxMicro.navx_device.getCurrentTransferRate());
+            DbgLog.msg("4 Delivvered Rate (Hz) %d", navxMicro.navx_perfmon.getDeliveredRateHz());
+            DbgLog.msg("5 Missed Samples..... %d", navxMicro.navx_perfmon.getNumMissedSensorTimestampedSamples());
+            DbgLog.msg("6 Duplicate Samples.. %d", navxMicro.navx_device.getDuplicateDataCount());
+            DbgLog.msg("7 Sensor deltaT (ms). %d", navxMicro.navx_perfmon.getLastSensorTimestampDeltaMS());
+            DbgLog.msg("8 System deltaT (ms). %d", navxMicro.navx_perfmon.getLastSystemTimestampDeltaMS());
 
         }
 

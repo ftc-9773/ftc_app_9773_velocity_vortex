@@ -29,6 +29,9 @@ public class BeaconClaim implements Attachment {
     private double curLength;
     double buttonServoSpeed; // units: cm per second
     double strokeLength; // units: cm
+    public enum BeaconClaimOperation {EXTEND, RETRACT, NONE}
+    private BeaconClaimOperation lastOp;
+    private ElapsedTime lastOpTimer;
 
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
@@ -78,6 +81,9 @@ public class BeaconClaim implements Attachment {
                 strokeLength = 15.0; // Just in case the JSON reader failed, set the default in 15 cm
                 e.printStackTrace();
             }
+            lastOp = BeaconClaimOperation.NONE;
+            lastOpTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            lastOpTimer.reset();
             DbgLog.msg("ftc9773: buttonServoSpeed=%f, strokeLength=%f",
                     buttonServoSpeed, strokeLength);
         }
@@ -138,13 +144,29 @@ public class BeaconClaim implements Attachment {
             idleBeacon();
         }
     }
+    private void updateBeaconServoLength(BeaconClaimOperation op) {
+        if (lastOp == BeaconClaimOperation.NONE) {
+            lastOpTimer.reset();
+        } else if (lastOp == BeaconClaimOperation.EXTEND) {
+            curLength += lastOpTimer.milliseconds() * buttonServoSpeed / 1000;
+            curLength =  (curLength > strokeLength) ? strokeLength : curLength;
+        } else {
+            curLength -= lastOpTimer.milliseconds() * buttonServoSpeed / 1000;
+            curLength = (curLength < 0) ? 0 : curLength;
+        }
+        lastOpTimer.reset();
+        lastOp = op;
+    }
     public void pushBeacon(){
+        updateBeaconServoLength(BeaconClaimOperation.EXTEND);
         buttonServo.setPower(-1.0);
     }
     public void retractBeacon(){
+        updateBeaconServoLength(BeaconClaimOperation.RETRACT);
         buttonServo.setPower(1.0);
     }
     public void idleBeacon(){
+        updateBeaconServoLength(BeaconClaimOperation.NONE);
         buttonServo.setPower(0.0);
     }
 
@@ -165,32 +187,6 @@ public class BeaconClaim implements Attachment {
         elapsedTime.reset();
         while ((elapsedTime.milliseconds() < timeToExtend) && curOpMode.opModeIsActive()) {
             retractBeacon();
-        }
-//        curOpMode.sleep(500);
-        idleBeacon();
-        curLength -= (timeToExtend * buttonServoSpeed);
-        curLength = (curLength < 0) ? 0 : curLength;
-    }
-
-    public void extendByLength(double lengthToExtend) {
-        double timeToExtend = (lengthToExtend / buttonServoSpeed) * 1000;
-        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        elapsedTime.reset();
-        while ((elapsedTime.milliseconds() < timeToExtend) && curOpMode.opModeIsActive()) {
-            pushBeacon();
-        }
-//        curOpMode.sleep(500);
-        idleBeacon();
-        curLength += lengthToExtend;
-        curLength = (curLength > strokeLength) ? strokeLength : curLength;
-    }
-
-    public void retractByLength(double lengthToRetract) {
-        double timeToExtend = (lengthToRetract / buttonServoSpeed) * 1000;
-        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        elapsedTime.reset();
-        while (elapsedTime.milliseconds() < timeToExtend && curOpMode.opModeIsActive()) {
-            pushBeacon();
         }
 //        curOpMode.sleep(500);
         idleBeacon();
@@ -263,5 +259,6 @@ public class BeaconClaim implements Attachment {
     public BeaconColor getBeaconColor() {
         return (beaconColor);
     }
+
 
 }
