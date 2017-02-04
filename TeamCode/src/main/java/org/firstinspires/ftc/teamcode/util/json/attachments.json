@@ -3,7 +3,7 @@
   "__comment2" : "direction to be set to REVERSE, depending on how the servo is mounted",
   "BeaconClaim" : {
     "motors" : {
-      "buttonServo" : {
+      "__buttonServo_unused" : {
         "motorType" : "CRservo",
         "motor" : "Tetrix-HS755-HB",
         "__comment" : "The following 2 values have to be changed",
@@ -19,21 +19,16 @@
         "maxButton" : "gamepad1.y"
       },
       "buttonServoLinear" : {
-        "motorType" : "servo",
+        "motorType" : "LinearServo",
         "motor" : "Actuonix L16-140-35-6-R",
         "__comment" : "For linearServo, min position=40, max position=200",
         "scaleRangeMin" : 0.157,
-        "scaleRangeMax" : 0.784
-      },
-      "__colorServo_unused" : {
-        "motorType" : "servo",
-        "motor" : "Tetrix-HS755-HB",
-        "scaleRangeMin" : 0.0,
-        "scaleRangeMax" : 0.33,
-        "needReverse" : true,
-        "fixedPositions" : true,
-        "minButton" : "gamepad1.a",
-        "maxButton" : "gamepad1.y"
+        "scaleRangeMax" : 0.784,
+        "needReverse" : false,
+        "__comment_speed" : "speed is in the units of centimeters per second",
+        "speed" : 3.2,
+        "__comment_strokeLength" : "strokeLength is in the units of cm",
+        "strokeLength" : 14.0
       }
     },
     "sensors" : {

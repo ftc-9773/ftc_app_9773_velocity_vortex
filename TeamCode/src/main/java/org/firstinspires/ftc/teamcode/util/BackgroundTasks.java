@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
@@ -55,6 +56,7 @@ public class BackgroundTasks {
 
         @Override
         public void startTask() {
+            if (!robot.enableBackgroundTasks) { return; }
             timer.reset();
             this.startingLength = beaconClaimObj.getCurLength();
             if (startingLength < targetLength) {
@@ -69,12 +71,14 @@ public class BackgroundTasks {
         }
 
         public void setTaskParams(double targetLength, double timeout) {
-            this.targetLength = targetLength;
+            this.targetLength = Range.clip(targetLength, 0, beaconClaimObj.getStrokeLength());
             this.timeout = timeout;
         }
 
         @Override
         public void continueTask() {
+            if (!robot.enableBackgroundTasks) { return; }
+
             if (timer.milliseconds() < timeout) {
                 if ((operation == BeaconClaim.BeaconClaimOperation.EXTEND) &&
                         (beaconClaimObj.getCurLength() <= targetLength)) {
@@ -94,11 +98,14 @@ public class BackgroundTasks {
 
         @Override
         public void endTask() {
+            if (!robot.enableBackgroundTasks) { return; }
             beaconClaimObj.idleBeacon();
         }
 
         @Override
         public void resetTask() {
+            if (!robot.enableBackgroundTasks) { return; }
+
             timer.reset();
             startingLength = targetLength = 0;
             timeout = 0;
@@ -107,6 +114,7 @@ public class BackgroundTasks {
 
         @Override
         public void printToConsole() {
+            if (!robot.enableBackgroundTasks) { return; }
             DbgLog.msg("ftc9773: startingLength=%f, targetLength=%f, timeout=%f, iterationCount=%d",
                     startingLength, targetLength, timeout, iterationCount);
         }

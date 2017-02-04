@@ -24,11 +24,13 @@ public class AutonomousRed extends LinearOpMode {
         String robotName = null;
         long startingDelay = 0;
         int startingPosition = 1;
+        boolean enableBackGroundTasks = false;
         try {
             autonomousOpt = opmodeCfg.jsonRoot.getString("autonomousOption");
             robotName = opmodeCfg.jsonRoot.getString("robot");
             startingDelay = opmodeCfg.jsonRoot.getLong("startingDelay");
             startingPosition = opmodeCfg.jsonRoot.getInt("startingPosition");
+            enableBackGroundTasks = opmodeCfg.jsonRoot.getBoolean("enableBackGroundTasks");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -36,6 +38,6 @@ public class AutonomousRed extends LinearOpMode {
         // TODO: 12/31/16 Instead of passing a 3rd parameter Autonomous/Teleop, use annotations to detect
         //     that FTCRobot is being instantiated for Autonomous or Teleop mode
         robot = new FTCRobot(this, robotName, "Autonomous");
-        robot.runAutonomous(autonomousOpt, "red", startingDelay, startingPosition);
+        robot.runAutonomous(autonomousOpt, "red", startingDelay, startingPosition, enableBackGroundTasks);
     }
 }

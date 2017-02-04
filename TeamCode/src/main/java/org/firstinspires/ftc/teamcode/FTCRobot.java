@@ -53,6 +53,7 @@ public class FTCRobot {
     public String autoOrTeleop;
     public Instrumentation instrumentation;
     public BackgroundTasks backgroundTasks;
+    public boolean enableBackgroundTasks=false;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -195,9 +196,10 @@ public class FTCRobot {
      *                      to coordinate with alliance partner, and prevent collision.
      */
     public void runAutonomous(String autonomousOpt, String allianceColor,
-                              long startingDelay, int startingPosition) {
+                              long startingDelay, int startingPosition, boolean enableBackgroundTasks) {
         this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
+        this.enableBackgroundTasks = enableBackgroundTasks;
 
         try {
             curOpMode.waitForStart();

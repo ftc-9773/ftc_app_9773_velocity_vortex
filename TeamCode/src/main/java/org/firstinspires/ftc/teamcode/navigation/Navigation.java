@@ -408,15 +408,12 @@ public class Navigation {
         beaconServoExtender.setTaskParams((distFromWall-4), 800);
         beaconServoExtender.startTask();
         if (navxMicro.navxIsWorking()) {
-//            instr.startLoopInstrumentation();
             robot.instrumentation.reset();
             while (!navChecks.stopNavigation()) {
                 robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) motorSpeed);
-//                instr.updateLoopInstrumentation();
                 robot.instrumentation.addInstrData();
                 beaconServoExtender.continueTask();
             }
-//            instr.printLoopInstrumentation();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
             robot.driveSystem.stop();
