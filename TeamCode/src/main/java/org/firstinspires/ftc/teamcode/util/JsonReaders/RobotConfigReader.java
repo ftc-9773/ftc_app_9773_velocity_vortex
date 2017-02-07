@@ -42,11 +42,16 @@ public class RobotConfigReader extends JsonReader {
         return name;
     }
 
-    public String getNavigationOption() {
+    public String getNavigationOption(String autoOrTeleop) {
         // ToDo
         String navigationOption = null;
+        String key=null;
         try{
-            String key = JsonReader.getRealKeyIgnoreCase(robotObj, "navigation");
+            if (autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+                key = JsonReader.getRealKeyIgnoreCase(robotObj, "autonomous_navigation");
+            } else if (autoOrTeleop.equalsIgnoreCase("Teleop")) {
+                key = JsonReader.getRealKeyIgnoreCase(robotObj, "teleop_navigation");
+            }
             navigationOption = robotObj.getString(key);
         }catch (JSONException e){
             e.printStackTrace();
@@ -67,11 +72,16 @@ public class RobotConfigReader extends JsonReader {
         return (value);
     }
 
-    public String[] getAttachments() {
+    public String[] getAttachments(String autoOrTeleop) {
         int len = 0;
         String[] attachmentsArr = null;
+        JSONArray attachs=null;
         try {
-            JSONArray attachs = robotObj.getJSONArray("attachments");
+            if (autoOrTeleop.equalsIgnoreCase("Autonomous")) {
+                attachs = robotObj.getJSONArray("autonomous_attachments");
+            } else if (autoOrTeleop.equalsIgnoreCase("Teleop")) {
+                attachs = robotObj.getJSONArray("teleop_attachments");
+            }
             len = attachs.length();
             DbgLog.msg("ftc9773: Length of attachs array = %d", attachs.length());
             attachmentsArr = new String[len];
