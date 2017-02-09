@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.DriverStation;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
@@ -30,8 +31,10 @@ public class BeaconClaim implements Attachment {
     private double curLength;
     double buttonServoSpeed; // units: cm per second
 
+    DriverStation.DSGamePad extendKey, retractKey;
+
     double strokeLength; // units: cm
-    public enum BeaconClaimOperation {EXTEND, RETRACT, NONE}
+    public enum BeaconClaimOperation {EXTEND, RETRACT, IDLE}
     private BeaconClaimOperation lastOp;
     private ElapsedTime lastOpTimer;
 
@@ -40,8 +43,9 @@ public class BeaconClaim implements Attachment {
         this.robot = robot;
         String key=null;
         JSONObject beaconJsonObj=null;
-        JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
+        JSONObject motorsObj=null, buttonServoObj=null;
         JSONObject sensorsObj = null,coloSensor1Obj=null;
+        JSONObject dsCmdsObj=null;
 
         try {
             key = JsonReader.getRealKeyIgnoreCase(rootObj, "BeaconClaim");
@@ -50,6 +54,8 @@ public class BeaconClaim implements Attachment {
             motorsObj = beaconJsonObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(beaconJsonObj, "sensors");
             sensorsObj = beaconJsonObj.getJSONObject(key);
+            key = JsonReader.getRealKeyIgnoreCase(beaconJsonObj, "DScommands");
+            dsCmdsObj = beaconJsonObj.getJSONObject(key);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -112,7 +118,7 @@ public class BeaconClaim implements Attachment {
                 e.printStackTrace();
             }
 
-            lastOp = BeaconClaimOperation.NONE;
+            lastOp = BeaconClaimOperation.IDLE;
             lastOpTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             lastOpTimer.reset();
             DbgLog.msg("ftc9773: buttonServoSpeed=%f, strokeLength=%f",
@@ -121,6 +127,15 @@ public class BeaconClaim implements Attachment {
         if (coloSensor1Obj != null) {
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
             colorSensor1.enableLed(false);
+        }
+
+        if (dsCmdsObj != null) {
+            try {
+                extendKey = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("extend"));
+                retractKey = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("retract"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         beaconColor = BeaconColor.NONE;
@@ -135,10 +150,11 @@ public class BeaconClaim implements Attachment {
     // This method should be called in the while(opModeIsActive) loop
     @Override
     public void getAndApplyDScmd() {
-        if (curOpMode.gamepad2.x){
+        if (robot.drvrStation.getBoolean(extendKey)) {
+//        if (curOpMode.gamepad2.x){
             pushBeacon();
-        }
-        else if (curOpMode.gamepad2.b){
+        } else if (robot.drvrStation.getBoolean(retractKey)) {
+//        else if (curOpMode.gamepad2.b){
             retractBeacon();
         }
         else {
@@ -146,7 +162,7 @@ public class BeaconClaim implements Attachment {
         }
     }
     private void updateBeaconServoLength(BeaconClaimOperation op) {
-        if (lastOp == BeaconClaimOperation.NONE) {
+        if (lastOp == BeaconClaimOperation.IDLE) {
             lastOpTimer.reset();
         } else if (lastOp == BeaconClaimOperation.EXTEND) {
             curLength += lastOpTimer.milliseconds() * buttonServoSpeed / 1000;
@@ -180,10 +196,10 @@ public class BeaconClaim implements Attachment {
     }
     public void idleBeacon(){
         if (buttonServoCR != null) {
-            updateBeaconServoLength(BeaconClaimOperation.NONE);
+            updateBeaconServoLength(BeaconClaimOperation.IDLE);
             buttonServoCR.setPower(0.0);
         } else if (buttonServoLinear != null) {
-            lastOp = BeaconClaimOperation.NONE;
+            lastOp = BeaconClaimOperation.IDLE;
         }
     }
 

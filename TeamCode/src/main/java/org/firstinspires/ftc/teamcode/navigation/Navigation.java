@@ -141,7 +141,7 @@ public class Navigation {
      * currentYaw to targetYaw
      * @param curYaw
      * @param targetYaw
-     * @return CLOCKWISE, COUNTERCLOCKWISE, NONE
+     * @return CLOCKWISE, COUNTERCLOCKWISE, IDLE
      */
     public SpinDirection getSpinDirection (double curYaw, double targetYaw) {
         SpinDirection direction = SpinDirection.NONE;

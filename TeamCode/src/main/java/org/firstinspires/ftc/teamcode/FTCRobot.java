@@ -54,6 +54,7 @@ public class FTCRobot {
     public Instrumentation instrumentation;
     public BackgroundTasks backgroundTasks;
     public boolean enableBackgroundTasks=false;
+    public DriverStation drvrStation;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -79,6 +80,9 @@ public class FTCRobot {
 
         // Initialize the BackgroundTasks object
         backgroundTasks = new BackgroundTasks(this, curOpMode);
+
+        // Instantiate a DriverStation object
+        drvrStation = new DriverStation(curOpMode);
 
         // Instantiate the Drive System
         try {

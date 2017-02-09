@@ -14,9 +14,7 @@
         "__comment_speed" : "speed is in the units of centimeters per second",
         "speed" : 6,
         "__comment_strokeLength" : "strokeLength is in the units of cm",
-        "strokeLength" : 15.0,
-        "minButton" : "gamepad1.a",
-        "maxButton" : "gamepad1.y"
+        "strokeLength" : 15.0
       },
       "buttonServoLinear" : {
         "motorType" : "LinearServo",
@@ -40,6 +38,10 @@
       "__touchSensor1" : {
         "sensorType": "TouchSensor"
       }
+    },
+    "DScommands" : {
+      "extend" : "gamepad1.a",
+      "retract" : "gamepad1.y"
     }
   },
   "CapBallLift" : {
@@ -64,6 +66,13 @@
         "minButton" : "gamepad1.left_bumper",
         "maxButton" : "gamepad1.right_bumper"
       }
+    },
+    "DScommands" : {
+      "raise_lower" : "gamepad2.right_stick_y",
+      "unfold_fork" : "gamepad2.a",
+      "fold_fork" : "gamepad2.y",
+      "lock_lift" : "gamepad2.right_bumper",
+      "unlock_lift" : "gamepad2.left_bumper"
     }
   },
   "Harvester" : {

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.DriverStation;
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.json.JSONException;
@@ -25,21 +26,20 @@ public class CapBallLift implements  Attachment {
     Servo liftServo = null;
     boolean lockLift = false;
 
+    DriverStation.DSGamePad liftStick, forkFoldKey, forkUnfoldKey, liftLockKey, liftUnlockKey;
+
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject liftObj = null;
-        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null;
+        JSONObject motorsObj = null, liftMotorObj = null, liftServoObj=null, dsCmdsObj=null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
         try {
-            key = JsonReader.getRealKeyIgnoreCase(rootObj, "CapBallLift");
-            liftObj = rootObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(liftObj, "motors");
-            motorsObj = liftObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftMotor");
-            liftMotorObj = motorsObj.getJSONObject(key);
+            liftObj = JsonReader.getJsonObject(rootObj, "CapBallLift");
+            motorsObj = JsonReader.getJsonObject(liftObj, "motors");
+            liftMotorObj = JsonReader.getJsonObject(motorsObj, "liftMotor");
             liftMotor = curOpMode.hardwareMap.dcMotor.get("liftMotor");
             if (liftMotorObj.getBoolean("needReverse")) {
                 DbgLog.msg("ftc9773: Reversing the lift servo");
@@ -49,8 +49,7 @@ public class CapBallLift implements  Attachment {
             double maxSpeed = liftMotorObj.getDouble("maxSpeed");
             liftMotor.setMaxSpeed((int)(liftMotor.getMaxSpeed() * maxSpeed));
 
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "liftServo");
-            liftServoObj = motorsObj.getJSONObject(key);
+            liftServoObj = JsonReader.getJsonObject(motorsObj, "liftServo");
             key = JsonReader.getRealKeyIgnoreCase(liftServoObj, "motorType");
             String motorType = liftServoObj.getString(key);
             if (motorType.equalsIgnoreCase("CRservo")) {
@@ -68,6 +67,13 @@ public class CapBallLift implements  Attachment {
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+            // Initilize the Driver Station commands
+            dsCmdsObj = JsonReader.getJsonObject(liftObj, "DScommands");
+            liftStick = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("raise_lower"));
+            forkFoldKey = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("fold_fork"));
+            forkUnfoldKey = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("unfold_fork"));
+            liftLockKey = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("lock_lift"));
+            liftUnlockKey = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("unlock_lift"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -121,26 +127,27 @@ public class CapBallLift implements  Attachment {
     public void getAndApplyDScmd() {
         float power;
 
-        power = -curOpMode.gamepad2.right_stick_y;
-
+//        power = -curOpMode.gamepad2.right_stick_y;
+        power = -1 * robot.drvrStation.getFloat(liftStick);
         applyPower(power);
 
-        if(curOpMode.gamepad2.right_bumper){
+//        if(curOpMode.gamepad2.right_bumper){
+        if (robot.drvrStation.getBoolean(liftLockKey)) {
             lockLiftMotor();
         }
-        if (curOpMode.gamepad2.left_bumper){
+//        if (curOpMode.gamepad2.left_bumper){
+        if (robot.drvrStation.getBoolean(liftUnlockKey)) {
             unlockLiftMotor();
         }
 
 
         if (liftServoCR != null) {
-            if (liftServoCR!= null && curOpMode.gamepad2.a) {
-                DbgLog.msg("ftc9773: reached here 1");
+//            if (liftServoCR!= null && curOpMode.gamepad2.a) {
+            if (liftServoCR!= null && robot.drvrStation.getBoolean(forkUnfoldKey)) {
                 autoPlacement();
-                DbgLog.msg("ftc9773: reached here 2");
-            } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
-                DbgLog.msg("ftc9773: reached here 3");
-                foldFork();
+//            } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
+            } else if (liftServoCR !=null && robot.drvrStation.getBoolean(forkFoldKey)) {
+                    foldFork();
             } else {
                 idleFork();
             }

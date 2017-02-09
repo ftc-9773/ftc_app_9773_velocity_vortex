@@ -43,14 +43,14 @@ public class BackgroundTasks {
             this.beaconClaimObj = beaconClaimObj;
             this.timeout = timeout;
             this.targetLength = targetLength;
-            this.operation = BeaconClaim.BeaconClaimOperation.NONE;
+            this.operation = BeaconClaim.BeaconClaimOperation.IDLE;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         }
 
         public BeaconServoExtender(BeaconClaim beaconClaimObj, double timeout) {
             this.beaconClaimObj = beaconClaimObj;
             this.timeout = timeout;
-            this.operation = BeaconClaim.BeaconClaimOperation.NONE;
+            this.operation = BeaconClaim.BeaconClaimOperation.IDLE;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         }
 
@@ -66,7 +66,7 @@ public class BackgroundTasks {
                 operation = BeaconClaim.BeaconClaimOperation.RETRACT;
                 DbgLog.msg("ftc9773: Trying to retract the beacon servo from %f cm to %f cm ", startingLength, targetLength);
             } else {
-                operation = BeaconClaim.BeaconClaimOperation.NONE;
+                operation = BeaconClaim.BeaconClaimOperation.IDLE;
             }
         }
 
@@ -109,7 +109,7 @@ public class BackgroundTasks {
             timer.reset();
             startingLength = targetLength = 0;
             timeout = 0;
-            this.operation = BeaconClaim.BeaconClaimOperation.NONE;
+            this.operation = BeaconClaim.BeaconClaimOperation.IDLE;
         }
 
         @Override

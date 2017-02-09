@@ -81,5 +81,15 @@ public class JsonReader {
         return null;
     }
 
-
+    public static JSONObject getJsonObject(JSONObject jobj, String key) {
+        JSONObject returnObj=null;
+        try {
+            String key1 = getRealKeyIgnoreCase(jobj, key);
+            returnObj = jobj.getJSONObject(key1);
+        } catch (JSONException e) {
+            DbgLog.msg("Error while trying to read the key %s", key);
+            e.printStackTrace();
+        }
+        return returnObj;
+    }
 }
