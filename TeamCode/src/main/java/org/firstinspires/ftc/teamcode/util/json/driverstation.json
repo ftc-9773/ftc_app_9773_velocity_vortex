@@ -1,0 +1,24 @@
+{
+  "__description1" : "This file contains the mapping between gamepad keys and robot commands",
+  "__description2" : "It contains 2 sections, keysToCmds and cmdsToKeys.",
+  "__description3" : "They are redundant for the program, but are useful for the human reader",
+  "cmdsToKeys" : {
+    "DriveBase_forward" : "gamepad1.leftstick_y_up",
+    "DriveBase_backward" : "gamepad1.leftstick_y_down",
+    "DriveBase_spinCW" : "gamepad1.rightstick_x_right",
+    "DriveBase_spinCCW" : "gamepad1.rightstick_x_left",
+    "CapBall_liftRaise" : "gamepad2.rightstick_y_up",
+    "CapBall_liftLower" : "gamepad2.rightstick_y_down",
+    "CapBall_liftLock" : "gampad2.right_bumper",
+    "CapBall_liftUnlock" : "gamepad2.left_bumper",
+    "CapBall_forkUnfold" : "gamepad2.a",
+    "CapBall_forkFold" : "gamepad2.y",
+    "ParticleRealease_open" : "gamepad1.a",
+    "ParticleRealease_close" : "gamepad1.y",
+    "ParticleAccelreator_start" : "gamepad1_dpad_up",
+    "ParticleAccelreator_stop" : "gamepad1_dpad_down",
+    "BeaconClaim_extend" : "gamepad2.x",
+    "BeaconClaim_retract" : "gamepad2.b"
+  }
+
+}
