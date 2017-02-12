@@ -354,7 +354,7 @@ public class Navigation {
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.OpmodeInactiveCheck opmodeCheck = navChecks.new OpmodeInactiveCheck();
         navChecks.addNewCheck(opmodeCheck);
-        driveBackwards = distance < 0 ? true : false;
+        driveBackwards = distance < 0;
         NavigationChecks.EncoderCheckForDistance distanceCheck = navChecks.new EncoderCheckForDistance(distance);
         navChecks.addNewCheck(distanceCheck);
         if (navxMicro.navxIsWorking()) {
