@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
@@ -25,7 +24,6 @@ import org.json.JSONObject;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
-
 
 
 /*
@@ -56,7 +54,6 @@ public class FTCRobot {
     public String autoOrTeleop;
     public RepetitiveActions repActions;
     public StateMachine stateMachine;
-    public DriverStation driverStation;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -74,13 +71,11 @@ public class FTCRobot {
         distanceRight = robotConfig.getDistanceRight();
         distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
         DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
-        this.stateMachine = new StateMachine();
-        this.driverStation = new DriverStation(this,curOpMode);
 
         // Initialize the Repetitive Actions object
         repActions = new RepetitiveActions(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
                 robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"));
-        DbgLog.msg("ftc9773: Initialized the RepetitiveActions object");
+        DbgLog.msg("ftc9773: Initialized the repetitiveActions object");
 
         // Instantiate the Drive System
         try {
@@ -106,9 +101,11 @@ public class FTCRobot {
             navigation = null;
         }
 
+        stateMachine = new StateMachine();
         DbgLog.msg("ftc9773: Done with robot initialization.  Current Voltage = %f", getVoltage());
         DbgLog.msg("ftc9773: Applications external storage directory=%s",
                 curOpMode.hardwareMap.appContext.getExternalFilesDir(null));
+
     }
 
     /**
@@ -180,33 +177,11 @@ public class FTCRobot {
             else if(curOpMode.gamepad1.b){
                 isReverse = false;
             }
-//            for (Attachment anAttachment : attachmentsArr) {
-//                anAttachment.getAndApplyDScmd();
-//            }
-            applyDSCmd();
-            curOpMode.idle();
-        }
-    }
+            for (Attachment anAttachment : attachmentsArr) {
+                anAttachment.getAndApplyDScmd();
+            }
 
-    private void applyDSCmd(){
-        driverStation.getDSCmd();
-        switch(driverStation.command.capBallLiftCmd.capBallLiftAction){
-            case FORK_AUTO_PLACEMENT: capBallLiftObj.autoPlacement(); break;
-            case FORK_FOLD: capBallLiftObj.foldFork(); break;
-            case FORK_IDLE: capBallLiftObj.idleFork(); break;
-            case LIFT_LOCK: capBallLiftObj.lockLiftMotor(); break;
-            case LIFT_UNLOCK: capBallLiftObj.unlockLiftMotor(); break;
-        }
-        switch (driverStation.command.harvesterCmd.harvesterAction){
-            case INTAKE: harvesterObj.intake(); break;
-            case OUTPUT: harvesterObj.output(); break;
-            case IDLE: harvesterObj.idle(); break;
-        }
-        if(driverStation.command.particleAccelCmd.activate) partAccObj.activateParticleAccelerator();
-        else{partAccObj.deactivateParticleAccelerator();}
-        switch (driverStation.command.particleReleaseCmd.status){
-            case RELEASE_WAIT_KEEP: particleObj.takeParticles(); break;
-            case KEEP: particleObj.keepParticles(); break;
+            curOpMode.idle();
         }
     }
 
