@@ -114,6 +114,10 @@ public class FTCRobot {
      * @param attachments   Array of attachment names specified in robots JSON file
      */
     private void createAttachments(String[] attachments) {
+        if (attachments == null) {
+            return;
+        }
+
         JsonReader attachmentsReader = new JsonReader(JsonReader.attachments);
         JSONObject rootObj = attachmentsReader.jsonRoot;
         attachmentsArr = new Attachment[attachments.length];

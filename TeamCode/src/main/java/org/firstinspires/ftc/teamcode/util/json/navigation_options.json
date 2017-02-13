@@ -80,6 +80,18 @@
       }
     }
   },
+  "MRGyroOnly" : {
+    "IMU": {
+      "name": "MRgyro",
+      "DIMname": "dim",
+      "type": "MRgyro",
+      "porttype": "i2c",
+      "portnum": 0,
+      "driveSysInitialPower": 0.3,
+      "driveSysTargetPower": 0.3,
+      "angleTolerance": 3.0
+    }
+  },
   "none" : {
 
   }

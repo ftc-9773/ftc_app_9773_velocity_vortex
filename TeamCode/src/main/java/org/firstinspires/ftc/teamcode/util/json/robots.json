@@ -1,8 +1,10 @@
 {
-  "programmersTestRobot" : {
-    "driveSystem": "4Motor4WDSteering",
-    "attachments": ["BeaconClaim"],
-    "navigation": "none"
+  "MRGyroTestRobot" : {
+    "driveSystem": "2Motor2WDSteering",
+    "attachments": [],
+    "navigation": "MRGyroOnly",
+    "distanceBetweenWheels" : 15.5,
+    "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime"
   },
   "2016_10_23_Meet_Robot" : {
     "driveSystem": "4Motor6WDSteering",

@@ -100,6 +100,17 @@ public class NavigationOptionsReader extends JsonReader {
         return (value);
     }
 
+    public String getIMUType() {
+        String imuType = null;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "type");
+            imuType = imuObj.getString(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (imuType);
+    }
+
     public String getIMUDIMname() {
         String imuName = null;
         try {

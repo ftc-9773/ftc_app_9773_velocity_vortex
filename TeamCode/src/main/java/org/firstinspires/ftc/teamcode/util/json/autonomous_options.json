@@ -1,4 +1,7 @@
 {
+  "testing1" : [
+    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : 12, "motorSpeed" : 0.75}
+  ],
   "Pleasantville_Red" : [
     {"type" : "Programmed", "value" : "startPartAcc"},
     {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 22.0, "motorSpeed" : 0.75},
