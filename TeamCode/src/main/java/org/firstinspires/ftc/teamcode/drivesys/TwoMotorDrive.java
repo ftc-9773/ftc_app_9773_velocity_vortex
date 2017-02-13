@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drivesys;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.navigation.NavigationChecks;
 
@@ -20,6 +21,8 @@ public class TwoMotorDrive extends DriveSystem{
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40
     boolean driveSysIsReversed = false;
     double distBetweenWheels;
+    boolean LisZero, RisZero;
+    ElapsedTime Ltimer, Rtimer;
 
     public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
         double encoderCountL;
@@ -69,6 +72,8 @@ public class TwoMotorDrive extends DriveSystem{
                          double frictionCoefficient, Wheel wheel, int motorCPR){
         this.motorL = motorL;
         this.motorR = motorR;
+        motorR.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.setZeroPowerMode(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeedCPS = maxSpeedCPS;
         DbgLog.msg("ftc9773: max speed CPS = %d", maxSpeedCPS);
@@ -76,6 +81,11 @@ public class TwoMotorDrive extends DriveSystem{
         motorR.setMaxSpeed(maxSpeedCPS);
         this.wheel = wheel;
         this.motorCPR = motorCPR;
+        this.LisZero = this.RisZero =  true;
+        this.Ltimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        this.Rtimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        Ltimer.reset();
+        Rtimer.reset();
     }
 
     @Override
@@ -112,6 +122,35 @@ public class TwoMotorDrive extends DriveSystem{
 
     @Override
     public void turnDegrees(double degrees, float speed, NavigationChecks navExc) {
+        double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
+        double countsPerInch = motorCPR / wheel.getCircumference();
+        double targetCounts = countsPerInch * distInInches;
+        double L1targetCounts, L2targetCounts, R1targetCounts, R2targetCounts;
+
+        if (degrees < 0) {
+            // Spin counterclockwise => left motors backward, right motors forward
+            motorL.setTargetPosition(getNonZeroCurrentPos(motorL) - (int) targetCounts);
+            motorR.setTargetPosition(getNonZeroCurrentPos(motorR) + (int) targetCounts);
+        } else {
+            // Spin clockwise => left motors forward, right motors backward
+            motorL.setTargetPosition(getNonZeroCurrentPos(motorL) + (int) targetCounts);
+            motorR.setTargetPosition(getNonZeroCurrentPos(motorR) - (int) targetCounts);
+        }
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL));
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
+
+        while (motorL.isBusy()  && motorR.isBusy() && curOpMode.opModeIsActive()) {
+//                && !navExc.stopNavigation() && curOpMode.opModeIsActive()) {
+            curOpMode.idle();
+        }
+
+        this.stop();
+
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL));
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         return;
     }
 
@@ -130,6 +169,24 @@ public class TwoMotorDrive extends DriveSystem{
 //    }
     @Override
     public void driveToDistance(float speed, double distance){
+        double countsPerInch = motorCPR / wheel.getCircumference();
+        double targetCounts = countsPerInch * distance;
+
+        motorL.setTargetPosition(motorL.getCurrentPosition() + (int) targetCounts);
+        motorR.setTargetPosition(motorR.getCurrentPosition() + (int) targetCounts);
+
+        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        this.drive((float) (speed * frictionCoefficient), 0.0f);
+
+        while (motorL.isBusy() && motorR.isBusy()  && curOpMode.opModeIsActive()) {
+            curOpMode.idle();
+        }
+
+        this.stop();
+
+        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         return;
     }
 
@@ -172,6 +229,8 @@ public class TwoMotorDrive extends DriveSystem{
 
     @Override
     public void initForPlay() {
+        Ltimer.reset();
+        Rtimer.reset();
         return;
     }
 
@@ -179,5 +238,29 @@ public class TwoMotorDrive extends DriveSystem{
         motorL.setMode(runMode);
         motorR.setMode(runMode);
     }
+
+    public int getNonZeroCurrentPos(DcMotor motor){
+        int curPos = motor.getCurrentPosition();
+        boolean skipWhileLoop = false;
+//        DbgLog.msg("ftc9773: Motor = %s, curPos = %d, isZeroPos = %b", motor.toString(), curPos, motor==motorL1 ? LisZero : motor==motorR1 ? RisZero : motor==motorL2 ? L2IsZero : R2IsZero);
+        if(motor==motorL && LisZero) {
+//            DbgLog.msg("ftc9773: Motor = L1, curPos = %d, isZeroPos = %b", curPos, LisZero);
+            if(Ltimer.milliseconds()>1000) LisZero = false;
+            skipWhileLoop = true;}
+        if(motor==motorR && RisZero) {
+//            DbgLog.msg("ftc9773: Motor = R1, curPos = %d, isZeroPos = %b",  curPos, RisZero);
+            if(Rtimer.milliseconds()>1000) RisZero = false;
+            skipWhileLoop = true;
+        }
+        if (skipWhileLoop) return curPos;
+
+        while(curPos==0){
+            curOpMode.sleep(10);
+            curPos = motor.getCurrentPosition();
+        }
+//        DbgLog.msg("ftc9773: Motor = %s, curPos = %d, isZeroPos = %b", motor.toString(), curPos, motor==motorL1 ? LisZero : motor==motorR1 ? RisZero : motor==motorL2 ? L2IsZero : R2IsZero);
+        return curPos;
+    }
+
 
 }

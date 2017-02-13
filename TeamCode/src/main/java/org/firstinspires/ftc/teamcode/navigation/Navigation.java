@@ -119,7 +119,9 @@ public class Navigation {
      * Initialize the navigation system just after pressing the play button.
      */
     public void initForPlay() {
-        navxMicro.setNavxStatus();
+        if (navxMicro != null){
+            navxMicro.setNavxStatus();
+        }
     }
 
     public void close() {

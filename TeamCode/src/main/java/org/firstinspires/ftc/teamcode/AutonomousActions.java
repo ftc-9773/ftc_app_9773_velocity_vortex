@@ -148,6 +148,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                DbgLog.msg("ftc9773: DriveToDistance: inches=%f, motorSpeed=%f", distance, speed);
                 robot.driveSystem.driveToDistance((float) speed, distance);
                 break;
             }
