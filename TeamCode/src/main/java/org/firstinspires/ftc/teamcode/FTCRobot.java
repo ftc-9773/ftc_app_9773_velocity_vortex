@@ -82,7 +82,7 @@ public class FTCRobot {
         backgroundTasks = new BackgroundTasks(this, curOpMode);
 
         // Instantiate a DriverStation object
-        drvrStation = new DriverStation(curOpMode);
+        drvrStation = new DriverStation(curOpMode, this);
 
         // Instantiate the Drive System
         try {

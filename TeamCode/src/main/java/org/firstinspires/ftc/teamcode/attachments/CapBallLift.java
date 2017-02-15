@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.attachments;
 
+import android.widget.Switch;
+
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -26,8 +28,11 @@ public class CapBallLift implements  Attachment {
     Servo liftServo = null;
     boolean lockLift = false;
 
-    DriverStation.DSGamePad liftStick, forkFoldKey, forkUnfoldKey, liftLockKey, liftUnlockKey;
+    public enum CapBallCmdID {LIFT_RAISE, LIFT_LOWER, LIFT_LOCK, LIFT_UNLOCK, FORK_FOLD, FORK_UNFOLD, NONE}
+    public String[] CapBallCmdStrs =  {"CapBall_liftRaise", "CapBall_liftLower",
+            "CapBall_liftLock", "CapBall_liftUnlock", "CapBall_forkUnfold", "CapBall_forkFold"};
 
+    DriverStation.DSGamePad liftStick, forkFoldKey, forkUnfoldKey, liftLockKey, liftUnlockKey;
 
     public CapBallLift(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
@@ -67,7 +72,8 @@ public class CapBallLift implements  Attachment {
             liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            // Initilize the Driver Station commands
+            // Initialize the Driver Station commands
+            // cmdIDs = registerCmdStrs(cmdStrs);
             dsCmdsObj = JsonReader.getJsonObject(liftObj, "DScommands");
             liftStick = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("raise_lower"));
             forkFoldKey = robot.drvrStation.StringToGamepadID(dsCmdsObj.getString("fold_fork"));
@@ -152,5 +158,19 @@ public class CapBallLift implements  Attachment {
                 idleFork();
             }
         }
+    }
+
+    public CapBallCmdID cmdStrToID(String cmdStr) {
+        CapBallCmdID cmdID=CapBallCmdID.NONE;
+        switch (cmdStr) {
+            case "CapBall_liftRaise": cmdID = CapBallCmdID.LIFT_RAISE; break;
+            case "CapBall_liftLower": cmdID = CapBallCmdID.LIFT_LOWER; break;
+            case "CapBall_liftLock": cmdID = CapBallCmdID.LIFT_LOCK; break;
+            case "CapBall_liftUnlock": cmdID = CapBallCmdID.LIFT_UNLOCK; break;
+            case "CapBall_forkUnfold": cmdID = CapBallCmdID.FORK_UNFOLD; break;
+            case "CapBall_forkFold": cmdID = CapBallCmdID.FORK_FOLD; break;
+            default: cmdID = CapBallCmdID.NONE;
+        }
+        return (cmdID);
     }
 }

@@ -27,6 +27,7 @@ public class JsonReader {
     public static final String opModesDir = new String(baseDir + "/opmodes/");
     public static final String autonomousRedDir =  new String(baseDir + "autonomous/red/");
     public static final String autonomousBlueDir = new String(baseDir + "autonomous/blue/");
+    public static final String drvrStationFile = new String((baseDir + "driverstation.json"));
 
     private String jsonFilePath;
     public String jsonStr;

@@ -2,12 +2,20 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.util.JsonReaders.DriverStationReader;
+import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by ftcrobocracy on 2/8/17.
  */
 
 public class DriverStation {
+    private FTCRobot robot;
     private LinearOpMode curOpMode;
+    public List<DSGamePad> gamepadKeys = new ArrayList<DSGamePad>();
 
     public enum DSGamePad {
         GAMEPAD1_START,
@@ -156,7 +164,16 @@ public class DriverStation {
         return (value);
     }
 
-    public DriverStation(LinearOpMode curOpMode) {
+    public DriverStation(LinearOpMode curOpMode, FTCRobot robot) {
+        DriverStationReader drvrReaderObj = new DriverStationReader(JsonReader.drvrStationFile, "TeleOp_Regular");
         this.curOpMode = curOpMode;
+        this.robot = robot;
+
+        // Add all the gamepad keys to the arraylist
+        String cmd = drvrReaderObj.drvrStationReader.keys().next();
+        while (cmd != null) {
+            this.gamepadKeys.add(StringToGamepadID(drvrReaderObj.getKeyForCmd(cmd)));
+            cmd = drvrReaderObj.drvrStationReader.keys().next();
+        }
     }
 }
