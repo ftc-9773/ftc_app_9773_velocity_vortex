@@ -60,11 +60,18 @@ public class Navigation {
         }
 
         if (navOption.imuExists()) {
-            this.navxMicro = new NavxMicro(curOpMode, robot, this, navOption.getIMUDIMname(),
-                    navOption.getIMUportNum(), navOption.getIMUVariableDouble("driveSysInitialPower"),
-                    navOption.getIMUVariableDouble("angleTolerance"), navOption.getIMUVariableDouble("straightPID_kp"),
-                    navOption.getIMUVariableDouble("turnPID_kp"), navOption.getIMUVariableDouble("PID_minSpeed"),
-                    navOption.getIMUVariableDouble("PID_maxSpeed"));
+            if (navOption.getIMUType().equalsIgnoreCase("navx-micro")) {
+                this.navxMicro = new NavxMicro(curOpMode, robot, this, navOption.getIMUDIMname(),
+                        navOption.getIMUportNum(), navOption.getIMUVariableDouble("driveSysInitialPower"),
+                        navOption.getIMUVariableDouble("angleTolerance"), navOption.getIMUVariableDouble("straightPID_kp"),
+                        navOption.getIMUVariableDouble("turnPID_kp"), navOption.getIMUVariableDouble("PID_minSpeed"),
+                        navOption.getIMUVariableDouble("PID_maxSpeed"));
+            } else if (navOption.getIMUType().equalsIgnoreCase("MRgyro")) {
+                // ToDo for Luke:  instantiate MR gyro object here
+                DbgLog.msg("ftc9773: instantiating MR gyro");
+                curOpMode.telemetry.addData("ftc9773:", "instantiating MR gyro");
+                curOpMode.telemetry.update();
+            }
         }
         else {
             this.navxMicro = null;
@@ -112,7 +119,9 @@ public class Navigation {
      * Initialize the navigation system just after pressing the play button.
      */
     public void initForPlay() {
-        navxMicro.setNavxStatus();
+        if (navxMicro != null){
+            navxMicro.setNavxStatus();
+        }
     }
 
     public void close() {
