@@ -38,6 +38,7 @@ import static java.lang.Thread.sleep;
 public class FTCRobot {
     public LinearOpMode curOpMode;
     public DriveSystem driveSystem=null;
+
     public Navigation navigation =null;
     private Attachment[] attachmentsArr;
     public AutonomousActions autonomousActions;
