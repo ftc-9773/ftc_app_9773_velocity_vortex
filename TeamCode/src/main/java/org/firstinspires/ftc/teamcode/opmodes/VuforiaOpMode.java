@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 /**
  * Created by michaelzhou on 2/19/17.
  */
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.HINT;
@@ -76,16 +77,10 @@ public class VuforiaOpMode extends LinearOpMode
                     robotAngle = Orientation.getOrientation(lastKnownLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
 
                     // Send information about whether the target is visible, and where the robot is
-//                    telemetry.addData("Tracking " + target.getName(), listener.isVisible());
-//                    telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
+                    telemetry.addData("Tracking " + target.getName(), listener.isVisible());
+                    telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
                 }
             }
-
-
-
-
-
-
 
             // Send telemetry and idle to let hardware catch up
             telemetry.update();
@@ -123,6 +118,8 @@ public class VuforiaOpMode extends LinearOpMode
             listeners.add(listener);
             listener.setPhoneInformation(phoneLocation, parameters.cameraDirection);
         }
+
+        DbgLog.msg("ftc9773: How many targets? %d","How many listeners? %d",visionTargets.size(),listeners.size());
 
     }
 
