@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
 import org.firstinspires.ftc.teamcode.util.LoopStatistics;
 import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
+import org.firstinspires.ftc.teamcode.navigation.MRGyro;
 import org.json.JSONObject;
 
 
@@ -24,6 +25,7 @@ public class Navigation {
     FTCRobot robot;
     LinearOpMode curOpMode;
     JSONObject navOptObj;
+    public MRGyro gyro;
     public LineFollow lf;
     public NavxMicro navxMicro;
     public EncoderNavigation encoderNav;
@@ -59,11 +61,12 @@ public class Navigation {
         }
 
         if (navOption.imuExists()) {
-            this.navxMicro = new NavxMicro(curOpMode, robot, this, navOption.getIMUDIMname(),
+            /*this.navxMicro = new NavxMicro(curOpMode, robot, this, navOption.getIMUDIMname(),
                     navOption.getIMUportNum(), navOption.getIMUVariableDouble("driveSysInitialPower"),
                     navOption.getIMUVariableDouble("angleTolerance"), navOption.getIMUVariableDouble("straightPID_kp"),
                     navOption.getIMUVariableDouble("turnPID_kp"), navOption.getIMUVariableDouble("PID_minSpeed"),
-                    navOption.getIMUVariableDouble("PID_maxSpeed"));
+                    navOption.getIMUVariableDouble("PID_maxSpeed"));*/
+            this.gyro = new MRGyro(robot,curOpMode);
         }
         else {
             this.navxMicro = null;

@@ -1,7 +1,7 @@
 {
   "programmersTestRobot" : {
-    "driveSystem": "4Motor4WDSteering",
-    "attachments": ["BeaconClaim"],
+    "driveSystem": "42Motor2WDSteering",
+    "attachments": [],
     "navigation": "none"
   },
   "2016_10_23_Meet_Robot" : {

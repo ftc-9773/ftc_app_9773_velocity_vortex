@@ -53,9 +53,9 @@
       }
     },
     "IMU": {
-      "name" : "navx",
+      "name" : "MRGyro",
       "DIMname" : "dim",
-      "type" : "navx-micro",
+      "type" : "MRGyro",
       "porttype": "i2c",
       "portnum": 0,
       "driveSysInitialPower": 0.3,
