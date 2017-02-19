@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
+import org.firstinspires.ftc.teamcode.navigation.Navigation;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -179,11 +180,7 @@ public class BeaconClaim implements Attachment {
     public boolean isBeaconBlue() {
         int redValue = colorSensor1.red();
         int blueValue = colorSensor1.blue();
-        if (blueValue >= 3 && ((blueValue - redValue) >= 2)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (blueValue >= 3 && ((blueValue - redValue) >= 2));
 
     }
 

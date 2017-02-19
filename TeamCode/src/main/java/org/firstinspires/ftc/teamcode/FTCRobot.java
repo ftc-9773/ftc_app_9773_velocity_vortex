@@ -146,6 +146,15 @@ public class FTCRobot {
     /**
      * Main TeleOp method. Run from TeleOp opmode classes.
      */
+    public void AutoBeaconClaiming(){
+        //Todo: align with the line, then with the wall, so we can claim the beacon accurately
+        //driveSystem.drive(0.5F,0);
+        navigation.goStraightToWhiteLine(0,0.4F,true);
+        beaconClaimObj.setBeaconStatus();
+        navigation.driveUntilAllianceBeacon(0.0,-2.5,3.0,0.3);
+        beaconClaimObj.claimABeacon();
+    }
+
     public void runTeleOp(String allianceColor) {
         float speed;
         float direction;
