@@ -100,6 +100,17 @@ public class NavigationOptionsReader extends JsonReader {
         return (value);
     }
 
+    public String getIMUType() {
+        String imuType = null;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(imuObj, "type");
+            imuType = imuObj.getString(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (imuType);
+    }
+
     public String getIMUDIMname() {
         String imuName = null;
         try {
@@ -131,6 +142,18 @@ public class NavigationOptionsReader extends JsonReader {
             e.printStackTrace();
         }
         return (value);
+    }
+
+    public double getRangeSensorRunningAvgWeight() {
+        double value = 0.0;
+        try {
+            String key = JsonReader.getRealKeyIgnoreCase(rangeObj, "runningAvgWeight");
+            value = rangeObj.getDouble(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (value);
+
     }
 
     public double getDoubleDriveSysEncVar(String varName) {

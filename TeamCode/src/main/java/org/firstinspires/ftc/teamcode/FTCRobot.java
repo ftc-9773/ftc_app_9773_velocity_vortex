@@ -4,7 +4,6 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.teamcode.attachments.Attachment;
 import org.firstinspires.ftc.teamcode.attachments.BeaconClaim;
 import org.firstinspires.ftc.teamcode.attachments.CapBallLift;
@@ -13,10 +12,11 @@ import org.firstinspires.ftc.teamcode.attachments.ParticleAccelerator;
 import org.firstinspires.ftc.teamcode.attachments.ParticleRelease;
 import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
+import org.firstinspires.ftc.teamcode.util.BackgroundTasks;
 import org.firstinspires.ftc.teamcode.util.FileRW;
+import org.firstinspires.ftc.teamcode.util.Instrumentation;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.RobotConfigReader;
-import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,7 +51,9 @@ public class FTCRobot {
     public double distanceRight;
     public double distanceBetweenWheels;
     public String autoOrTeleop;
-    public RepetitiveActions repActions;
+    public Instrumentation instrumentation;
+    public BackgroundTasks backgroundTasks;
+    public boolean enableBackgroundTasks=false;
 
     /**
      * Reads robots JSON file, initializes drive system and attachments.
@@ -70,10 +72,13 @@ public class FTCRobot {
         distanceBetweenWheels = robotConfig.getDistanceBetweenWheels();
         DbgLog.msg("ftc9773: distanceBetweenWheels=%f", distanceBetweenWheels);
 
-        // Initialize the Repetitive Actions object
-        repActions = new RepetitiveActions(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
+        // Initialize the Instrumentation object
+        instrumentation = new Instrumentation(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
                 robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"));
-        DbgLog.msg("ftc9773: Initialized the repetitiveActions object");
+        DbgLog.msg("ftc9773: Initialized the Instrumentation object");
+
+        // Initialize the BackgroundTasks object
+        backgroundTasks = new BackgroundTasks(this, curOpMode);
 
         // Instantiate the Drive System
         try {
@@ -109,6 +114,10 @@ public class FTCRobot {
      * @param attachments   Array of attachment names specified in robots JSON file
      */
     private void createAttachments(String[] attachments) {
+        if (attachments == null) {
+            return;
+        }
+
         JsonReader attachmentsReader = new JsonReader(JsonReader.attachments);
         JSONObject rootObj = attachmentsReader.jsonRoot;
         attachmentsArr = new Attachment[attachments.length];
@@ -200,9 +209,10 @@ public class FTCRobot {
      *                      to coordinate with alliance partner, and prevent collision.
      */
     public void runAutonomous(String autonomousOpt, String allianceColor,
-                              long startingDelay, int startingPosition) {
+                              long startingDelay, int startingPosition, boolean enableBackgroundTasks) {
         this.autonomousActions =
                 new AutonomousActions(this, curOpMode, autonomousOpt, allianceColor);
+        this.enableBackgroundTasks = enableBackgroundTasks;
 
         try {
             curOpMode.waitForStart();

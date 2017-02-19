@@ -2,7 +2,7 @@
 <Robot type="FirstInspires-FTC">
     <DeviceInterfaceModule name="dim" serialNumber="AL00XKYB">
         <ModernRoboticsI2cRangeSensor name="rangeSensor1" port="2" />
-        <ColorSensor name="colorSensor1" port="4" />
+        <ColorSensor name="colorSensor1" port="5" />
         <OpticalDistanceSensor name="ods" port="1" />
     </DeviceInterfaceModule>
     <DeviceInterfaceModule name="dim2" serialNumber="AL00VBY8">
@@ -10,7 +10,7 @@
     </DeviceInterfaceModule>
     <ServoController name="Servo Controller 2" serialNumber="AL00XLTB">
         <ContinuousRotationServo name="liftServo" port="1" />
-        <ContinuousRotationServo name="buttonServo" port="3" />
+        <Servo name="buttonServo" port="3" />
         <Servo name="particleReleaseServo" port="5" />
     </ServoController>
     <MotorController name="Shooter Motor Controller" serialNumber="AL00VBJK">

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class NavigationChecks {
     public enum NavChecksSupported {CHECK_OPMODE_INACTIVE, CHECK_ROBOT_TILTING, CHECK_TIMEOUT,
-        CHECK_WHITElINE, CHECK_DEGREES_TURNED, CHECK_DISTANCE_TRAVELLED,
+        CHECK_WHITElINE, CHECK_TARGET_YAW_NAVX, CHECK_DISTANCE_TRAVELLED,
         CROSSCHECK_NAVX_WITH_ENCODERS, CHECK_NAVX_IS_WORKING}
     LinearOpMode curOpMode;
     FTCRobot robot;
@@ -92,12 +92,39 @@ public class NavigationChecks {
         }
     }
 
-    public class CheckNavxWhileTurning extends NavCheckBaseClass {
+    public class CheckNavxTargetYawReached extends NavCheckBaseClass {
+        double targetYaw;
+        double angleTolerance;
+        NavxMicro navxMicro;
+        public CheckNavxTargetYawReached(double targetYaw) {
+            this.targetYaw = targetYaw;
+            this.navxMicro = navigationObj.navxMicro;
+            this.angleTolerance = navxMicro.angleTolerance;
+            navcheck = NavChecksSupported.CHECK_TARGET_YAW_NAVX;
+        }
+
+        @Override
+        public void reset() {
+            targetYaw = navxMicro.getModifiedYaw();
+        }
+
+        @Override
+        public boolean stopNavigation() {
+            double curYaw = navxMicro.getModifiedYaw();
+            if (navigationObj.distanceBetweenAngles(curYaw, targetYaw) < angleTolerance) {
+                return (true);
+            } else {
+                return (false);
+            }
+        }
+    }
+
+    public class CrossCheckNavxWhileTurning extends NavCheckBaseClass {
         double degreesToCheck;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
         double navxYaw;
         NavxMicro navxMicro;
-        public CheckNavxWhileTurning(double degreesToCheck) {
+        public CrossCheckNavxWhileTurning(double degreesToCheck) {
             this.degreesToCheck = degreesToCheck;
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
             elapsedCounts.reset();

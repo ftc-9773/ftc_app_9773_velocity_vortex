@@ -3,6 +3,6 @@
   "__Comment" : "startingPosition can be 1 or 2",
   "startingPosition" : 1,
   "enableBackGroundTasks" : false,
-  "autonomousOption" : "testing1",
-  "robot" : "MRGyroTestRobot"
+  "autonomousOption" : "verifyBeaconColorOnly",
+  "robot" : "2017_2_5_Pleasantville_Robot"
 }

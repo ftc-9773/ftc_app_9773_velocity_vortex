@@ -22,13 +22,14 @@
       "driveSysInitialPower": 0.25,
       "driveSysTargetPower": 0.5,
       "angleTolerance": 2.0,
-      "straightPID_kp" : 0.01,
+      "straightPID_kp" : 0.025,
       "turnPID_kp" : 0.005,
       "PID_minSpeed" : -1.0,
       "PID_maxSpeed" : 1.0
     },
     "RangeSensor" : {
-      "name": "rangeSensor1"
+      "name": "rangeSensor1",
+      "runningAvgWeight" : 0.5
     },
     "DriveSysEncoderVariables" : {
       "__Comment" : "These values are applicable when driving with RUN_USING_ENCODERS or RUN_TO_POSITION setting",
@@ -77,6 +78,18 @@
         "highSpeed": 0.35,
         "timeOut": 2.5
       }
+    }
+  },
+  "MRGyroOnly" : {
+    "IMU": {
+      "name": "MRgyro",
+      "DIMname": "dim",
+      "type": "MRgyro",
+      "porttype": "i2c",
+      "portnum": 0,
+      "driveSysInitialPower": 0.3,
+      "driveSysTargetPower": 0.3,
+      "angleTolerance": 3.0
     }
   },
   "none" : {

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -21,16 +22,24 @@ import org.json.JSONObject;
 public class BeaconClaim implements Attachment {
     private FTCRobot robot;
     private LinearOpMode curOpMode;
-    private CRServo buttonServo=null;
-    private Servo colorServo=null;
+    private CRServo buttonServoCR =null;
+    private Servo buttonServoLinear=null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     public enum BeaconColor {RED, BLUE, NONE}
     public BeaconColor beaconColor;
 
+    private double curLength;
+    double buttonServoSpeed; // units: cm per second
+
+    double strokeLength; // units: cm
+    public enum BeaconClaimOperation {EXTEND, RETRACT, NONE}
+    private BeaconClaimOperation lastOp;
+    private ElapsedTime lastOpTimer;
+
     public BeaconClaim(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         this.curOpMode = curOpMode;
         this.robot = robot;
-        String key;
+        String key=null;
         JSONObject beaconJsonObj=null;
         JSONObject motorsObj=null, buttonServoObj=null, colorServoObj=null;
         JSONObject sensorsObj = null,coloSensor1Obj=null;
@@ -47,7 +56,9 @@ public class BeaconClaim implements Attachment {
         }
 
         try {
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServo");
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServoCR");
+            if (key == null)
+                key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServoLinear");
             buttonServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
             coloSensor1Obj = sensorsObj.getJSONObject(key);
@@ -58,49 +69,67 @@ public class BeaconClaim implements Attachment {
             e.printStackTrace();
         }
         if (buttonServoObj != null) {
+            String servoType=null;
             try {
-                buttonServo = curOpMode.hardwareMap.crservo.get("buttonServo");
-            } catch (IllegalArgumentException e) {
+                key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "motorType");
+                servoType = buttonServoObj.getString(key);
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            try {
+                if (servoType.equalsIgnoreCase("CRservo")) {
+                    buttonServoCR = curOpMode.hardwareMap.crservo.get("buttonServo");
+                    if (buttonServoObj.getBoolean("needReverse")) {
+                        DbgLog.msg("ftc9773: Reversing the button servo");
+                        buttonServoCR.setDirection(CRServo.Direction.REVERSE);
+                    }
+                } else if (servoType.equalsIgnoreCase("LinearServo")) {
+                    buttonServoLinear = curOpMode.hardwareMap.servo.get("buttonServo");
+                    if (buttonServoObj.getBoolean("needReverse")) {
+                        DbgLog.msg("ftc9773: Reversing the button servo");
+                        buttonServoLinear.setDirection(Servo.Direction.REVERSE);
+                    }
+                    key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "scaleRangeMin");
+                    double scaleMin = buttonServoObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "scaleRangeMax");
+                    double scaleMax = buttonServoObj.getDouble(key);
+                    buttonServoLinear.scaleRange(scaleMin, scaleMax);
+                    buttonServoLinear.setPosition(0.0);
+                }
+                // speed and strokeLength parameters are common to both types of servos
+                key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "speed");
+                buttonServoSpeed = buttonServoObj.getDouble(key);
+                key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "strokeLength");
+                strokeLength = buttonServoObj.getDouble(key);
+            } catch (IllegalArgumentException e) {
+                DbgLog.msg("ftc9773:  IllegalArgumentException has occurred");
+                e.printStackTrace();
+            }catch (JSONException e) {
+                // Based on tests, it takes 200 milliseconds per 1 cm of extension
+                DbgLog.msg("ftc9773: JSON exception occurred.  key =%s", key);
+                buttonServoSpeed = 5.0; // default value = 5 cm per second
+                strokeLength = 15.0; // Just in case the JSON reader failed, set the default in 15 cm
+                e.printStackTrace();
+            }
+
+            lastOp = BeaconClaimOperation.NONE;
+            lastOpTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            lastOpTimer.reset();
+            DbgLog.msg("ftc9773: buttonServoSpeed=%f, strokeLength=%f",
+                    buttonServoSpeed, strokeLength);
         }
         if (coloSensor1Obj != null) {
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
             colorSensor1.enableLed(false);
         }
-        if (colorServoObj != null) {
-            try {
-                colorServo = curOpMode.hardwareMap.servo.get("colorServo");
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-        }
 
-
-        // Set the MIN and MAX positions for servos
-        try {
-            if (buttonServo != null) {
-                if (buttonServoObj.getBoolean("needReverse")) {
-                    DbgLog.msg("ftc9773: Reversing the button servo");
-                    buttonServo.setDirection(CRServo.Direction.REVERSE);
-                }
-           }
-
-            if (colorServo != null) {
-                colorServo.scaleRange(colorServoObj.getDouble("scaleRangeMin"),
-                        colorServoObj.getDouble("scaleRangeMax"));
-                if (colorServoObj.getBoolean("needReverse")) {
-                    DbgLog.msg("ftc9773: Reversing the color servo");
-                    colorServo.setDirection(Servo.Direction.REVERSE);
-                }
-                colorServo.setPosition(1.0);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
         beaconColor = BeaconColor.NONE;
+        curLength = 0.0;
+    }
+
+    public double getCurLength() {
+        return curLength;
     }
 
     // method to activate or reset beacon claim attachment
@@ -117,40 +146,100 @@ public class BeaconClaim implements Attachment {
             idleBeacon();
         }
     }
+    private void updateBeaconServoLength(BeaconClaimOperation op) {
+        if (lastOp == BeaconClaimOperation.NONE) {
+            lastOpTimer.reset();
+        } else if (lastOp == BeaconClaimOperation.EXTEND) {
+            curLength += lastOpTimer.milliseconds() * buttonServoSpeed / 1000;
+            curLength =  (curLength > strokeLength) ? strokeLength : curLength;
+        } else {
+            curLength -= lastOpTimer.milliseconds() * buttonServoSpeed / 1000;
+            curLength = (curLength < 0) ? 0 : curLength;
+        }
+        lastOpTimer.reset();
+        lastOp = op;
+    }
     public void pushBeacon(){
-        buttonServo.setPower(1.0);
+        if (buttonServoCR != null) {
+            updateBeaconServoLength(BeaconClaimOperation.EXTEND);
+            buttonServoCR.setPower(-1.0);
+        } else if (buttonServoLinear != null) {
+            lastOp = BeaconClaimOperation.EXTEND;
+            curLength = Range.clip(curLength+1.0, 0, strokeLength);
+            buttonServoLinear.setPosition(curLength / strokeLength);
+        }
     }
     public void retractBeacon(){
-        buttonServo.setPower(-1.0);
+        if (buttonServoCR != null) {
+            updateBeaconServoLength(BeaconClaimOperation.RETRACT);
+            buttonServoCR.setPower(1.0);
+        } else if (buttonServoLinear != null) {
+            lastOp = BeaconClaimOperation.RETRACT;
+            curLength = Range.clip(curLength-1.0, 0, strokeLength);
+            buttonServoLinear.setPosition(curLength / strokeLength);
+        }
     }
     public void idleBeacon(){
-        buttonServo.setPower(0.0);
-    }
-
-    public void activateButtonServo() {
-        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
-            pushBeacon();
+        if (buttonServoCR != null) {
+            updateBeaconServoLength(BeaconClaimOperation.NONE);
+            buttonServoCR.setPower(0.0);
+        } else if (buttonServoLinear != null) {
+            lastOp = BeaconClaimOperation.NONE;
         }
-//        curOpMode.sleep(500);
-        idleBeacon();
     }
 
-    public void deactivateButtonServo() {
-        ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        elapsedTime.reset();
-        while (elapsedTime.milliseconds() < 1200 && curOpMode.opModeIsActive()) {
-            retractBeacon();
+    public void activateButtonServo(double timeToExtend, double lengthToExtend) {
+        if (buttonServoCR != null) {
+            ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            elapsedTime.reset();
+            while (elapsedTime.milliseconds() < timeToExtend && curOpMode.opModeIsActive()) {
+                pushBeacon();
+            }
+//        curOpMode.sleep(500);
+            idleBeacon();
+            curLength += (timeToExtend * buttonServoSpeed);
+            curLength = (curLength > strokeLength) ? strokeLength : curLength;
+        } else if (buttonServoLinear != null) {
+            double servoPosition = Range.clip(lengthToExtend, 0, strokeLength) / strokeLength;
+            servoPosition = Range.clip(buttonServoLinear.getPosition() + servoPosition, 0, 1);
+            DbgLog.msg("ftc9773: activateButtonServo: cur position = %f, new position=%f",
+                    buttonServoLinear.getPosition(), servoPosition);
+            buttonServoLinear.setPosition(servoPosition);
+            curOpMode.sleep((long)timeToExtend);
         }
-//        curOpMode.sleep(500);
-        idleBeacon();
     }
 
-    public void claimABeacon() {
-        activateButtonServo();
+    public void deactivateButtonServo(double timeToRetract, double lengthToRetract) {
+        if (buttonServoCR != null) {
+            ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            elapsedTime.reset();
+            while ((elapsedTime.milliseconds() < timeToRetract) && curOpMode.opModeIsActive()) {
+                retractBeacon();
+            }
+//        curOpMode.sleep(500);
+            idleBeacon();
+            curLength -= (timeToRetract * buttonServoSpeed);
+            curLength = (curLength < 0) ? 0 : curLength;
+        } else if (buttonServoLinear != null) {
+            double servoPosition = Range.clip(lengthToRetract, 0, strokeLength) / strokeLength;
+            servoPosition = Range.clip(buttonServoLinear.getPosition() - servoPosition, 0, 1);
+            DbgLog.msg("ftc9773: deactivateButtonServo: cur position = %f, new position=%f",
+                    buttonServoLinear.getPosition(), servoPosition);
+            buttonServoLinear.setPosition(servoPosition);
+            curOpMode.sleep(600);
+        }
+    }
+
+    public void claimABeacon(double distanceFromWall) {
+        double lengthToExtend = distanceFromWall - curLength;
+        lengthToExtend =  (lengthToExtend < 0) ? 2 : lengthToExtend;
+
+        double timeToExtend = lengthToExtend * (1000 / buttonServoSpeed);
+        DbgLog.msg("ftc9773: timeToExtend=%f millis, lengthToExtend=%f cm",
+                timeToExtend, lengthToExtend);
+        activateButtonServo(timeToExtend, lengthToExtend);
         curOpMode.sleep(50);
-        deactivateButtonServo();
+        deactivateButtonServo(timeToExtend, lengthToExtend);
     }
 
     public void verifyBeaconColor(){
@@ -163,8 +252,8 @@ public class BeaconClaim implements Attachment {
     }
 
     public void verifyBeaconServo() {
-        activateButtonServo();
-        deactivateButtonServo();
+        activateButtonServo(1000, 5);
+        deactivateButtonServo(1000, 5);
     }
 
     public boolean isBeaconRed() {
@@ -201,6 +290,10 @@ public class BeaconClaim implements Attachment {
 
     public BeaconColor getBeaconColor() {
         return (beaconColor);
+    }
+
+    public double getStrokeLength() {
+        return strokeLength;
     }
 
 }

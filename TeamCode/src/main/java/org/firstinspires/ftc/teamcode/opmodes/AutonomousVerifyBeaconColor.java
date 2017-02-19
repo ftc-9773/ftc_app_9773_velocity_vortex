@@ -12,14 +12,14 @@ import org.json.JSONException;
  * Copyright (c) 2016 Robocracy 9773
  */
 
-@Autonomous(name = "AutonomousRed", group = "Autonomous")
-public class AutonomousRed extends LinearOpMode {
+@Autonomous(name = "AutonomousColorVerify", group = "Autonomous")
+public class AutonomousVerifyBeaconColor extends LinearOpMode {
 
     FTCRobot robot;
 
     @Override
     public void runOpMode() {
-        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "AutonomousRed.json");
+        JsonReader opmodeCfg = new JsonReader(JsonReader.opModesDir + "AutonomousVerifyBeacon.json");
         String autonomousOpt = null;
         String robotName = null;
         long startingDelay = 0;
