@@ -119,7 +119,7 @@ public class VuforiaOpMode extends LinearOpMode
             listener.setPhoneInformation(phoneLocation, parameters.cameraDirection);
         }
 
-        DbgLog.msg("ftc9773: How many targets? %d","How many listeners? %d",visionTargets.size(),listeners.size());
+        DbgLog.msg("ftc9773: How many targets?","How many listeners?",visionTargets.size(),listeners.size());
 
     }
 
