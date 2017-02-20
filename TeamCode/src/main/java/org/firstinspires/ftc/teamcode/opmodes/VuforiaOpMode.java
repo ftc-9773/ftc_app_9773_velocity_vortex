@@ -65,6 +65,7 @@ public class VuforiaOpMode extends LinearOpMode
 
         while(opModeIsActive())
         {
+            DbgLog.msg("ftc9773: Op mode is Active");
             OpenGLMatrix latestLocation = null;
             for(VuforiaTrackable target : visionTargets){
                 VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener) target.getListener();
@@ -78,12 +79,11 @@ public class VuforiaOpMode extends LinearOpMode
                     robotX = coordinates[0];
                     robotY = coordinates[1];
                     robotAngle = Orientation.getOrientation(lastKnownLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
-
                     // Send information about whether the target is visible, and where the robot is
                     telemetry.addData("Tracking " + target.getName(), listener.isVisible());
                     telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
                     telemetry.addData("Distance from target: ", "%f", getDistance(lastKnownLocation, target.getLocation()));
-                    DbgLog.msg("ftc9773: Location: ", formatMatrix(lastKnownLocation));
+                    DbgLog.msg("ftc9773: Location: %s", formatMatrix(lastKnownLocation));
                 }
             }
 
