@@ -25,7 +25,7 @@ public class Navigation {
     FTCRobot robot;
     LinearOpMode curOpMode;
     JSONObject navOptObj;
-    public MRGyro gyro;
+    public MRGyro gyro;  // Added the MR gyro support
     public LineFollow lf;
     public NavxMicro navxMicro;
     public EncoderNavigation encoderNav;
