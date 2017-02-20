@@ -93,7 +93,7 @@ public class VuforiaOpMode extends LinearOpMode
         // Setup parameters to create localizer
         parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId); // To remove the camera view from the screen, remove the R.id.cameraMonitorViewId
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
         parameters.useExtendedTracking = false;
         vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
 
@@ -106,7 +106,7 @@ public class VuforiaOpMode extends LinearOpMode
         visionTargets.get(0).setName("Wheels"); // 0 corresponds to the wheels target
         visionTargets.get(0).setLocation(createMatrix(0, 500, 0, 90, 0, 90));
         visionTargets.get(1).setName("Tools");
-        visionTargets.get(1).setLocation(createMatrix(0, -500, 0, -90, 0, 90));//TODO: Check these cordinates
+        visionTargets.get(1).setLocation(createMatrix(0, -500, 0, -90, 0, 90));
 
         // Set phone location on robot
         phoneLocation = createMatrix(0, 225, 0, 90, 0, 0);
@@ -124,7 +124,7 @@ public class VuforiaOpMode extends LinearOpMode
     }
 
     // Creates a matrix for determining the locations and orientations of objects
-    // Units are millimeters for x, y, and z, and degrees for u, v, and w
+    // Units are millimeters for x, y, and z, and degrees for u, v, and w (pitch, roll, yaw)
     private OpenGLMatrix createMatrix(float x, float y, float z, float u, float v, float w)
     {
         return OpenGLMatrix.translation(x, y, z).
