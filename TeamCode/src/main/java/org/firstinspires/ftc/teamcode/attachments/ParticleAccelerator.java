@@ -23,13 +23,13 @@ import org.json.JSONObject;
 public class ParticleAccelerator implements Attachment{
     FTCRobot robot;
     LinearOpMode curOpMode;
-    DcMotor launcherMotor;
+    DcMotor launcherMotor1, launcherMotor2;
     long rampUpTime = 2000; // default value in milli seconds
 
     public ParticleAccelerator(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {
         String key;
         JSONObject launcherObj = null;
-        JSONObject motorsObj = null, launcherMotorObj = null;
+        JSONObject motorsObj = null, launcherMotorObj1 = null, launcherMotorObj2 = null;
 
         this.robot = robot;
         this.curOpMode = curOpMode;
@@ -38,21 +38,44 @@ public class ParticleAccelerator implements Attachment{
             launcherObj = rootObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(launcherObj, "motors");
             motorsObj = launcherObj.getJSONObject(key);
-            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "partAccMotor");
-            launcherMotorObj = motorsObj.getJSONObject(key);
-            launcherMotor = curOpMode.hardwareMap.dcMotor.get("partAccMotor");
-            if (launcherMotorObj.getBoolean("needReverse")) {
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try{
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "partAccMotor1");
+            launcherMotorObj1 = motorsObj.getJSONObject(key);
+            launcherMotor1 = curOpMode.hardwareMap.dcMotor.get("partAccMotor1");
+            if (launcherMotorObj1.getBoolean("needReverse")) {
                 DbgLog.msg("ftc9773: Reversing the launcher motor");
-                launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+                launcherMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
             }
-            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj, "rampUpTime");
-            rampUpTime = launcherMotorObj.getLong(key);
-            launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj1, "rampUpTime");
+            rampUpTime = launcherMotorObj1.getLong(key);
+            launcherMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //            int maxSpeed = launcherMotorObj.getInt("maxSpeed");
 //            launcherMotor.setMaxSpeed(maxSpeed);
             // Set the zero power behaviour to float sot hat the motor stops gradually
             // This is recommended for high speed low torque motors
-            launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            launcherMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try{
+            key = JsonReader.getRealKeyIgnoreCase(motorsObj, "partAccMotor2");
+            launcherMotorObj2 = motorsObj.getJSONObject(key);
+            launcherMotor2 = curOpMode.hardwareMap.dcMotor.get("partAccMotor2");
+            if (launcherMotorObj1.getBoolean("needReverse")) {
+                DbgLog.msg("ftc9773: Reversing the launcher motor");
+                launcherMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+            }
+            key = JsonReader.getRealKeyIgnoreCase(launcherMotorObj2, "rampUpTime");
+            rampUpTime = launcherMotorObj2.getLong(key);
+            launcherMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            int maxSpeed = launcherMotorObj.getInt("maxSpeed");
+//            launcherMotor.setMaxSpeed(maxSpeed);
+            // Set the zero power behaviour to float sot hat the motor stops gradually
+            // This is recommended for high speed low torque motors
+            launcherMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -66,12 +89,14 @@ public class ParticleAccelerator implements Attachment{
 //        while ((rampUpTimer.milliseconds() < rampUpTime) && curOpMode.opModeIsActive()) {
 //            launcherMotor.setPower(1 - (rampUpTimer.milliseconds() / rampUpTime));
 //        }
-        launcherMotor.setPower(1.0);
+        launcherMotor1.setPower(1.0);
+        launcherMotor2.setPower(1.0);
     }
 
     public void deactivateParticleAccelerator() {
         // Zero power behaviour was set to FLOAT in the constructor.
-        launcherMotor.setPower(0.0);
+        launcherMotor1.setPower(0.0);
+        launcherMotor2.setPower(0.0);
     }
     
     @Override

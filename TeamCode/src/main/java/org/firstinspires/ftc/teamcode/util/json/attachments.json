@@ -81,13 +81,25 @@
   },
   "ParticleAccelerator" : {
     "motors": {
-      "partAccMotor": {
+      "partAccMotor1": {
         "motorType" : "dc",
         "__motor comment" : "The Motor used for shooter is Neverest20 with banebot p60 gear box",
         "motor" : "Neverest20",
         "needReverse" : false,
         "fixedPositions" : false,
-        "maxSpeed" : 2500,
+        "maxSpeed" : 4000,
+        "__comment1" : "ramUpTime is in milli seconds",
+        "rampUpTime" : 2000,
+        "minButton" : "gamepad1.dpad_down",
+        "maxButton" : "gamepad1.dpad_up"
+      },
+      "partAccMotor2": {
+        "motorType" : "dc",
+        "__motor comment" : "The Motor used for shooter is Neverest20 with banebot p60 gear box",
+        "motor" : "Neverest20",
+        "needReverse" : false,
+        "fixedPositions" : false,
+        "maxSpeed" : 4000,
         "__comment1" : "ramUpTime is in milli seconds",
         "rampUpTime" : 2000,
         "minButton" : "gamepad1.dpad_down",
