@@ -131,7 +131,11 @@ public class VuforiaOpMode extends LinearOpMode
         float x = Math.abs(targetData[12] - myData[12]);
         float y = Math.abs(targetData[13] - myData[13]);
         float z = Math.abs(targetData[14] - myData[14]);
-        return (float) Math.sqrt(x*x + y*y);
+        return (float) Math.sqrt(x*x + y*y + z*z);
+    }
+
+    public float getDistance(float x, float y, float z){
+        return (float) Math.sqrt(x*x + y*y + z*z);
     }
 
     // Creates a matrix for determining the locations and orientations of objects
