@@ -80,8 +80,7 @@ public class VuforiaOpMode extends LinearOpMode
                     // Send information about whether the target is visible, and where the robot is
                     telemetry.addData("Tracking " + target.getName(), listener.isVisible());
                     telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
-                    telemetry.addData("Distance from (0)Wheels: ", "%f", getDistance(lastKnownLocation, visionTargets.get(0).getLocation()));
-                    telemetry.addData("Distance from (1)Tools: ", "%f", getDistance(lastKnownLocation, visionTargets.get(1).getLocation()));
+                    telemetry.addData("Distance from target: ", "%f", getDistance(lastKnownLocation, target.getLocation()));
                     DbgLog.msg("ftc9773: Location: ", formatMatrix(lastKnownLocation));
                 }
             }
