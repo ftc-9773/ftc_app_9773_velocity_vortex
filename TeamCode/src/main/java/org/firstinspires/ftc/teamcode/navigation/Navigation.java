@@ -12,8 +12,6 @@ import org.firstinspires.ftc.teamcode.util.BackgroundTasks;
 import org.firstinspires.ftc.teamcode.util.Instrumentation;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.NavigationOptionsReader;
-import org.firstinspires.ftc.teamcode.util.LoopStatistics;
-import org.firstinspires.ftc.teamcode.util.RepetitiveActions;
 import org.firstinspires.ftc.teamcode.navigation.MRGyro;
 import org.json.JSONObject;
 
