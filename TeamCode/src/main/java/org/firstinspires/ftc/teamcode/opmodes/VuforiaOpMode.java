@@ -7,6 +7,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.HINT;
+import com.vuforia.ImageTarget;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -79,6 +80,9 @@ public class VuforiaOpMode extends LinearOpMode
                     // Send information about whether the target is visible, and where the robot is
                     telemetry.addData("Tracking " + target.getName(), listener.isVisible());
                     telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
+                    telemetry.addData("Distance from (0)Wheels: ", "%f", getDistance(lastKnownLocation, visionTargets.get(0).getLocation()));
+                    telemetry.addData("Distance from (1)Tools: ", "%f", getDistance(lastKnownLocation, visionTargets.get(1).getLocation()));
+                    DbgLog.msg("ftc9773: Location: ", formatMatrix(lastKnownLocation));
                 }
             }
 
@@ -118,9 +122,15 @@ public class VuforiaOpMode extends LinearOpMode
             listeners.add(listener);
             listener.setPhoneInformation(phoneLocation, parameters.cameraDirection);
         }
+    }
 
-        DbgLog.msg("ftc9773: How many targets?","How many listeners?",visionTargets.size(),listeners.size());
-
+    private float getDistance(OpenGLMatrix obj, OpenGLMatrix target){
+        float[] myData = obj.getData();
+        float[] targetData = target.getData();
+        float x = Math.abs(targetData[0] - myData[0]);
+        float y = Math.abs(targetData[1] - myData[1]);
+        float z = Math.abs(targetData[2] - myData[2]);
+        return (float) Math.sqrt(x*x + z*z);
     }
 
     // Creates a matrix for determining the locations and orientations of objects
