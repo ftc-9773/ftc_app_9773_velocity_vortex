@@ -125,7 +125,7 @@ public class VuforiaOpMode extends LinearOpMode
         }
     }
 
-    private float getDistance(OpenGLMatrix obj, OpenGLMatrix target){
+    public float getDistance(OpenGLMatrix obj, OpenGLMatrix target){
         float[] myData = obj.getData();
         float[] targetData = target.getData();
         float x = Math.abs(targetData[12] - myData[12]);
