@@ -98,9 +98,7 @@ public class VuforiaOpMode extends LinearOpMode
         // Setup parameters to create localizer
         parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId); // To remove the camera view from the screen, remove the R.id.cameraMonitorViewId
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
-        int cameraOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
         parameters.useExtendedTracking = false;
         vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
 
