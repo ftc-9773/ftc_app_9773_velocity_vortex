@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 /**
  * Created by michaelzhou on 2/19/17.
  */
+import android.content.pm.ActivityInfo;
+
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -96,7 +98,9 @@ public class VuforiaOpMode extends LinearOpMode
         // Setup parameters to create localizer
         parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId); // To remove the camera view from the screen, remove the R.id.cameraMonitorViewId
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
+        int cameraOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+
         parameters.useExtendedTracking = false;
         vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
 
@@ -126,10 +130,10 @@ public class VuforiaOpMode extends LinearOpMode
     private float getDistance(OpenGLMatrix obj, OpenGLMatrix target){
         float[] myData = obj.getData();
         float[] targetData = target.getData();
-        float x = Math.abs(targetData[0] - myData[0]);
-        float y = Math.abs(targetData[1] - myData[1]);
-        float z = Math.abs(targetData[2] - myData[2]);
-        return (float) Math.sqrt(x*x + z*z);
+        float x = Math.abs(targetData[12] - myData[12]);
+        float y = Math.abs(targetData[13] - myData[13]);
+        float z = Math.abs(targetData[14] - myData[14]);
+        return (float) Math.sqrt(x*x + y*y);
     }
 
     // Creates a matrix for determining the locations and orientations of objects
