@@ -132,10 +132,10 @@ public class VuforiaOpMode extends LinearOpMode
         float z = Math.abs(targetData[14] - myData[14]);
         return (float) Math.sqrt(x*x + y*y + z*z);
     }
-
-    public float getDistance(float x, float y, float z){
-        return (float) Math.sqrt(x*x + y*y + z*z);
-    }
+//
+//    public float getDistance(float x, float y, float z){
+//        return (float) Math.sqrt(x*x + y*y + z*z);
+//    }
 
     // Creates a matrix for determining the locations and orientations of objects
     // Units are millimeters for x, y, and z, and degrees for u, v, and w (pitch, roll, yaw)
