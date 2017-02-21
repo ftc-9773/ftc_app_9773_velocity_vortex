@@ -26,7 +26,7 @@ public class Instrumentation {
     public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
     private List<InstrBaseClass> instrObjects = new ArrayList<InstrBaseClass>();
-    public String loopRuntimeLog, rangeSensorLog, navxLog;
+    public String loopRuntimeLog, rangeSensorLog, navxLog, shooterLog;
 
     public class InstrBaseClass {
         public InstrumentationID instrID;
@@ -376,13 +376,92 @@ public class Instrumentation {
         }
     }
 
+    public class PartAccData extends InstrBaseClass{
+        ElapsedTime timer;
+        FTCRobot robot;
+        LinearOpMode curOpMode;
+        double batteryVoltage, curTime, motorPower1, motorPower2;
+        boolean isSuccess;
+        String action;
+        FileRW fileRW;
+        String logFile;
+
+
+        public PartAccData(FTCRobot robot, LinearOpMode curOpMode){
+            this.curOpMode = curOpMode;
+            this.robot = robot;
+            timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+            batteryVoltage = motorPower1 = motorPower2 = 0.0;
+            isSuccess = false;
+            curTime = timer.milliseconds();
+
+            if (shooterLog != null) {
+                // Create a FileRW object
+                logFile = FileRW.getTimeStampedFileName(shooterLog);
+                this.fileRW = new FileRW(logFile, true);
+                if (this.fileRW == null) {
+                    DbgLog.error("ftc9773: Error! Could not create the file %s", logFile);
+                }
+            }
+        }
+
+        @Override
+        public void reset(){
+            timer.reset();
+            batteryVoltage = motorPower1 = motorPower2 = 0.0;
+            isSuccess = false;
+        }
+
+        @Override
+        public void addInstrData(){
+            if (curOpMode.gamepad1.dpad_up){
+                action = "Shooter On";
+            }
+            if (curOpMode.gamepad1.a){
+                action = "Particle Released";
+            }
+            if (curOpMode.gamepad1.right_bumper){
+                isSuccess = true;
+            } else {
+                isSuccess = false;
+            }
+            motorPower1 = robot.partAccObj.launcherMotor1.getPower();
+            motorPower2 = robot.partAccObj.launcherMotor2.getPower();
+
+            batteryVoltage = robot.getVoltage();
+            curTime = timer.milliseconds();
+        }
+
+        @Override
+        public void printToConsole(){
+            DbgLog.msg("ftc9773: action = %s, motor1power=%f, motor2power=%f, current voltage=%f, curTime=%f, isSuccess=%b",
+                    action, motorPower1, motorPower2, batteryVoltage, curTime, isSuccess);
+        }
+
+        @Override
+        public void writeToFile(){
+            fileRW.fileWrite(String.format("%s,%f,%f,%f,%f, ,%b",
+                    action, batteryVoltage, curTime, motorPower1, motorPower2, isSuccess));
+        }
+
+        @Override
+        public void closeLog(){
+            if (this.fileRW != null) {
+                DbgLog.msg("ftc9773: Instrumentation: Closing PartAccLog fileobj");
+                this.fileRW.close();
+            }
+        }
+    }
+
     public Instrumentation(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
-                           String rangeSensorLog, String navxLog) {
+                           String rangeSensorLog, String navxLog, String shooterLog) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.loopRuntimeLog = loopRuntimeLog;
         this.rangeSensorLog = rangeSensorLog;
         this.navxLog = navxLog;
+        this.shooterLog = shooterLog;
     }
 
     public void addAction(InstrBaseClass action) {

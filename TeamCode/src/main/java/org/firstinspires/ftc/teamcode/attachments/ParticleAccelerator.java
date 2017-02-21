@@ -4,8 +4,6 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
 import org.firstinspires.ftc.teamcode.util.JsonReaders.JsonReader;
@@ -23,7 +21,7 @@ import org.json.JSONObject;
 public class ParticleAccelerator implements Attachment{
     FTCRobot robot;
     LinearOpMode curOpMode;
-    DcMotor launcherMotor1, launcherMotor2;
+    public DcMotor launcherMotor1, launcherMotor2;
     long rampUpTime = 2000; // default value in milli seconds
 
     public ParticleAccelerator(FTCRobot robot, LinearOpMode curOpMode, JSONObject rootObj) {

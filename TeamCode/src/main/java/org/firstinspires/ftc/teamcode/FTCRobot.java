@@ -22,8 +22,6 @@ import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 
-import static java.lang.Thread.sleep;
-
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -74,7 +72,7 @@ public class FTCRobot {
 
         // Initialize the Instrumentation object
         instrumentation = new Instrumentation(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
-                robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"));
+                robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"), robotConfig.getString("partAccLog"));
         DbgLog.msg("ftc9773: Initialized the Instrumentation object");
 
         // Initialize the BackgroundTasks object

@@ -68,6 +68,7 @@
     "distanceBetweenWheels" : 15.5,
     "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime",
     "rangeSensorLog" : "/sdcard/FIRST/team9773/logs/rangeSensor",
-    "navxLog" : "/sdcard/FIRST/team9773/logs/navxmicro"
+    "navxLog" : "/sdcard/FIRST/team9773/logs/navxmicro",
+    "partAccLog" : "/sdcard/FIRST/team9773/logs/partAcc"
   }
 }
