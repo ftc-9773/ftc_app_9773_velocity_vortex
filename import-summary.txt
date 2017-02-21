@@ -8,8 +8,8 @@ due to bugs, placing projects in directories containing spaces in the
 path, or characters like ", ' and &, have had issues. We're working to
 eliminate these bugs, but to save yourself headaches you may want to
 move your project to a location where this is not a problem.
-C:\Users\pranavburugula\Documents\Android Studio Projects\ftc_app_9773_velocity_vortex
-                                         -      -                                     
+C:\Users\pb8xe_000\Documents\Android Studio Workspace\ftc_app_9773_velocity_vortex
+                                    -      -                                      
 
 Ignored Files:
 --------------
