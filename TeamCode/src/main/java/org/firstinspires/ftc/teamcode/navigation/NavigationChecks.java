@@ -12,8 +12,9 @@ import java.util.List;
 
 public class NavigationChecks {
     public enum NavChecksSupported {CHECK_OPMODE_INACTIVE, CHECK_ROBOT_TILTING, CHECK_TIMEOUT,
-        CHECK_WHITElINE, CHECK_TARGET_YAW_NAVX, CHECK_DISTANCE_TRAVELLED,
-        CROSSCHECK_NAVX_WITH_ENCODERS, CHECK_NAVX_IS_WORKING}
+        CHECK_WHITElINE, CHECK_TARGET_YAW_GYRO, CHECK_DISTANCE_TRAVELLED,
+        CROSSCHECK_GYRO_WITH_ENCODERS, CHECK_GYRO_IS_WORKING
+    }
     LinearOpMode curOpMode;
     FTCRobot robot;
     Navigation navigationObj;
@@ -52,34 +53,34 @@ public class NavigationChecks {
         }
     }
 
-    public class CheckNavxIsWorking extends NavCheckBaseClass {
+    public class CheckGyroIsWorking extends NavCheckBaseClass {
         ElapsedTime timer;
-        NavxMicro navxMicro;
+        GyroInterface gyro;
         double prevYaw;
         boolean firstCheck;
-        public CheckNavxIsWorking() {
-            navxMicro = navigationObj.navxMicro;
+        public CheckGyroIsWorking() {
+            gyro = navigationObj.gyro;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-            prevYaw = navxMicro.getModifiedYaw();
+            prevYaw = gyro.getYaw();
             firstCheck = true;
-            navcheck = NavChecksSupported.CHECK_NAVX_IS_WORKING;
+            navcheck = NavChecksSupported.CHECK_GYRO_IS_WORKING;
         }
 
         @Override
         public void reset() {
             timer.reset();
             firstCheck = true;
-            prevYaw = navxMicro.getModifiedYaw();
+            prevYaw = gyro.getYaw();
         }
 
         @Override
         public boolean stopNavigation() {
-            double curYaw = navxMicro.getModifiedYaw();
+            double curYaw = gyro.getYaw();
             // If there is no update in 200 milli second, declare navx failure
             // For the first time check though, we may see > 200 msec difference due to the
             // time gap between instantiating this object and actually using it.
             if ((curYaw == prevYaw) && (timer.milliseconds() > 200) && !firstCheck) {
-                DbgLog.msg("ftc9773:  CheckNavxIsWorking:  navx got disconnected!");
+                DbgLog.msg("ftc9773:  CheckGyroIsWorking:  navx got disconnected!");
                 return (true);
             } else {
                 // navx is working fine; just update the timer and prevYaw so the next
@@ -92,25 +93,25 @@ public class NavigationChecks {
         }
     }
 
-    public class CheckNavxTargetYawReached extends NavCheckBaseClass {
+    public class CheckGyroTargetYawReached extends NavCheckBaseClass {
         double targetYaw;
         double angleTolerance;
-        NavxMicro navxMicro;
-        public CheckNavxTargetYawReached(double targetYaw) {
+        GyroInterface gyro;
+        public CheckGyroTargetYawReached(double targetYaw) {
             this.targetYaw = targetYaw;
-            this.navxMicro = navigationObj.navxMicro;
-            this.angleTolerance = navxMicro.angleTolerance;
-            navcheck = NavChecksSupported.CHECK_TARGET_YAW_NAVX;
+            this.gyro = navigationObj.gyro;
+            this.angleTolerance = gyro.getAngleTolerance();
+            navcheck = NavChecksSupported.CHECK_TARGET_YAW_GYRO;
         }
 
         @Override
         public void reset() {
-            targetYaw = navxMicro.getModifiedYaw();
+            targetYaw = gyro.getYaw();
         }
 
         @Override
         public boolean stopNavigation() {
-            double curYaw = navxMicro.getModifiedYaw();
+            double curYaw = gyro.getYaw();
             if (navigationObj.distanceBetweenAngles(curYaw, targetYaw) < angleTolerance) {
                 return (true);
             } else {
@@ -123,27 +124,27 @@ public class NavigationChecks {
         double degreesToCheck;
         DriveSystem.ElapsedEncoderCounts elapsedCounts;
         double navxYaw;
-        NavxMicro navxMicro;
+        GyroInterface gyro;
         public CrossCheckNavxWhileTurning(double degreesToCheck) {
             this.degreesToCheck = degreesToCheck;
             elapsedCounts = robot.driveSystem.getNewElapsedCountsObj();
             elapsedCounts.reset();
-            navxMicro = navigationObj.navxMicro;
-            navxYaw = navxMicro.getModifiedYaw();
-            navcheck = NavChecksSupported.CROSSCHECK_NAVX_WITH_ENCODERS;
+            gyro = navigationObj.gyro;
+            navxYaw = gyro.getYaw();
+            navcheck = NavChecksSupported.CROSSCHECK_GYRO_WITH_ENCODERS;
         }
 
         @Override
         public void reset() {
             elapsedCounts.reset();
-            navxYaw = navxMicro.getModifiedYaw();
+            navxYaw = gyro.getYaw();
         }
 
         @Override
         public boolean stopNavigation() {
             double encoder_degreesTurned = Math.abs(elapsedCounts.getDegreesTurned());
             double navx_degreesTurned = navigationObj.distanceBetweenAngles(navxYaw,
-                    navxMicro.getModifiedYaw());
+                    gyro.getYaw());
             double diff = Math.abs(encoder_degreesTurned - navx_degreesTurned);
             if (diff > Math.abs(degreesToCheck)) {
                 DbgLog.msg("ftc9773: encoder degrees: %f, navx degrees: %f", encoder_degreesTurned, navx_degreesTurned);
@@ -156,14 +157,14 @@ public class NavigationChecks {
 
     public class CheckRobotTilting extends NavCheckBaseClass {
         double pitchDegrees;
-        NavxMicro navxMicro;
+        GyroInterface gyro;
         double navxPitch;
         // TODO: 12/29/16 Investigate the feasibility of using phone's builtin sensors to detect tilting
 
         public CheckRobotTilting(double pitchDegrees) {
             this.pitchDegrees = pitchDegrees;
-            navxMicro = navigationObj.navxMicro;
-            navxPitch = navxMicro.getPitch();
+            gyro = navigationObj.gyro;
+            navxPitch = gyro.getPitch();
             navcheck = NavChecksSupported.CHECK_ROBOT_TILTING;
         }
 
@@ -174,7 +175,7 @@ public class NavigationChecks {
 
         @Override
         public boolean stopNavigation() {
-            if (Math.abs(navxMicro.getPitch() - navxPitch) > pitchDegrees) {
+            if (Math.abs(gyro.getPitch() - navxPitch) > pitchDegrees) {
                 return (true);
             } else {
                 return (false);

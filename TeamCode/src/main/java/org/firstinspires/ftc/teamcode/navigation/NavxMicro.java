@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
  * Copyright (c) 2016 Robocracy 9773
  */
 
-public class NavxMicro {
+public class NavxMicro implements GyroInterface {
     LinearOpMode curOpMode;
     FTCRobot robot;
     Navigation navigation;
@@ -22,25 +22,18 @@ public class NavxMicro {
     private enum NAVX_Status {STATUS_NOT_SET, WORKING, NOT_WORKING}
     public AHRS navx_device;
     public double angleTolerance = 0.0;
-    private double driveSysInitialPower = 0.0;
-    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
-    navXPIDController yawPIDController=null;
-    navXPIDController.PIDResult yawPIDResult=null;
-    private double drive_speed=0.0;
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 30; // changed to 30 Hz for lower update frequency
     public double straightPID_kp=0.005, turnPID_kp=0.005;
-    private double pid_minSpeed=-1.0, pid_maxSpeed=1.0;
     private DcMotor.ZeroPowerBehavior prev_zp=null;
     private NAVX_Status navxStatus;
     public navXPerformanceMonitor navx_perfmon;
 
 
     public NavxMicro(LinearOpMode curOpMode, FTCRobot robot, Navigation navigation, String dimName, int portNum,
-                     double driveSysInitialPower, double angleTolerance, double straightPID_kp,
-                     double turnPID_kp, double pid_minSpeed, double pid_maxSpeed) {
+                     double angleTolerance, double straightPID_kp, double turnPID_kp) {
         this.curOpMode = curOpMode;
         this.robot = robot;
         this.navigation = navigation;
-        this.driveSysInitialPower = driveSysInitialPower;
         this.angleTolerance = angleTolerance;
 
         DbgLog.msg("ftc9773: dimName=%s, portNum=%d", dimName, portNum);
@@ -69,15 +62,8 @@ public class NavxMicro {
         }
         DbgLog.msg("ftc9773: Current yaw = %f", getModifiedYaw());
 
-        /* Configure the PID controller */
-        this.pid_minSpeed = pid_minSpeed;
-        this.pid_maxSpeed = pid_maxSpeed;
-        /* Drive straight forward at 3/4 of full drive speed */
-        this.drive_speed = pid_maxSpeed * 0.75;
         this.straightPID_kp = straightPID_kp;
         this.turnPID_kp = turnPID_kp;
-        curOpMode.telemetry.addData("navx: ", "minSpeed=%f, maxSpeed=%f, driveSpeed=%f",
-                pid_minSpeed, pid_maxSpeed, drive_speed);
         curOpMode.telemetry.addData("navx: ", "straightKp=%f, turnKp=%f", straightPID_kp, turnPID_kp);
         curOpMode.telemetry.update();
 
@@ -87,11 +73,24 @@ public class NavxMicro {
         navx_perfmon = new navXPerformanceMonitor(navx_device);
     }
 
+    @Override
     public void initAfterStart() {
-        navx_device.registerCallback(navx_perfmon);
+//        navx_device.registerCallback(navx_perfmon);
+        testAndSetGyroStatus();
     }
 
-    public void setNavxStatus() {
+    @Override
+    public Navigation.GyroType getGyroType() {
+        return Navigation.GyroType.NAVX_MICRO;
+    }
+
+    @Override
+    public double getAngleTolerance() {
+        return (angleTolerance);
+    }
+
+    @Override
+    public void testAndSetGyroStatus() {
         double updateCount1 = navx_device.getUpdateCount();
         curOpMode.sleep(200);
         double updateCount2 = navx_device.getUpdateCount();
@@ -102,6 +101,18 @@ public class NavxMicro {
         else {
             navxStatus = NAVX_Status.NOT_WORKING;
         }
+
+        if (this.navx_device.isCalibrating()) {
+            DbgLog.msg("ftc9773: Navx device is calibrating");
+        } else {
+            DbgLog.msg("ftc9773: Navx device is done with calibration");
+        }
+
+        if (this.navx_device.isConnected()) {
+            DbgLog.msg("ftc9773: Navx device is connected");
+        } else {
+            DbgLog.msg("ftc9773: Navx device is not connected");
+        }
     }
 
     public boolean navxIsWorking() {
@@ -111,6 +122,10 @@ public class NavxMicro {
         else {
             return (false);
         }
+    }
+    @Override
+    public double getYaw() {
+        return getModifiedYaw();
     }
 
     public double getModifiedYaw() {
@@ -126,11 +141,17 @@ public class NavxMicro {
         return (newYaw);
     }
 
+    @Override
     public double getPitch() {
         return ((double)navx_device.getPitch());
     }
 
-    public double convertToNavxYaw(double modifiedYaw) {
+    @Override
+    public boolean isGyroWorking() {
+        return navxIsWorking();
+    }
+
+    private double convertToNavxYaw(double modifiedYaw) {
         // This method does the inverse of getModifiedYaw()
         double navxYaw = 0.0;
 
@@ -142,6 +163,7 @@ public class NavxMicro {
         return (navxYaw);
     }
 
+    @Override
     public void setRobotOrientation(double targetYaw, double speed, NavigationChecks navigationChecks) {
         // The orientation is with respect to the initial autonomous starting position
         // The initial orientation of the robot at the beginning of the autonomous period
@@ -178,6 +200,7 @@ public class NavxMicro {
         robot.instrumentation.printToConsole();
     }
 
+    @Override
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw, yawDiff;
@@ -228,7 +251,8 @@ public class NavxMicro {
         robot.instrumentation.printToConsole();
     }
 
-    public void navxGoStraightPID(boolean driveBackwards, double degrees, float speed) {
+    @Override
+    public void goStraightPID(boolean driveBackwards, double degrees, float speed) {
         // degrees specified robot orientation
         double error=0.0, correction=0.0;
         double leftSpeed, rightSpeed;
@@ -239,10 +263,10 @@ public class NavxMicro {
             error = error + 360;
         }
         correction = this.straightPID_kp * error / 2;
-        leftSpeed = Range.clip(speed - correction, 0, drive_speed);
-        rightSpeed = Range.clip(speed + correction, 0, drive_speed);
-//        leftSpeed = drive_speed - correction;
-//        rightSpeed = drive_speed + correction;
+        // Ensure that 0.25 <= speed <= 0.75 so that correction can be meanigful.
+        speed = Range.clip(speed, 0.25f, 0.75f);
+        leftSpeed = Range.clip(speed - correction, 0, 1);
+        rightSpeed = Range.clip(speed + correction, 0, 1);
 //        DbgLog.msg("ftc9773: error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
         if (!driveBackwards) {
             robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);
@@ -251,20 +275,7 @@ public class NavxMicro {
         }
     }
 
-    public void testNavxCalibrateConnection() {
-        if (this.navx_device.isCalibrating()) {
-            DbgLog.msg("ftc9773: Navx device is calibrating");
-        } else {
-            DbgLog.msg("ftc9773: Navx device is done with calibration");
-        }
-
-        if (this.navx_device.isConnected()) {
-            DbgLog.msg("ftc9773: Navx device is connected");
-        } else {
-            DbgLog.msg("ftc9773: Navx device is not connected");
-        }
-    }
-
+    @Override
     public double getUpdateCount() {
         return (navx_device.getUpdateCount());
     }

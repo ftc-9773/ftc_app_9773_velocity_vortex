@@ -1,6 +1,6 @@
 {
   "testing1" : [
-    {"type" : "Programmed", "value" : "DriveToDistance", "inches" : -12, "motorSpeed" : 0.75}
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 90.0, "motorSpeed" : 0.3}
   ],
   "Pleasantville_Red" : [
     {"type" : "Programmed", "value" : "startPartAcc"},

@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.navigation.GyroInterface;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
-import org.firstinspires.ftc.teamcode.navigation.NavxMicro;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class Instrumentation {
     public enum InstrumentationID {LOOP_RUNTIME, RANGESENSOR_CM, NAVX_DEGREES, NAVX_YAW_MONITOR}
     public enum LoopType {DRIVE_TO_DISTANCE, DRIVE_UNTIL_WHITELINE, DRIVE_TILL_BEACON, TURN_ROBOT}
     private List<InstrBaseClass> instrObjects = new ArrayList<InstrBaseClass>();
-    public String loopRuntimeLog, rangeSensorLog, navxLog;
+    public String loopRuntimeLog, rangeSensorLog, gyroLog;
 
     public class InstrBaseClass {
         public InstrumentationID instrID;
@@ -207,8 +207,8 @@ public class Instrumentation {
         }
     }
 
-    public class NavxDegrees extends InstrBaseClass {
-        NavxMicro navxMicro;
+    public class GyroDegrees extends InstrBaseClass {
+        GyroInterface gyro;
         double updateCount, prevUpdateCount;
         ElapsedTime timer;
         boolean printEveryUpdate=true;
@@ -217,10 +217,10 @@ public class Instrumentation {
         String logFile;
         FileRW fileObj;
 
-        public NavxDegrees(NavxMicro navxMicro, boolean printEveryUpdate) {
+        public GyroDegrees(GyroInterface gyro, boolean printEveryUpdate) {
             instrID = InstrumentationID.NAVX_DEGREES;
             iterationCount = 0;
-            this.navxMicro = navxMicro;
+            this.gyro = gyro;
             timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             timer.reset();
             updateCount = prevUpdateCount =0;
@@ -228,9 +228,9 @@ public class Instrumentation {
             minDegrees = Double.MAX_VALUE;
             maxDegrees = totalDegrees = avgDegrees = 0.0;
             numUpdates = 0;
-            if (navxLog != null) {
+            if (gyroLog != null) {
                 // Create a FileRW object
-                logFile = FileRW.getTimeStampedFileName(navxLog);
+                logFile = FileRW.getTimeStampedFileName(gyroLog);
                 this.fileObj = new FileRW(logFile, true);
                 if (this.fileObj == null) {
                     DbgLog.error("ftc9773: Error! Could not create the file %s", logFile);
@@ -254,7 +254,7 @@ public class Instrumentation {
 
         @Override
         public void addInstrData() {
-            double curDegrees = navxMicro.getModifiedYaw();
+            double curDegrees = gyro.getYaw();
             iterationCount++;
             if (curDegrees < minDegrees) {
                 minDegrees = curDegrees;
@@ -264,11 +264,11 @@ public class Instrumentation {
             }
             totalDegrees += curDegrees;
             prevUpdateCount = updateCount;
-            updateCount = navxMicro.getUpdateCount();
+            updateCount = gyro.getUpdateCount();
             if (printEveryUpdate && (updateCount != prevUpdateCount)) {
                 numUpdates++;
                 String strToWrite = String.format("%f, %f, %d, %f, %f, %f", robot.getVoltage(),
-                        timer.milliseconds(), iterationCount, curDegrees, navxMicro.getPitch(),
+                        timer.milliseconds(), iterationCount, curDegrees, gyro.getPitch(),
                         updateCount);
                 fileObj.fileWrite(strToWrite);
             }
@@ -280,14 +280,6 @@ public class Instrumentation {
             DbgLog.msg("ftc9773: Starting time=%f, minDegrees=%f, maxDegrees=%f, avgDegreese=%f, " +
                     "count=%d, updateCount=%f",
                     timer.startTime(), minDegrees, maxDegrees, avgDegrees, iterationCount, updateCount);
-            DbgLog.msg("2 Sensor Rate (Hz)...%d", navxMicro.navx_device.getActualUpdateRate());
-            DbgLog.msg("3 Transfer Rate (Hz). %d", navxMicro.navx_device.getCurrentTransferRate());
-            DbgLog.msg("4 Delivvered Rate (Hz) %d", navxMicro.navx_perfmon.getDeliveredRateHz());
-            DbgLog.msg("5 Missed Samples..... %d", navxMicro.navx_perfmon.getNumMissedSensorTimestampedSamples());
-            DbgLog.msg("6 Duplicate Samples.. %d", navxMicro.navx_device.getDuplicateDataCount());
-            DbgLog.msg("7 Sensor deltaT (ms). %d", navxMicro.navx_perfmon.getLastSensorTimestampDeltaMS());
-            DbgLog.msg("8 System deltaT (ms). %d", navxMicro.navx_perfmon.getLastSystemTimestampDeltaMS());
-
         }
 
         @Override
@@ -307,20 +299,20 @@ public class Instrumentation {
         }
     }
 
-    public class NavxYawMonitor extends InstrBaseClass {
+    public class GyroYawMonitor extends InstrBaseClass {
         double yawToMonitor, tolerance;
-        NavxMicro navxMicro;
+        GyroInterface gyro;
         Navigation navigation;
         int numUpdatesToCheck, totalUpdatesChecked;
         int numWithinRange;
         double updateCount, prevUpdateCount;
         public boolean targetYawReachedAndStable;
 
-        public NavxYawMonitor(Navigation navigation, NavxMicro navxMicro, double yawToMonitor,
+        public GyroYawMonitor(Navigation navigation, GyroInterface gyro, double yawToMonitor,
                               double tolerance, int numUpdatesToCheck) {
             instrID = InstrumentationID.NAVX_YAW_MONITOR;
             this.navigation = navigation;
-            this.navxMicro = navxMicro;
+            this.gyro = gyro;
             this.yawToMonitor = yawToMonitor;
             this.tolerance = tolerance;
             this.numUpdatesToCheck = numUpdatesToCheck;
@@ -342,9 +334,9 @@ public class Instrumentation {
 
         @Override
         public void addInstrData() {
-            double curYaw = navxMicro.getModifiedYaw();
+            double curYaw = gyro.getYaw();
             prevUpdateCount = updateCount;
-            updateCount = navxMicro.getUpdateCount();
+            updateCount = gyro.getUpdateCount();
             if (updateCount != prevUpdateCount) {
                 totalUpdatesChecked++;
                 if (navigation.distanceBetweenAngles(curYaw, yawToMonitor) <= tolerance) {
@@ -382,7 +374,7 @@ public class Instrumentation {
         this.curOpMode = curOpMode;
         this.loopRuntimeLog = loopRuntimeLog;
         this.rangeSensorLog = rangeSensorLog;
-        this.navxLog = navxLog;
+        this.gyroLog = navxLog;
     }
 
     public void addAction(InstrBaseClass action) {

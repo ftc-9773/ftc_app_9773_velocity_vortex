@@ -110,13 +110,13 @@ public class LineFollow{
         double minLight = 1.0, maxLight=0.0, curLight;
         driveSystem.setMaxSpeed((float)robot.navigation.turnMaxSpeed);
         robot.driveSystem.turnOrSpin(-0.4, 0.4);
-        double initialYaw = robot.navigation.navxMicro.getModifiedYaw();
+        double initialYaw = robot.navigation.gyro.getYaw();
         double diffYaw=0.0;
         while ((diffYaw < 45.0) && robot.curOpMode.opModeIsActive()) {
             curLight = robot.navigation.lf.lightSensor.getLightDetected();
             if (minLight > curLight) minLight = curLight;
             if (maxLight < curLight) maxLight = curLight;
-            diffYaw = Math.abs(robot.navigation.navxMicro.getModifiedYaw() - initialYaw);
+            diffYaw = Math.abs(robot.navigation.gyro.getYaw() - initialYaw);
             DbgLog.msg("ftc9773: diffYaw=%f, minLight=%f, maxLight=%f, curLight=%f", diffYaw,
                     minLight, maxLight, curLight);
         }

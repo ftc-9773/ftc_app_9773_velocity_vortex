@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.navigation;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
@@ -11,15 +10,30 @@ import org.firstinspires.ftc.teamcode.FTCRobot;
 /**
  * Created by Kids on 2/12/2017.
  */
-public class MRGyro {
+public class MRGyro implements GyroInterface {
+    private enum MRGyro_Status {STATUS_NOT_SET, WORKING, NOT_WORKING}
 
     ModernRoboticsI2cGyro gyro;
     LinearOpMode curOpMode;
     FTCRobot robot;
+    Navigation navigation;
+    public double straightPID_kp=0.005, turnPID_kp=0.005;
+    double angleTolerance;
+    private MRGyro_Status status=MRGyro_Status.STATUS_NOT_SET;
+    private double updateCount;
 
-    public MRGyro(FTCRobot robot, LinearOpMode curOpMode){
+
+    public MRGyro(FTCRobot robot, LinearOpMode curOpMode, Navigation navigation,
+                  double angleTolerance, double straightPID_kp, double turnPID_kp){
         this.robot = robot;
         this.curOpMode = curOpMode;
+        this.navigation = navigation;
+        this.angleTolerance = angleTolerance;
+        this.straightPID_kp = straightPID_kp;
+        this.turnPID_kp = turnPID_kp;
+        status=MRGyro_Status.STATUS_NOT_SET;
+        updateCount = 0;
+
         gyro = (ModernRoboticsI2cGyro)curOpMode.hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
 
@@ -29,26 +43,98 @@ public class MRGyro {
             curOpMode.idle();
         }
         gyro.resetZAxisIntegrator();
-        DbgLog.msg("Done with initializing MR Gyro");
-        DbgLog.msg("Current Yaw=%f, Current pitch=%f", gyro.getIntegratedZValue(), gyro.rawX());
+        DbgLog.msg("ftc9773: Done with initializing MR Gyro");
+        DbgLog.msg("ftc9773: Current Yaw=%f, pitch=%f", (double)gyro.getIntegratedZValue(), (double)gyro.rawX());
     }
 
     // todo: find out how to return yaw and pitch angles
     // for Navx it is navx_device.getYaw() and navx_device.getPitch()
 
+    @Override
+    public void initAfterStart() {
+        return;
+    }
+
+    @Override
+    public Navigation.GyroType getGyroType() {
+        return (Navigation.GyroType.MR_GYRO);
+    }
+
+    @Override
     public double getYaw() {return gyro.getIntegratedZValue();}
 
+    @Override
     public double getPitch() {
+        // Normally pitch is obtained by rawY(), but due to the way the mr-gyro is mounted on
+        // Robot V3, the rawX() value gives the pitch, not rawY().
         return ((double)gyro.rawX());
     }
 
-    public void setRobotOrientation(double targetAngle, double speed, NavigationChecks navigationChecks){
-        double curYaw = getYaw();
-        double diff = targetAngle - curYaw;
-        double angleToTurn = diff > 180 ? diff - 360: diff < -180 ? diff + 360: diff;
-        turnRobot(angleToTurn,speed,navigationChecks);
+    @Override
+    public boolean isGyroWorking() {
+        return true;
     }
 
+    @Override
+    public double getUpdateCount() {
+        // update count is valid only for navx-micro
+        return (updateCount++);
+    }
+
+    @Override
+    public double getAngleTolerance() {
+        return (angleTolerance);
+    }
+
+    @Override
+    public void testAndSetGyroStatus() {
+        if (gyro.isCalibrating()) {
+            DbgLog.msg("ftc9773:  MR Gyro still calibrating; connection info=%s", gyro.getConnectionInfo());
+            status = MRGyro_Status.NOT_WORKING;
+        } else {
+            DbgLog.msg("ft9773: MR Gyro is done with calibration");
+            status = MRGyro_Status.WORKING;
+        }
+    }
+
+    @Override
+    public void setRobotOrientation(double targetYaw, double speed, NavigationChecks navigationChecks) {
+        // The orientation is with respect to the initial autonomous starting position
+        // The initial orientation of the robot at the beginning of the autonomous period
+        // is '0'. targetAngle is between 0 to 360 degrees.
+        double curYaw = getYaw();
+        double yawDiff;
+        double diff = targetYaw - curYaw;
+        double angleToTurn = diff>180 ? diff-360 : diff<-180 ? diff+360 : diff;
+//        turnRobot(angleToTurn, speed, navigationChecks);
+        double rightPower, leftPower;
+        if (angleToTurn > 0 && angleToTurn < 360) {
+            // Spin clockwise
+            leftPower = speed;
+            rightPower = -1 * leftPower;
+        }
+        else if (angleToTurn < 0 && angleToTurn > -360) {
+            // Spin counter clockwise
+            rightPower = speed;
+            leftPower = -1 * rightPower;
+        } else {
+            DbgLog.msg("ftc9773: angle %f is invalid!", angleToTurn);
+            return;
+        }
+        DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
+        robot.instrumentation.reset();
+        while (!navigationChecks.stopNavigation()) {
+            this.robot.driveSystem.turnOrSpin(leftPower, rightPower);
+            robot.instrumentation.addInstrData();
+            yawDiff = navigation.distanceBetweenAngles(getYaw(), targetYaw);
+            if (yawDiff <= angleTolerance)
+                break;
+        }
+        this.robot.driveSystem.stop();
+        robot.instrumentation.printToConsole();
+    }
+
+    @Override
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks){
         double leftPower = 0.0, rightPower = 0.0;
         double startingYaw, targetYaw, yawDiff;
@@ -92,18 +178,21 @@ public class MRGyro {
 
     }
 
+    @Override
     public void goStraightPID(boolean driveBackwards, double degrees, float speed){
         double error = 0.0, correction = 0.0;
         double leftSpeed, rightSpeed;
-        error = getYaw() - degrees;//again, not sure what range is returned by getYaw()
+        error = getYaw() - degrees;
         if (error > 180){
             error -= 360;
         } else if (error <-180){
             error += 360;
         }
-        correction = -error;//warning
-        leftSpeed = Range.clip(speed - correction, 0, speed);//warning
-        rightSpeed = Range.clip(speed + correction, 0, speed);//warning
+        correction = this.straightPID_kp * error / 2;
+        // Ensure that 0.25 <= speed <= 0.75 so that correction can be meanigful.
+        speed = Range.clip(speed, 0.25f, 0.75f);
+        leftSpeed = Range.clip(speed - correction, 0, 1);
+        rightSpeed = Range.clip(speed + correction, 0, 1);
 
         if (!driveBackwards) {
             robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);

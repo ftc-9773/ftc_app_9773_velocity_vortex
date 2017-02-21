@@ -1,10 +1,12 @@
 {
   "MRGyroTestRobot" : {
-    "driveSystem": "2Motor2WDSteering",
+    "driveSystem": "4Motor6WDSteering",
     "attachments": [],
     "navigation": "MRGyroOnly",
     "distanceBetweenWheels" : 15.5,
-    "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime"
+    "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime",
+    "rangeSensorLog" : "/sdcard/FIRST/team9773/logs/rangeSensor",
+    "gyroLog" : "/sdcard/FIRST/team9773/logs/gyro"
   },
   "2016_10_23_Meet_Robot" : {
     "driveSystem": "4Motor6WDSteering",

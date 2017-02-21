@@ -70,7 +70,7 @@ public class AutonomousActions {
                 }
                 if(lineElements.length > 3){
                     if(turnCounter == 0) {
-                        DbgLog.msg("ftc9773: Yaw: %f, Target yaw = %s", robot.navigation.navxMicro.getModifiedYaw(), lineElements[3]);
+                        DbgLog.msg("ftc9773: Yaw: %f, Target yaw = %s", robot.navigation.gyro.getYaw(), lineElements[3]);
                         robot.navigation.setRobotOrientation(Double.parseDouble(lineElements[3]),
                                 robot.navigation.turnMaxSpeed);
                         DbgLog.msg("ftc9773: Reached target orientation");
@@ -118,7 +118,7 @@ public class AutonomousActions {
                 break;
             }
             case "TurnDegrees": {
-                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
+                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.gyro.getYaw());
                 double degrees = 0.0;
                 double speed = robot.navigation.turnMaxSpeed;
                 try {
@@ -130,7 +130,7 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 //robot.navigation.navxMicro.turnRobot(degrees, speed, navigationChecks);
-                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.navxMicro.getModifiedYaw());
+                DbgLog.msg("ftc9773: currentYaw = %f", robot.navigation.gyro.getYaw());
                 break;
             }
             case "TurnUntilWhiteLine": {
@@ -303,7 +303,6 @@ public class AutonomousActions {
                 break;
             }
             case "navxGoStraightPID": {
-                double Kp = 0.005;
                 double degrees = 0;
                 String termCondition = null;
                 double inches = 0.0;
@@ -326,11 +325,10 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Kp = robot.navigation.navxMicro.straightPID_kp;
-                DbgLog.msg("ftc9773: degrees=%f, kp=%f, inches=%f, driveBackwards=%b", degrees, Kp, inches, driveBackwards);
+                DbgLog.msg("ftc9773: degrees=%f, inches=%f, driveBackwards=%b", degrees, inches, driveBackwards);
                 if (driveUntilWhiteLine) {
                     while ((!robot.navigation.lf.onWhiteLine()) && robot.curOpMode.opModeIsActive()) {
-                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) speed);
+                        robot.navigation.gyro.goStraightPID(driveBackwards, degrees, (float) speed);
                     }
                     driveSystem.stop();
                 } else {
@@ -340,7 +338,7 @@ public class AutonomousActions {
                     elapsedCounts.reset();
                     while ((elapsedCounts.getDistanceTravelledInInches() < inches) &&
                             robot.curOpMode.opModeIsActive()) {
-                        robot.navigation.navxMicro.navxGoStraightPID(driveBackwards, degrees, (float) speed);
+                        robot.navigation.gyro.goStraightPID(driveBackwards, degrees, (float) speed);
                     }
                     driveSystem.stop();
                 }

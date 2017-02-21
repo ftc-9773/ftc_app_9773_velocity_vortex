@@ -74,7 +74,7 @@ public class FTCRobot {
 
         // Initialize the Instrumentation object
         instrumentation = new Instrumentation(this, curOpMode, robotConfig.getString("loopRuntimeLog"),
-                robotConfig.getString("rangeSensorLog"), robotConfig.getString("navxLog"));
+                robotConfig.getString("rangeSensorLog"), robotConfig.getString("gyroLog"));
         DbgLog.msg("ftc9773: Initialized the Instrumentation object");
 
         // Initialize the BackgroundTasks object
@@ -150,18 +150,6 @@ public class FTCRobot {
                     break;
             }
         }
-    }
-
-    /**
-     * Main TeleOp method. Run from TeleOp opmode classes.
-     */
-    public void AutoBeaconClaiming(){
-        //Todo: align with the line, then with the wall, so we can claim the beacon accurately
-        //driveSystem.drive(0.5F,0);
-        navigation.goStraightToWhiteLine(0,0.4F,true);
-        beaconClaimObj.setBeaconStatus();
-        navigation.driveUntilAllianceBeacon(0.0,-2.5,3.0,0.3);
-        beaconClaimObj.claimABeacon();
     }
 
     public void runTeleOp(String allianceColor) {
@@ -298,7 +286,7 @@ public class FTCRobot {
                 isReverse = false;
             }
             if(curOpMode.gamepad1.left_bumper){
-                spinAngle = navigation.navxMicro.getModifiedYaw();
+                spinAngle = navigation.gyro.getYaw();
             }
 
             elapsedTime = System.nanoTime() - startingTime;
