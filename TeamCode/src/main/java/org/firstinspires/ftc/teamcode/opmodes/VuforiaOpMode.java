@@ -115,11 +115,9 @@ public class VuforiaOpMode extends LinearOpMode
         // Set phone location on robot
         phoneLocation = createMatrix(0, 225, 0, 90, 0, 0);
 
-        listeners = new ArrayList<>();
         // Setup listener and inform it of phone information
         for(VuforiaTrackable target : visionTargets){
             VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener) target.getListener();
-            listeners.add(listener);
             listener.setPhoneInformation(phoneLocation, parameters.cameraDirection);
         }
     }
