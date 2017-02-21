@@ -65,7 +65,6 @@ public class VuforiaOpMode extends LinearOpMode
 
         while(opModeIsActive())
         {
-            DbgLog.msg("ftc9773: Op mode is Active");
             OpenGLMatrix latestLocation = null;
             for(VuforiaTrackable target : visionTargets){
                 VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener) target.getListener();
@@ -98,7 +97,7 @@ public class VuforiaOpMode extends LinearOpMode
         // Setup parameters to create localizer
         parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId); // To remove the camera view from the screen, remove the R.id.cameraMonitorViewId
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
         parameters.useExtendedTracking = false;
         vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
 
