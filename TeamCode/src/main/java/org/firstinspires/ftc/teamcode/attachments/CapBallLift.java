@@ -41,7 +41,7 @@ public class CapBallLift implements  Attachment {
             liftMotorObj = motorsObj.getJSONObject(key);
             liftMotor = curOpMode.hardwareMap.dcMotor.get("liftMotor");
             if (liftMotorObj.getBoolean("needReverse")) {
-                DbgLog.msg("Reversing the lift servo");
+                DbgLog.msg("ftc9773: Reversing the lift servo");
                 liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
             liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -59,7 +59,7 @@ public class CapBallLift implements  Attachment {
                 liftServo.scaleRange(liftServoObj.getDouble("scaleRangeMin"),
                         liftServoObj.getDouble("scaleRangeMax"));
                 if (liftServoObj.getBoolean("needReverse")) {
-                    DbgLog.msg("Reversing the lift servo");
+                    DbgLog.msg("ftc9773: Reversing the lift servo");
                     liftServo.setDirection(Servo.Direction.REVERSE);
                 }
                 liftServo.setPosition(1);

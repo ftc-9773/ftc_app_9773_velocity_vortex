@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.vision.Vision;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.firstinspires.ftc.robotcontroller.internal.vision.BeaconColorResult;
+import org.firstinspires.ftc.teamcode.util.vision.BeaconColorResult;
 
 
 /*
@@ -99,7 +99,7 @@ public class BeaconClaim implements Attachment {
         try {
             if (buttonServo != null) {
                 if (buttonServoObj.getBoolean("needReverse")) {
-                    DbgLog.msg("Reversing the button servo");
+                    DbgLog.msg("ftc9773: Reversing the button servo");
                     buttonServo.setDirection(CRServo.Direction.REVERSE);
                 }
            }
@@ -108,7 +108,7 @@ public class BeaconClaim implements Attachment {
                 colorServo.scaleRange(colorServoObj.getDouble("scaleRangeMin"),
                         colorServoObj.getDouble("scaleRangeMax"));
                 if (colorServoObj.getBoolean("needReverse")) {
-                    DbgLog.msg("Reversing the color servo");
+                    DbgLog.msg("ftc9773: Reversing the color servo");
                     colorServo.setDirection(Servo.Direction.REVERSE);
                 }
                 colorServo.setPosition(1.0);
@@ -176,7 +176,7 @@ public class BeaconClaim implements Attachment {
 
     public void claimABeaconOld(int beaconId) {
         // Do different actions based on whether the beacon button has to be pressed once or twice.
-        DbgLog.msg("beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
+        DbgLog.msg("ftc9773: beaconID=%d, numPressesNeeded=%d", beaconId, numPressesNeeded[beaconId-1]);
         if (numPressesNeeded[beaconId-1] == 1) {
             activateButtonServo();
             deactivateButtonServo();
@@ -196,12 +196,16 @@ public class BeaconClaim implements Attachment {
     }
 
     public void verifyBeaconColor(){
-        BeaconColor[] beaconColors = this.getBeaconColor();
-        curOpMode.telemetry.addData("left: ", "%s", beaconColors[0].toString());
-        curOpMode.telemetry.addData("right: ", "%s", beaconColors[1].toString());
+        BeaconColor[] nearBeaconColors = this.getNearBeaconColor();
+//        BeaconColor[] farBeaconColors = this.getFarBeaconColor();
+        curOpMode.telemetry.addData("Near Beacon left: ", "%s", nearBeaconColors[0].toString());
+        curOpMode.telemetry.addData("Near Beacon right: ", "%s", nearBeaconColors[1].toString());
+//        curOpMode.telemetry.addData("Far Beacon left: ", "%s", farBeaconColors[0].toString());
+//        curOpMode.telemetry.addData("Far Beacon right: ", "%s", farBeaconColors[1].toString());
         curOpMode.telemetry.update();
-        DbgLog.msg("left value = %s, right value = %s",beaconColors[0].toString(),beaconColors[1].toString());
-        //DbgLog.msg("color number = %x", colorSensor1.getI2cAddress().get7Bit());
+        DbgLog.msg("ftc9773: Near beacon: left value = %s, right value = %s",nearBeaconColors[0].toString(),nearBeaconColors[1].toString());
+//        DbgLog.msg("ftc9773: Far beacon: left value = %s, right value = %s",farBeaconColors[0].toString(),farBeaconColors[1].toString());
+        //DbgLog.msg("ftc9773: color number = %x", colorSensor1.getI2cAddress().get7Bit());
     }
 
     public void verifyBeaconServo() {
@@ -218,13 +222,13 @@ public class BeaconClaim implements Attachment {
     }
 
     public String checkBeaconColor() {
-        DbgLog.msg("red=%d, blue=%d, green=%d", colorSensor1.red(), colorSensor1.blue(),
+        DbgLog.msg("ftc9773: red=%d, blue=%d, green=%d", colorSensor1.red(), colorSensor1.blue(),
                 colorSensor1.green());
         return null;
     }
 
     public void setBeaconStatus(int beaconId, String allianceColor, int numBlues, int numReds) {
-        DbgLog.msg("setBeaconStatus: beaconID=%d, allianceColor=%s, numBlues=%d, numReds=%d",
+        DbgLog.msg("ftc9773: setBeaconStatus: beaconID=%d, allianceColor=%s, numBlues=%d, numReds=%d",
                 beaconId, allianceColor, numBlues, numReds);
         numBlueDetected[beaconId-1] = numBlues;
         numRedDetected[beaconId-1] = numReds;
@@ -240,7 +244,7 @@ public class BeaconClaim implements Attachment {
         } else {
             numPressesNeeded[beaconId-1] = 2;
         }
-        DbgLog.msg("setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
+        DbgLog.msg("ftc9773: setBeaconStatus: numPressesNeeded=%d", numPressesNeeded[beaconId-1]);
     }
 
     public void startBeaconScanning() {
@@ -274,28 +278,52 @@ public class BeaconClaim implements Attachment {
         }
     }
 
-    public BeaconColor[] getBeaconColor() {
-        BeaconColor[] beaconColors = new BeaconColor[2];
-        BeaconColorResult.BeaconColor[] visionBeaconColors = vision.getVisionBeaconColors();
-        if (visionBeaconColors[0] == BeaconColorResult.BeaconColor.RED) {
-            beaconColors[0] = BeaconColor.RED;
-        } else if (visionBeaconColors[0] == BeaconColorResult.BeaconColor.BLUE) {
-            beaconColors[0] = BeaconColor.BLUE;
-        } else if (visionBeaconColors[0] == (BeaconColorResult.BeaconColor.GREEN) || (visionBeaconColors[0] == BeaconColorResult.BeaconColor.UNKNOWN)){
-            beaconColors[0] = BeaconColor.NONE;
+    public BeaconColor[] getNearBeaconColor() {
+        BeaconColor[] leftBeaconColors = new BeaconColor[2];
+        BeaconColorResult.BeaconColor[][] visionBeaconColors = vision.getBothBeaconColors();
+        if (visionBeaconColors[3][0] == BeaconColorResult.BeaconColor.RED) {
+            leftBeaconColors[0] = BeaconColor.RED;
+        } else if (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.BLUE) {
+            leftBeaconColors[0] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[0][0] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[0][0] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            leftBeaconColors[0] = BeaconColor.NONE;
         }
-        if (visionBeaconColors[1] == BeaconColorResult.BeaconColor.RED) {
-            beaconColors[1] = BeaconColor.RED;
-        } else if (visionBeaconColors[1] == BeaconColorResult.BeaconColor.BLUE) {
-            beaconColors[1] = BeaconColor.BLUE;
-        } else if (visionBeaconColors[1] == (BeaconColorResult.BeaconColor.GREEN) || (visionBeaconColors[1] == BeaconColorResult.BeaconColor.UNKNOWN)){
-            beaconColors[1] = BeaconColor.NONE;
+        if (visionBeaconColors[3][1] == BeaconColorResult.BeaconColor.RED) {
+            leftBeaconColors[1] = BeaconColor.RED;
+        } else if (visionBeaconColors[0][1] == BeaconColorResult.BeaconColor.BLUE) {
+            leftBeaconColors[1] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[0][1] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[0][1] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            leftBeaconColors[1] = BeaconColor.NONE;
         }
-        return beaconColors;
+        return leftBeaconColors;
+    }
+
+    public BeaconColor[] getFarBeaconColor(){
+        BeaconColor[] rightBeaconColors = new BeaconColor[2];
+        BeaconColorResult.BeaconColor[][] visionBeaconColors = vision.getBothBeaconColors();
+        if (visionBeaconColors[1][0] == BeaconColorResult.BeaconColor.RED) {
+            rightBeaconColors[0] = BeaconColor.RED;
+        } else if (visionBeaconColors[1][0] == BeaconColorResult.BeaconColor.BLUE) {
+            rightBeaconColors[0] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[1][0] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[1][0] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            rightBeaconColors[0] = BeaconColor.NONE;
+        }
+        if (visionBeaconColors[1][1] == BeaconColorResult.BeaconColor.RED) {
+            rightBeaconColors[1] = BeaconColor.RED;
+        } else if (visionBeaconColors[1][1] == BeaconColorResult.BeaconColor.BLUE) {
+            rightBeaconColors[1] = BeaconColor.BLUE;
+        } else if (visionBeaconColors[1][1] == (BeaconColorResult.BeaconColor.GREEN) ||
+                (visionBeaconColors[1][1] == BeaconColorResult.BeaconColor.UNKNOWN)){
+            rightBeaconColors[1] = BeaconColor.NONE;
+        }
+        return rightBeaconColors;
     }
 
     public void printBeaconScanningData() {
-        DbgLog.msg("accumulatedRed = %f, accumulatedBlue=%f, firstTimeStamp=%f, lastTimeStamp=%f",
+        DbgLog.msg("ftc9773: accumulatedRed = %f, accumulatedBlue=%f, firstTimeStamp=%f, lastTimeStamp=%f",
                 accumulatedRedValue, accumulatedBlueValue,
                 firstDetectedTimeStamp, lastDetectedTimeStamp);
     }

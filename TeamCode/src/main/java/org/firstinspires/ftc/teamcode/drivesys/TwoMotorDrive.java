@@ -60,7 +60,7 @@ public class TwoMotorDrive extends DriveSystem{
 
         @Override
         public void printCurrentEncoderCounts() {
-            DbgLog.msg("printCurrent...(): encoder counts: L=%d, R=%d",
+            DbgLog.msg("ftc9773: printCurrent...(): encoder counts: L=%d, R=%d",
                     motorL.getCurrentPosition(), motorR.getCurrentPosition());
         }
     }
@@ -71,7 +71,7 @@ public class TwoMotorDrive extends DriveSystem{
         this.motorR = motorR;
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeedCPS = maxSpeedCPS;
-        DbgLog.msg("max speed CPS = %d", maxSpeedCPS);
+        DbgLog.msg("ftc9773: max speed CPS = %d", maxSpeedCPS);
         motorL.setMaxSpeed(maxSpeedCPS);
         motorR.setMaxSpeed(maxSpeedCPS);
         this.wheel = wheel;
@@ -108,33 +108,6 @@ public class TwoMotorDrive extends DriveSystem{
     public void stop() {
         motorL.setPower(0.0);
         motorR.setPower(0.0);
-    }
-
-    @Override
-    public void startDriveToPosition(double distanceInInches) {
-        double countsPerInch = motorCPR / wheel.getCircumference();
-        double targetCounts = countsPerInch * distanceInInches;
-
-        motorL.setTargetPosition(motorL.getCurrentPosition() + (int) targetCounts);
-        motorR.setTargetPosition(motorR.getCurrentPosition() + (int) targetCounts);
-
-        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-    }
-
-    @Override
-    public boolean isBusy() {
-        if (motorL.isBusy() || motorR.isBusy()) {
-            return (true);
-        } else {
-            return (false);
-        }
-    }
-
-    @Override
-    public void doneWithDriveToPosition() {
-        this.stop();
-        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
@@ -194,7 +167,12 @@ public class TwoMotorDrive extends DriveSystem{
 
     @Override
     public void printCurrentPosition() {
-        DbgLog.msg("L:%d, R:%d", motorL.getCurrentPosition(), motorR.getCurrentPosition());
+        DbgLog.msg("ftc9773: L:%d, R:%d", motorL.getCurrentPosition(), motorR.getCurrentPosition());
+    }
+
+    @Override
+    public void initForPlay() {
+        return;
     }
 
     private void setDriveSysMode(DcMotor.RunMode runMode) {

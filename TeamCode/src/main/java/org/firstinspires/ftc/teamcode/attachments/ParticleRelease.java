@@ -44,7 +44,7 @@ public class ParticleRelease implements Attachment{
             particleServo.scaleRange(particleServoObj.getDouble("scaleRangeMin"),
                     particleServoObj.getDouble("scaleRangeMax"));
             if (particleServoObj.getBoolean("needReverse")) {
-                DbgLog.msg("Reversing the particle release servo");
+                DbgLog.msg("ftc9773: Reversing the particle release servo");
                 particleServo.setDirection(Servo.Direction.REVERSE);
             }
             particleServo.setPosition(1.0);
@@ -65,6 +65,8 @@ public class ParticleRelease implements Attachment{
     public void getAndApplyDScmd() {
         if (curOpMode.gamepad1.a) {
             releaseParticles();
+            curOpMode.sleep(500);
+            keepParticles();
         }
         if (curOpMode.gamepad1.y) {
             keepParticles();

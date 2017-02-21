@@ -15,10 +15,10 @@
     },
     "IMU": {
       "name" : "navx",
-      "DIMname" : "dim",
+      "DIMname" : "dim2",
       "type" : "navx-micro",
       "porttype": "i2c",
-      "portnum": 1,
+      "portnum": 5,
       "driveSysInitialPower": 0.25,
       "driveSysTargetPower": 0.5,
       "angleTolerance": 2.0,

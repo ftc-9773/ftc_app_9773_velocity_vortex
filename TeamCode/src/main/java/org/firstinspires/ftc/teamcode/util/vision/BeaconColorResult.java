@@ -1,17 +1,16 @@
-/*
- * Copyright (c) 2016 Robocracy 9773.
- */
-
 package org.firstinspires.ftc.teamcode.util.vision;
 
 import org.opencv.core.Scalar;
 
 /**
- * Created by pb8xe_000 on 12/30/2016.
+ * Created by pranavburugula on 12/31/2016.
+ */
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
  */
 
 public class BeaconColorResult {
-
     public BeaconColorResult(BeaconColor leftColor, BeaconColor rightColor) {
         this.leftColor = leftColor;
         this.rightColor = rightColor;

@@ -44,7 +44,7 @@ public abstract class DriveSystem {
                                                 String driveSysName) {
         DriveSystem driveSys = null;
         DriveSysReader driveSysReader = new DriveSysReader(JsonReader.driveSystemsFile, driveSysName);
-        DbgLog.msg("driveSysName=%s", driveSysReader.getDriveSysName());
+        DbgLog.msg("ftc9773: driveSysName=%s", driveSysReader.getDriveSysName());
         WheelSpecsReader wheelSpecs = new WheelSpecsReader(JsonReader.wheelSpecsFile,
                 driveSysReader.getWheelType());
         if(driveSysName.equals("4Motor4WDSteering")||driveSysName.equals("4Motor6WDSteering")) {
@@ -70,7 +70,7 @@ public abstract class DriveSystem {
 
             Wheel wheel = new Wheel(wheel_type, wheelDiameter);
 
-            DbgLog.msg("wheel diameter = %f", wheel.diameter);
+            DbgLog.msg("ftc9773: wheel diameter = %f", wheel.diameter);
             // Determine if autonomous or teleop
             int maxSpeedCPS=4000; // = driveSysReader.getMaxMotorSpeed();
             if (robot.autoOrTeleop.equalsIgnoreCase("Autonomous")) {
@@ -78,7 +78,7 @@ public abstract class DriveSystem {
             } else if (robot.autoOrTeleop.equalsIgnoreCase("Teleop")) {
                 maxSpeedCPS = driveSysReader.getMaxMotorSpeed("TeleOpMaxMotorSpeed");
             }
-            DbgLog.msg("maxSpeedCPS = %d", maxSpeedCPS);
+            DbgLog.msg("ftc9773: maxSpeedCPS = %d", maxSpeedCPS);
             fourMotorSteeringDrive = new FourMotorSteeringDrive(fMotorL, rMotorL, fMotorR, rMotorR,
                     maxSpeedCPS, frictionCoeff, robot.distanceBetweenWheels, wheel, CPR);
             fourMotorSteeringDrive.curOpMode = curOpMode;
@@ -103,7 +103,7 @@ public abstract class DriveSystem {
             DcMotor motorR = curOpMode.hardwareMap.dcMotor.get("motorR");
             Wheel wheel = new Wheel(wheel_type, wheelDiameter);
 
-            DbgLog.msg("wheel diameter = %f", wheel.diameter);
+            DbgLog.msg("ftc9773: wheel diameter = %f", wheel.diameter);
             // Determine if autonomous or teleop
             int maxSpeedCPS=4000; // = driveSysReader.getMaxMotorSpeed();
             if (robot.autoOrTeleop.equalsIgnoreCase("Autonomous")) {
@@ -111,7 +111,7 @@ public abstract class DriveSystem {
             } else if (robot.autoOrTeleop.equalsIgnoreCase("Teleop")) {
                 maxSpeedCPS = driveSysReader.getMaxMotorSpeed("TeleOpMaxMotorSpeed");
             }
-            DbgLog.msg("maxSpeedCPS = %d", maxSpeedCPS);
+            DbgLog.msg("ftc9773: maxSpeedCPS = %d", maxSpeedCPS);
             twoMotorDrive = new TwoMotorDrive(motorL, motorR, maxSpeedCPS, frictionCoeff, wheel, CPR);
             twoMotorDrive.curOpMode = curOpMode;
             twoMotorDrive.robot = robot;
@@ -131,12 +131,6 @@ public abstract class DriveSystem {
     public void turnOrSpin(double leftSpeed, double rightSpeed) {return;}
     public void stop() {return;}
 
-    public abstract void startDriveToPosition(double distanceInInches);
-
-    public abstract boolean isBusy();
-
-    public abstract void doneWithDriveToPosition();
-
     public abstract void turnDegrees(double degrees, float speed, NavigationChecks navExc);
 
     public abstract void setMaxSpeed(float speed);
@@ -144,6 +138,7 @@ public abstract class DriveSystem {
     public abstract void reverse();
     public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
     public abstract void printCurrentPosition();
+    public abstract void initForPlay();
 
     public void testEncoders(){return;}
 

@@ -23,6 +23,8 @@ public class FourMotorSteeringDrive extends DriveSystem {
     int motorCPR;  // Cycles Per Revolution.  == 1120 for Neverest40, 560 for Neverest20
     boolean driveSysIsReversed = false;
     double distBetweenWheels;
+    boolean L1IsZero, L2IsZero, R1IsZero, R2IsZero;
+    ElapsedTime L1Timer, L2Timer, R1Timer, R2Timer;
 
     public class ElapsedEncoderCounts implements DriveSystem.ElapsedEncoderCounts {
         long encoderCountL1;
@@ -35,18 +37,18 @@ public class FourMotorSteeringDrive extends DriveSystem {
         }
 
         public void reset() {
-            encoderCountL1 = motorL1.getCurrentPosition();
-            encoderCountL2 = motorL2.getCurrentPosition();
-            encoderCountR1 = motorR1.getCurrentPosition();
-            encoderCountR2 = motorR2.getCurrentPosition();
-            DbgLog.msg("In reset(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d", encoderCountL1,
+            encoderCountL1 = getNonZeroCurrentPos(motorL1);
+            encoderCountL2 = getNonZeroCurrentPos(motorL2);
+            encoderCountR1 = getNonZeroCurrentPos(motorR1);
+            encoderCountR2 = getNonZeroCurrentPos(motorR2);
+            DbgLog.msg("ftc9773: In reset(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d", encoderCountL1,
                     encoderCountL2, encoderCountR1, encoderCountR2);
         }
 
         public  void printCurrentEncoderCounts() {
-            DbgLog.msg("In printCurrent...(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d",
-                    motorL1.getCurrentPosition(), motorL2.getCurrentPosition(),
-                    motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+            DbgLog.msg("ftc9773: In printCurrent...(): encoder counts: L1=%d, L2=%d, R1=%d, R2=%d",
+                    motorL1.getCurrentPosition(), getNonZeroCurrentPos(motorL2),
+                    getNonZeroCurrentPos(motorR1), getNonZeroCurrentPos(motorR2));
         }
 
         public double getDistanceTravelledInInches() {
@@ -54,9 +56,9 @@ public class FourMotorSteeringDrive extends DriveSystem {
             double distanceTravelled = 0.0;
 
             avgEncoderCounts = (Math.abs(motorL1.getCurrentPosition() - encoderCountL1) +
-                    Math.abs(motorL2.getCurrentPosition() - encoderCountL2) +
-                    Math.abs(motorR1.getCurrentPosition() - encoderCountR1) +
-                    Math.abs(motorR2.getCurrentPosition() - encoderCountR2)) / 4;
+                    Math.abs(getNonZeroCurrentPos(motorL2) - encoderCountL2) +
+                    Math.abs(getNonZeroCurrentPos(motorR1) - encoderCountR1) +
+                    Math.abs(getNonZeroCurrentPos(motorR2) - encoderCountR2)) / 4;
 
             distanceTravelled = (avgEncoderCounts / motorCPR) * wheel.getCircumference();
             return (distanceTravelled);
@@ -68,12 +70,12 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
             distanceTravelledInInches = this.getDistanceTravelledInInches();
             degreesTurned = 360 * distanceTravelledInInches / (Math.PI * distBetweenWheels);
-            leftDegreesTurned = ((motorL1.getCurrentPosition() - encoderCountL1) +
-                    (motorL2.getCurrentPosition() - encoderCountL2)) / 2;
+            leftDegreesTurned = ((getNonZeroCurrentPos(motorL1) - encoderCountL1) +
+                    (getNonZeroCurrentPos(motorL2) - encoderCountL2)) / 2;
             if (leftDegreesTurned < 0) {
                 degreesTurned *= -1; // Negate the number to indicate counterclockwise spin
             }
-//            DbgLog.msg("distanceTravelledInInches: %f, degreesTurned: %f", distanceTravelledInInches, degreesTurned);
+//            DbgLog.msg("ftc9773: distanceTravelledInInches: %f, degreesTurned: %f", distanceTravelledInInches, degreesTurned);
 
             return (degreesTurned);
         }
@@ -94,7 +96,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.setZeroPowerMode(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;
         this.maxSpeedCPS = maxSpeedCPS;
-        DbgLog.msg("max speed CPS = %d", maxSpeedCPS);
+        DbgLog.msg("ftc9773: max speed CPS = %d", maxSpeedCPS);
         motorL1.setMaxSpeed(maxSpeedCPS);
         motorL2.setMaxSpeed(maxSpeedCPS);
         motorR1.setMaxSpeed(maxSpeedCPS);
@@ -103,6 +105,15 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorCPR = motorCPR;
         this.prevPowerL1 = this.prevPowerL2 = this.prevPowerR1 = this.prevPowerR2 = 0.0;
         this.distBetweenWheels = distanceBetweenWheels; // 14.75 or 15.5;
+        this.L1IsZero = this.L2IsZero = this.R1IsZero = this.R2IsZero = true;
+        this.L1Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        this.L2Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        this.R1Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        this.R2Timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        L1Timer.reset();
+        L2Timer.reset();
+        R1Timer.reset();
+        R2Timer.reset();
     }
 
     @Override
@@ -179,9 +190,9 @@ public class FourMotorSteeringDrive extends DriveSystem {
         double targetCounts = countsPerInch * distanceInInches;
 
         motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
-        motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
-        motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
-        motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
+        motorL2.setTargetPosition(getNonZeroCurrentPos(motorL2) + (int) targetCounts);
+        motorR1.setTargetPosition(getNonZeroCurrentPos(motorR1) + (int) targetCounts);
+        motorR2.setTargetPosition(getNonZeroCurrentPos(motorR2) + (int) targetCounts);
 
         setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -197,34 +208,6 @@ public class FourMotorSteeringDrive extends DriveSystem {
     }
 
     @Override
-    public void startDriveToPosition(double distanceInInches) {
-        double countsPerInch = motorCPR / wheel.getCircumference();
-        double targetCounts = countsPerInch * distanceInInches;
-
-        motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
-        motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
-        motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
-        motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
-
-        setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
-    @Override
-    public boolean isBusy() {
-        if (motorL1.isBusy() || motorL2.isBusy() || motorR1.isBusy() || motorR2.isBusy()) {
-            return (true);
-        } else {
-            return (false);
-        }
-    }
-
-    @Override
-    public void doneWithDriveToPosition() {
-        this.stop();
-        setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    @Override
     public void turnDegrees(double degrees, float speed, NavigationChecks navExc) {
 
         double distInInches = (Math.abs(degrees) / 360) * Math.PI * this.distBetweenWheels;
@@ -234,31 +217,32 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
         if (degrees < 0) {
             // Spin counterclockwise => left motors backward, right motors forward
-            motorL1.setTargetPosition(motorL1.getCurrentPosition() - (int) targetCounts);
-            motorL2.setTargetPosition(motorL2.getCurrentPosition() - (int) targetCounts);
-            motorR1.setTargetPosition(motorR1.getCurrentPosition() + (int) targetCounts);
-            motorR2.setTargetPosition(motorR2.getCurrentPosition() + (int) targetCounts);
+            motorL1.setTargetPosition(getNonZeroCurrentPos(motorL1) - (int) targetCounts);
+            motorL2.setTargetPosition(getNonZeroCurrentPos(motorL2) - (int) targetCounts);
+            motorR1.setTargetPosition(getNonZeroCurrentPos(motorR1) + (int) targetCounts);
+            motorR2.setTargetPosition(getNonZeroCurrentPos(motorR2) + (int) targetCounts);
         } else {
             // Spin clockwise => left motors forward, right motors backward
-            motorL1.setTargetPosition(motorL1.getCurrentPosition() + (int) targetCounts);
-            motorL2.setTargetPosition(motorL2.getCurrentPosition() + (int) targetCounts);
-            motorR1.setTargetPosition(motorR1.getCurrentPosition() - (int) targetCounts);
-            motorR2.setTargetPosition(motorR2.getCurrentPosition() - (int) targetCounts);
+            motorL1.setTargetPosition(getNonZeroCurrentPos(motorL1) + (int) targetCounts);
+            motorL2.setTargetPosition(getNonZeroCurrentPos(motorL2) + (int) targetCounts);
+            motorR1.setTargetPosition(getNonZeroCurrentPos(motorR1) - (int) targetCounts);
+            motorR2.setTargetPosition(getNonZeroCurrentPos(motorR2) - (int) targetCounts);
         }
-        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL1));
 
         setDriveSysMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         this.drive((float) (speed * frictionCoefficient), 0.0f);
 
         while (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()
-                && !navExc.stopNavigation() && curOpMode.opModeIsActive()) {
+                && curOpMode.opModeIsActive()) {
+//                && !navExc.stopNavigation() && curOpMode.opModeIsActive()) {
             curOpMode.idle();
         }
 
         this.stop();
 
-        DbgLog.msg("motorL1 current position = %d", motorL1.getCurrentPosition());
+        DbgLog.msg("ftc9773: motorL1 current position = %d", getNonZeroCurrentPos(motorL1));
         setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
@@ -275,7 +259,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
     //  the new power values do not get applied if they are same as the previous power values.
     @Override
     public void setMaxSpeed(float speed) {
-        DbgLog.msg("Current max speed =%d", maxSpeedCPS);
+        DbgLog.msg("ftc9773: Current max speed =%d", maxSpeedCPS);
         motorL1.setMaxSpeed((int) (maxSpeedCPS * speed));
         motorL2.setMaxSpeed((int) (maxSpeedCPS * speed));
         motorR1.setMaxSpeed((int) (maxSpeedCPS * speed));
@@ -314,17 +298,58 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public void printCurrentPosition() {
-        DbgLog.msg("L1:%d, L2:%d, R1:%d, R2:%d", motorL1.getCurrentPosition(),
-                motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+        DbgLog.msg("ftc9773: L1:%d, L2:%d, R1:%d, R2:%d", getNonZeroCurrentPos(motorL1),
+                getNonZeroCurrentPos(motorL2), getNonZeroCurrentPos(motorR1), getNonZeroCurrentPos(motorR2));
+    }
+
+    @Override
+    public void initForPlay() {
+        L1Timer.reset();
+        L2Timer.reset();
+        R1Timer.reset();
+        R2Timer.reset();
+    }
+
+    public int getNonZeroCurrentPos(DcMotor motor){
+        int curPos = motor.getCurrentPosition();
+        boolean skipWhileLoop = false;
+//        DbgLog.msg("ftc9773: Motor = %s, curPos = %d, isZeroPos = %b", motor.toString(), curPos, motor==motorL1 ? L1IsZero : motor==motorR1 ? R1IsZero : motor==motorL2 ? L2IsZero : R2IsZero);
+        if(motor==motorL1 && L1IsZero) {
+//            DbgLog.msg("ftc9773: Motor = L1, curPos = %d, isZeroPos = %b", curPos, L1IsZero);
+            if(L1Timer.milliseconds()>1000) L1IsZero = false;
+            skipWhileLoop = true;}
+        if(motor==motorL2 && L2IsZero) {
+//            DbgLog.msg("ftc9773: Motor = L2, curPos = %d, isZeroPos = %b", curPos, L2IsZero);
+            if(L2Timer.milliseconds()>1000) L2IsZero = false;
+            skipWhileLoop = true;
+        }
+        if(motor==motorR1 && R1IsZero) {
+//            DbgLog.msg("ftc9773: Motor = R1, curPos = %d, isZeroPos = %b",  curPos, R1IsZero);
+            if(R1Timer.milliseconds()>1000) R1IsZero = false;
+            skipWhileLoop = true;
+        }
+        if(motor==motorR2 && R2IsZero) {
+//            DbgLog.msg("ftc9773: Motor = R2, curPos = %d, isZeroPos = %b", curPos, R2IsZero);
+            if(R2Timer.milliseconds()>1000) R2IsZero = false;
+            skipWhileLoop = true;
+        }
+        if (skipWhileLoop) return curPos;
+
+       while(curPos==0){
+           curOpMode.sleep(10);
+           curPos = motor.getCurrentPosition();
+        }
+//        DbgLog.msg("ftc9773: Motor = %s, curPos = %d, isZeroPos = %b", motor.toString(), curPos, motor==motorL1 ? L1IsZero : motor==motorR1 ? R1IsZero : motor==motorL2 ? L2IsZero : R2IsZero);
+        return curPos;
     }
 
     /*public void driveToDistance(float speed, float direction, double distance){
-        double startingPositionL = motorL1.getCurrentPosition();
-        double startingPositionR = motorR1.getCurrentPosition();
+        double startingPositionL = getNonZeroCurrentPos(motorL1);
+        double startingPositionR = getNonZeroCurrentPos(motorR1);
 
         double targetPosition =(distance / wheelValues[1]) * 1120;
 
-        while(((motorL1.getCurrentPosition()-startingPositionL)<targetPosition) && ((motorR.getCurrentPosition()-startingPositionR)<targetPosition)){
+        while(((getNonZeroCurrentPos(motorL1)-startingPositionL)<targetPosition) && ((motorR.getCurrentPosition()-startingPositionR)<targetPosition)){
             drive(speed, direction);
         }
         motorR.setPower(0);
@@ -336,15 +361,21 @@ public class FourMotorSteeringDrive extends DriveSystem {
 //        this.setDriveSysMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 //        timer.reset();
-//        DbgLog.msg("L1 Encoder: %d L2 Encoder: %d R1 Encoder: %d R2 Encoder: %d", motorL1.getCurrentPosition(), motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+//        DbgLog.msg("ftc9773: L1 Encoder: %d L2 Encoder: %d R1 Encoder: %d R2 Encoder: %d", getNonZeroCurrentPos(motorL1), getNonZeroCurrentPos(motorL2), getNonZeroCurrentPos(motorR1), getNonZeroCurrentPos(motorR2));
 //        while (curOpMode.opModeIsActive() && timer.milliseconds()<4000){
 //            this.drive(1.0F,0);
 //        }
 //        this.stop();
-//        DbgLog.msg("L1 Encoder: %d L2 Encoder: %d R1 Encoder: %d R2 Encoder: %d", motorL1.getCurrentPosition(), motorL2.getCurrentPosition(), motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+//        DbgLog.msg("ftc9773: L1 Encoder: %d L2 Encoder: %d R1 Encoder: %d R2 Encoder: %d", getNonZeroCurrentPos(motorL1), getNonZeroCurrentPos(motorL2), getNonZeroCurrentPos(motorR1), getNonZeroCurrentPos(motorR2));
         this.motorL1.setMaxSpeed(2500);
         this.motorL2.setMaxSpeed(2500);
         this.motorR1.setMaxSpeed(2500);
         this.motorR2.setMaxSpeed(2500);
+    }
+
+    public boolean motorControllerIsConnected() {
+        boolean connected = false;
+
+        return (connected);
     }
 }

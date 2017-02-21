@@ -48,13 +48,13 @@ public class EncoderNavigation {
     public void setRobotOrientation (double targetYaw, double speed, NavigationChecks navExc) {
         double degrees = navigation.getDegreesToTurn(currentYaw, targetYaw);
 
-        DbgLog.msg("degrees: %f, currYaw: %f, targetYaw: %f", degrees, this.getCurrentYaw(), targetYaw);
+        DbgLog.msg("ftc9773: degrees: %f, currYaw: %f, targetYaw: %f", degrees, this.getCurrentYaw(), targetYaw);
 
         driveSys.turnDegrees(degrees, (float)speed, navExc);
     }
 
     public void shiftRobot(double distance, double moveDistance, boolean isForward, double speed,
-                           NavigationChecks navigationChecks){
+                           NavigationChecks navigationChecks, boolean returnToSamePos){
         double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(distance, 2));
         double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
 

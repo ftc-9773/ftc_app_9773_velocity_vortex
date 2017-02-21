@@ -93,7 +93,7 @@ public class NavigationOptionsReader extends JsonReader {
             lfVarObj = lfObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(lfVarObj, variableName);
             value = lfVarObj.getDouble(key);
-            DbgLog.msg("getLFvariableDouble(): key = %s, value=%f", key, value);
+            DbgLog.msg("ftc9773: getLFvariableDouble(): key = %s, value=%f", key, value);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -7,9 +7,11 @@ import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.util.LoopStatistics;
 
 /*
  * Copyright (c) 2016 Robocracy 9773
@@ -43,7 +45,7 @@ public class NavxMicro {
         this.driveSysInitialPower = driveSysInitialPower;
         this.angleTolerance = angleTolerance;
 
-        DbgLog.msg("dimName=%s, portNum=%d", dimName, portNum);
+        DbgLog.msg("ftc9773: dimName=%s, portNum=%d", dimName, portNum);
         navx_device = AHRS.getInstance(curOpMode.hardwareMap.deviceInterfaceModule.get(dimName),
                 portNum, AHRS.DeviceDataType.kProcessedData);
 
@@ -55,17 +57,17 @@ public class NavxMicro {
         }
         if (navx_device.isCalibrating()) {
             // sleep for 20 milli seconds
-            DbgLog.msg("still calibating navx....");
+            DbgLog.msg("ftc9773: still calibating navx....");
             curOpMode.telemetry.addData("navx: ", "calibrating %s", "navx");
 //            curOpMode.sleep(20);
         } else {
-            DbgLog.msg("Done with calibrating navx");
+            DbgLog.msg("ftc9773: Done with calibrating navx");
             curOpMode.telemetry.addData("navx: ", "Done with calibrating %s", "navx");
         }
 
         // ToDo:  The should be done only in the autonomous mode.
         navx_device.zeroYaw();
-        DbgLog.msg("Current yaw = %f", getModifiedYaw());
+        DbgLog.msg("ftc9773: Current yaw = %f", getModifiedYaw());
 
         /* Configure the PID controller */
         this.pid_minSpeed = pid_minSpeed;
@@ -147,6 +149,8 @@ public class NavxMicro {
     public void turnRobot(double angle, double speed, NavigationChecks navigationChecks) {
         double leftPower=0.0, rightPower=0.0;
         double startingYaw, targetYaw, yawDiff;
+        double min_angleToTurn=0.0;
+        LoopStatistics instr = new LoopStatistics();
         if (angle > 0 && angle < 360) {
             // Spin clockwise
             leftPower = speed;
@@ -157,35 +161,39 @@ public class NavxMicro {
             rightPower = speed;
             leftPower = -1 * rightPower;
         } else {
-            DbgLog.msg("angle %f is invalid!", angle);
+            DbgLog.msg("ftc9773: angle %f is invalid!", angle);
             return;
         }
 
         // Note the current yaw value
         startingYaw = getModifiedYaw();
+        min_angleToTurn = Math.abs(angle) - angleTolerance;
         targetYaw = startingYaw + angle;
         if (targetYaw > 360) {
             targetYaw %= 360;
         } else if (targetYaw < 0) {
             targetYaw += 360;
         }
-        DbgLog.msg("power left = %f, right = %f",leftPower, rightPower);
-        DbgLog.msg("raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
+        DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
+        DbgLog.msg("ftc9773: raw Yaw = %f, Starting yaw = %f, Current Yaw = %f, targetYaw = %f",
                 navx_device.getYaw(), startingYaw, getModifiedYaw(), targetYaw);
 
+        instr.startLoopInstrumentation();
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
             this.robot.driveSystem.turnOrSpin(leftPower,rightPower);
-            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), targetYaw);
-            if (yawDiff < this.angleTolerance)
+            instr.updateLoopInstrumentation();
+            yawDiff = navigation.distanceBetweenAngles(getModifiedYaw(), startingYaw);
+            if (yawDiff > min_angleToTurn)
                 break;
-            //DbgLog.msg("yawDiff=%f", yawDiff);
+            //DbgLog.msg("ftc9773: yawDiff=%f", yawDiff);
         }
 
-        DbgLog.msg("angle = %f", angle);
+        DbgLog.msg("ftc9773: angle = %f", angle);
         this.robot.driveSystem.stop();
+        instr.printLoopInstrumentation();
     }
 
-    public void navxGoStraightPID(boolean driveBackwards, double degrees) {
+    public void navxGoStraightPID(boolean driveBackwards, double degrees, float speed) {
         // degrees specified robot orientation
         double error=0.0, correction=0.0;
         double leftSpeed, rightSpeed;
@@ -196,9 +204,11 @@ public class NavxMicro {
             error = error + 360;
         }
         correction = this.straightPID_kp * error / 2;
-        leftSpeed = drive_speed - correction;
-        rightSpeed = drive_speed + correction;
-//        DbgLog.msg("error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
+        leftSpeed = Range.clip(speed - correction, 0, drive_speed);
+        rightSpeed = Range.clip(speed + correction, 0, drive_speed);
+//        leftSpeed = drive_speed - correction;
+//        rightSpeed = drive_speed + correction;
+//        DbgLog.msg("ftc9773: error=%f, correction=%f, leftSpeed,=%f, rightSpeed=%f", error, correction, leftSpeed, rightSpeed);
         if (!driveBackwards) {
             robot.driveSystem.turnOrSpin(leftSpeed, rightSpeed);
         } else {
@@ -206,54 +216,17 @@ public class NavxMicro {
         }
     }
 
-    public void shiftRobot(double shiftDistance, double moveDistance, boolean isForward, double speed,
-                           NavigationChecks navigationChecks){
-        double driveDistance = Math.sqrt(Math.pow(moveDistance, 2) + Math.pow(shiftDistance, 2));
-        double angle = 90 - Math.toDegrees(Math.asin(moveDistance/driveDistance));
-
-        if (isForward){
-            if (shiftDistance < 0) {
-                angle *= -1;
-            }
-            double startingYaw = this.getModifiedYaw();
-            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, driveDistance);
-            navigationChecks.reset();
-            this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -moveDistance);
-        }
-        else{
-            if (shiftDistance > 0){
-                angle *= -1;
-            }
-            double startingYaw = this.getModifiedYaw();
-            this.turnRobot(angle, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, -driveDistance);
-            navigationChecks.reset();
-            this.setRobotOrientation(startingYaw, this.driveSysInitialPower, navigationChecks);
-            robot.driveSystem.driveToDistance((float) speed, moveDistance);
-        }
-    }
-
     public void testNavxCalibrateConnection() {
         if (this.navx_device.isCalibrating()) {
-            DbgLog.msg("Navx device is calibrating");
+            DbgLog.msg("ftc9773: Navx device is calibrating");
         } else {
-            DbgLog.msg("Navx device is done with calibration");
+            DbgLog.msg("ftc9773: Navx device is done with calibration");
         }
 
         if (this.navx_device.isConnected()) {
-            DbgLog.msg("Navx device is connected");
+            DbgLog.msg("ftc9773: Navx device is connected");
         } else {
-            DbgLog.msg("Navx device is not connected");
+            DbgLog.msg("ftc9773: Navx device is not connected");
         }
-    }
-
-    public void navx_go_straight () {
-        // ToDo
-        navXPIDController yawPIDController = new navXPIDController(navx_device, navXPIDController.navXTimestampedDataSource.YAW);
-
-        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, 3);
-
     }
 }

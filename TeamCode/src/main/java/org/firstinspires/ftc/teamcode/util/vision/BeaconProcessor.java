@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2016 Robocracy 9773.
- */
-
 package org.firstinspires.ftc.teamcode.util.vision;
-
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -16,10 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by vandejd1 on 8/29/16.
- * FTC Team EV 7393
+ * Created by pranavburugula on 12/31/2016.
  */
-public class BeaconProcessor implements ImageProcessor<BeaconColorResult> {
+
+/*
+ * Copyright (c) 2016 Robocracy 9773
+ */
+
+public class BeaconProcessor implements ImageProcessor {
     private static final String TAG = "BeaconProcessor";
     private static final double MIN_MASS = 6;
 
