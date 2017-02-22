@@ -19,22 +19,16 @@ import java.lang.annotation.Annotation;
  */
 
 public abstract class DriveSystem {
+    public enum DriveSysType {TWO_MOTOR_DRIVE, FOUR_MOTOR_6WD}
     LinearOpMode curOpMode;
     FTCRobot robot;
-    String driveSysType;
+    DriveSysType driveSysType;
 
     public interface ElapsedEncoderCounts {
         public abstract void reset();
         public abstract double getDistanceTravelledInInches();
         public abstract double getDegreesTurned();
         public abstract void printCurrentEncoderCounts();
-    }
-
-
-    public DriveSystem(LinearOpMode curOpMode, FTCRobot robot, String driveSysType) {
-        this.curOpMode = curOpMode;
-        this.robot = robot;
-        this.driveSysType = driveSysType;
     }
 
     public DriveSystem() {
@@ -83,7 +77,7 @@ public abstract class DriveSystem {
                     maxSpeedCPS, frictionCoeff, robot.distanceBetweenWheels, wheel, CPR);
             fourMotorSteeringDrive.curOpMode = curOpMode;
             fourMotorSteeringDrive.robot = robot;
-            fourMotorSteeringDrive.driveSysType = driveSysName;
+            fourMotorSteeringDrive.driveSysType = DriveSysType.FOUR_MOTOR_6WD;
             driveSys = (DriveSystem) fourMotorSteeringDrive;
         } else if (driveSysName.equalsIgnoreCase("2Motor2WDSteering")) {
             int CPR = 0;
@@ -115,13 +109,14 @@ public abstract class DriveSystem {
             twoMotorDrive = new TwoMotorDrive(motorL, motorR, maxSpeedCPS, frictionCoeff, wheel, CPR);
             twoMotorDrive.curOpMode = curOpMode;
             twoMotorDrive.robot = robot;
-            twoMotorDrive.driveSysType = driveSysName;
+            twoMotorDrive.driveSysType = DriveSysType.TWO_MOTOR_DRIVE;
             driveSys = (DriveSystem) twoMotorDrive;
         }
         return (driveSys);
     }
 
     public void drive(float speed, float direction) {return;}
+    public DriveSysType getDriveSysType() { return driveSysType;}
 
     public abstract void setZeroPowerMode(DcMotor.ZeroPowerBehavior zp_behavior);
 
@@ -139,6 +134,7 @@ public abstract class DriveSystem {
     public abstract ElapsedEncoderCounts getNewElapsedCountsObj();
     public abstract void printCurrentPosition();
     public abstract void initForPlay();
+    public abstract String getDriveSysInstrData();
 
     public void testEncoders(){return;}
 

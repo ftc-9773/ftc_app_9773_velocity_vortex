@@ -234,6 +234,13 @@ public class TwoMotorDrive extends DriveSystem{
         return;
     }
 
+    @Override
+    public String getDriveSysInstrData() {
+        String instrData= String.format("%f,%f,%f,%f", motorL.getPower(), motorR.getPower(),
+                motorL.getCurrentPosition(), motorR.getCurrentPosition());
+        return instrData;
+    }
+
     private void setDriveSysMode(DcMotor.RunMode runMode) {
         motorL.setMode(runMode);
         motorR.setMode(runMode);

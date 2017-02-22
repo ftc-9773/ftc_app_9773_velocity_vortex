@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.FTCRobot;
+import org.firstinspires.ftc.teamcode.drivesys.DriveSystem;
 import org.firstinspires.ftc.teamcode.navigation.GyroInterface;
 import org.firstinspires.ftc.teamcode.navigation.Navigation;
 
@@ -247,7 +248,14 @@ public class Instrumentation {
             minDegrees = Double.MAX_VALUE;
             maxDegrees = totalDegrees = avgDegrees = 0.0;
             if (printEveryUpdate) {
-                String strToWrite = String.format("voltage, millis, iteration, yaw degrees, pitch, updateCount");
+                String strToWrite = null;
+                if (robot.driveSystem.getDriveSysType() == DriveSystem.DriveSysType.FOUR_MOTOR_6WD) {
+                    strToWrite = String.format("voltage, millis, iteration, yaw degrees, pitch, updateCount, " +
+                            "L1power, L2power, R1power, R2power, L1counts, L2counts, R1counts, R2counts");
+                } else if (robot.driveSystem.getDriveSysType() == DriveSystem.DriveSysType.TWO_MOTOR_DRIVE) {
+                    strToWrite = String.format("voltage, millis, iteration, yaw degrees, pitch, updateCount," +
+                            "Lpower, Rpower, Lcounts, Rcounts");
+                }
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -267,9 +275,9 @@ public class Instrumentation {
             updateCount = gyro.getUpdateCount();
             if (printEveryUpdate && (updateCount != prevUpdateCount)) {
                 numUpdates++;
-                String strToWrite = String.format("%f, %f, %d, %f, %f, %f", robot.getVoltage(),
+                String strToWrite = String.format("%f, %f, %d, %f, %f, %f, %s", robot.getVoltage(),
                         timer.milliseconds(), iterationCount, curDegrees, gyro.getPitch(),
-                        updateCount);
+                        updateCount, robot.driveSystem.getDriveSysInstrData());
                 fileObj.fileWrite(strToWrite);
             }
         }
@@ -369,12 +377,12 @@ public class Instrumentation {
     }
 
     public Instrumentation(FTCRobot robot, LinearOpMode curOpMode, String loopRuntimeLog,
-                           String rangeSensorLog, String navxLog) {
+                           String rangeSensorLog, String gyroLog) {
         this.robot = robot;
         this.curOpMode = curOpMode;
         this.loopRuntimeLog = loopRuntimeLog;
         this.rangeSensorLog = rangeSensorLog;
-        this.gyroLog = navxLog;
+        this.gyroLog = gyroLog;
     }
 
     public void addAction(InstrBaseClass action) {

@@ -310,6 +310,15 @@ public class FourMotorSteeringDrive extends DriveSystem {
         R2Timer.reset();
     }
 
+    @Override
+    public String getDriveSysInstrData() {
+        String instrData = String.format("%f,%f,%f,%f,%f,%f,%f,%f", prevPowerL1, prevPowerL2,
+                prevPowerR1, prevPowerR2, motorL1.getCurrentPosition(), motorL2.getCurrentPosition(),
+                motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
+
+        return instrData;
+    }
+
     public int getNonZeroCurrentPos(DcMotor motor){
         int curPos = motor.getCurrentPosition();
         boolean skipWhileLoop = false;

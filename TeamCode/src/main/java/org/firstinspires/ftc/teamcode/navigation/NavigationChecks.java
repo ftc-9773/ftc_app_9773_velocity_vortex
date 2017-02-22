@@ -112,7 +112,7 @@ public class NavigationChecks {
         @Override
         public boolean stopNavigation() {
             double curYaw = gyro.getYaw();
-            if (navigationObj.distanceBetweenAngles(curYaw, targetYaw) < angleTolerance) {
+            if (navigationObj.distanceBetweenAngles(curYaw, targetYaw) <= angleTolerance) {
                 return (true);
             } else {
                 return (false);

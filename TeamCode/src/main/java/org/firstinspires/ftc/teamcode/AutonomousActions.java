@@ -277,7 +277,7 @@ public class AutonomousActions {
                 robot.navigation.goStraightToWhiteLine(degrees, (float) motorSpeed, driveBackwards);
                 break;
             }
-            case "GoStriaghtTillNavxIsStable" : {
+            case "GoStriaghtTillGyroIsStable" : {
                 double inches = 0.0;
                 double motorSpeed = 0.0;
                 double degrees=0.0;
@@ -298,7 +298,7 @@ public class AutonomousActions {
                     e.printStackTrace();
                 }
                 DbgLog.msg("ftc9773: Degrees: %f, inches: %f, motorSpeed: %f", degrees, inches, motorSpeed);
-                robot.navigation.goStraightTillNavxIsStable(inches, degrees, (float)degreeTolerance,
+                robot.navigation.goStraightTillGyroIsStable(inches, degrees, (float)degreeTolerance,
                         (float) motorSpeed, numUpdatesToSettle);
                 break;
             }

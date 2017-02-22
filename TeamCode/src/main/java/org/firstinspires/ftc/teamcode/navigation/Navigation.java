@@ -230,11 +230,11 @@ public class Navigation {
 
     // ToDo:  this is unused; remove this eventually
     @Deprecated
-    public void goStraightTillNavxIsStable(double inches, double degrees, double degreeTolerance,
+    public void goStraightTillGyroIsStable(double inches, double degrees, double degreeTolerance,
                                            float speed, int numUpdatesToSettle) {
         // Before measuring the distance using range sensor, we should wait until the robot settles
         // on a path roughly parallel to the wall.  This can be done by waiting until numUpdatesToSettle
-        // number of consecutive navx readings have been within the tolerance of degreeTolerance.
+        // number of consecutive gyro readings have been within the tolerance of degreeTolerance.
         if (gyro.isGyroWorking()) {
             NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
             NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
@@ -249,7 +249,7 @@ public class Navigation {
 
             boolean driveBackwards = inches < 0 ? true : false;
 
-            DbgLog.msg("ftc9773: Navx is working");
+            DbgLog.msg("ftc9773: Gyro is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
             robot.instrumentation.addAction(gyroDegreesInstr);
@@ -285,7 +285,7 @@ public class Navigation {
     }
 
     public void goStraightToDistance(double inches, double degrees, float speed) {
-        // If navx is working, using navx's goStraightPID() method, else use driveSystem's
+        // If gyro is working, using gyro's goStraightPID() method, else use driveSystem's
         // driveToDistance method
         NavigationChecks navChecks = new NavigationChecks(robot, curOpMode, this);
         NavigationChecks.EncoderCheckForDistance encodercheck = navChecks.new EncoderCheckForDistance(inches);
@@ -296,7 +296,7 @@ public class Navigation {
         robot.instrumentation.addAction(driveToDistInstr);
         boolean driveBackwards = inches < 0 ? true : false;
         if (gyro.isGyroWorking()) {
-            DbgLog.msg("ftc9773: Navx is working");
+            DbgLog.msg("ftc9773: Gyro is working");
             NavigationChecks.CheckRobotTilting tiltingCheck = navChecks.new CheckRobotTilting(10);
             navChecks.addNewCheck(tiltingCheck);
             robot.instrumentation.addAction(gyroDegreesInstr);
@@ -313,10 +313,10 @@ public class Navigation {
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
             robot.instrumentation.removeAction(gyroDegreesInstr);
-            // Update the encoderNav's current yaw with that of navxMicro
+            // Update the encoderNav's current yaw with that of gyro
             encoderNav.setCurrentYaw(gyro.getYaw());
         } else {
-            DbgLog.msg("ftc9773: Navx is not working");
+            DbgLog.msg("ftc9773: Gyro is not working");
             // Use purely encoder based navigation
             DbgLog.msg("ftc9773: Speed: %f, distance: %f", speed, inches);
             if (inches < 0) {
@@ -367,7 +367,7 @@ public class Navigation {
             robot.driveSystem.stop();
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
-            // Update the encoderNav's current yaw with that of navxMicro
+            // Update the encoderNav's current yaw with that of gyro
             encoderNav.setCurrentYaw(gyro.getYaw());
         } else {
             // Use purely encoder based navigation
@@ -439,7 +439,7 @@ public class Navigation {
             robot.instrumentation.printToConsole();
             robot.instrumentation.writeToFile();
             robot.driveSystem.stop();
-            // Update the encoderNav's current yaw with that of navxMicro
+            // Update the encoderNav's current yaw with that of gyro
             encoderNav.setCurrentYaw(gyro.getYaw());
         } else {
             robot.driveSystem.driveToDistance((float)motorSpeed, distance);
@@ -465,18 +465,18 @@ public class Navigation {
         DriveSystem.ElapsedEncoderCounts elapsedEncoderCounts = robot.driveSystem.getNewElapsedCountsObj();
         elapsedEncoderCounts.reset();
 
-        // If the navx is working, then set the robot orientation with navx
+        // If the gyro is working, then set the robot orientation with gyro
         if (gyro.isGyroWorking()) {
-            curOpMode.telemetry.addData("Set Robot Orientation", "Using Navx");
+            curOpMode.telemetry.addData("Set Robot Orientation", "Using Gyro");
             curOpMode.telemetry.update();
-            DbgLog.msg("ftc9773: Set Robot Orientation, Using Navx");
-            // The difference between the encoder-based degrees and navx based degrees can easily
-            // go upto 10 degrees even when navx is working well.  So, we should not have too low
+            DbgLog.msg("ftc9773: Set Robot Orientation, Using Gyro");
+            // The difference between the encoder-based degrees and gyro based degrees can easily
+            // go upto 10 degrees even when gyro is working well.  So, we should not have too low
             // value for the CheckWhileTurning constructor.  Ensure that we do not check for less
-            // 30 degree deviation between the encoder-based and navx-based angles.
+            // 30 degree deviation between the encoder-based and gyro-based angles.
 //            double degreesToCheck = Math.max(this.distanceBetweenAngles(targetYaw, curYaw) /2, 30);
-//            NavigationChecks.CrossCheckNavxWhileTurning check3 = navigationChecks.new
-//                    CrossCheckNavxWhileTurning(degreesToCheck);
+//            NavigationChecks.CrossCheckGyroWhileTurning check3 = navigationChecks.new
+//                    CrossCheckGyroWhileTurning(degreesToCheck);
 //            navigationChecks.addNewCheck(check3);
             NavigationChecks.CheckGyroIsWorking gyroCheck = navigationChecks.new CheckGyroIsWorking();
             navigationChecks.addNewCheck(gyroCheck);
@@ -500,7 +500,7 @@ public class Navigation {
             }
             this.robot.driveSystem.stop();
             robot.instrumentation.printToConsole();
-//            navxMicro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
+//            gyro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&
                     ((navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CROSSCHECK_GYRO_WITH_ENCODERS)
                     || (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CHECK_GYRO_IS_WORKING)))
@@ -508,18 +508,18 @@ public class Navigation {
                 double encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
                 encoderNav.updateCurrentYaw(encoder_degreesTurned);
                 elapsedEncoderCounts.reset();
-                curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Navx");
+                curOpMode.telemetry.addData("Set Robot Orientation", "Not Using Gyro");
                 curOpMode.telemetry.update();
-                DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Navx");
+                DbgLog.msg("ftc9773: Set Robot Orientation, Not Using Gyro");
 //                navigationChecks.removeCheck(check3);
                 navigationChecks.removeCheck(gyroCheck);
                 encoderNav.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
                 encoder_degreesTurned = elapsedEncoderCounts.getDegreesTurned();
                 encoderNav.updateCurrentYaw(encoder_degreesTurned);
-                // Set the navx status again
+                // Set the gyro status again
                 gyro.testAndSetGyroStatus();
             } else if (navigationChecks.stopNavCriterion.navcheck == NavigationChecks.NavChecksSupported.CHECK_TARGET_YAW_GYRO) {
-                // navx worked without any problems; Set the encoderNav's currentYaw to the navx yaw value
+                // gyro worked without any problems; Set the encoderNav's currentYaw to the gyro yaw value
                 encoderNav.setCurrentYaw(gyro.getYaw());
             }
         }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.navigation;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.FTCRobot;
@@ -21,7 +22,11 @@ public class MRGyro implements GyroInterface {
     double angleTolerance;
     private MRGyro_Status status=MRGyro_Status.STATUS_NOT_SET;
     private double updateCount;
-
+    double prevYaw;
+    ElapsedTime getYawTimer;
+    // Do not bother to call getIntegratedZValue if it has been less than 20 milli seconds
+    // since the last time it was called.
+    final double GYRO_LATENCY = 20;
 
     public MRGyro(FTCRobot robot, LinearOpMode curOpMode, Navigation navigation,
                   double angleTolerance, double straightPID_kp, double turnPID_kp){
@@ -34,6 +39,7 @@ public class MRGyro implements GyroInterface {
         status=MRGyro_Status.STATUS_NOT_SET;
         updateCount = 0;
 
+
         gyro = (ModernRoboticsI2cGyro)curOpMode.hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
 
@@ -45,6 +51,10 @@ public class MRGyro implements GyroInterface {
         gyro.resetZAxisIntegrator();
         DbgLog.msg("ftc9773: Done with initializing MR Gyro");
         DbgLog.msg("ftc9773: Current Yaw=%f, pitch=%f", (double)gyro.getIntegratedZValue(), (double)gyro.rawX());
+
+        getYawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        prevYaw = gyro.getIntegratedZValue();
+        getYawTimer.reset();
     }
 
     // todo: find out how to return yaw and pitch angles
@@ -61,7 +71,18 @@ public class MRGyro implements GyroInterface {
     }
 
     @Override
-    public double getYaw() {return gyro.getIntegratedZValue();}
+    public double getYaw() {
+        double newYaw;
+        if (getYawTimer.milliseconds() >= GYRO_LATENCY) {
+            newYaw = gyro.getIntegratedZValue();
+            prevYaw = newYaw;
+            getYawTimer.reset();
+        }
+        else
+            newYaw = prevYaw;
+
+        return newYaw;
+    }
 
     @Override
     public double getPitch() {
