@@ -159,9 +159,9 @@ public class VuforiaOpMode2 extends LinearOpMode{
 
     public float getDistanceFromRawPose(OpenGLMatrix rawPose){
         float x = rawPose.getTranslation().getData()[0];
-        float y = rawPose.getTranslation().getData()[1];
+//        float y = rawPose.getTranslation().getData()[1];
         float z = rawPose.getTranslation().getData()[2];
-        return (float)Math.sqrt(x*x + y*y + z*z);
+        return (float)Math.sqrt(x*x + z*z);
     }
 
 
