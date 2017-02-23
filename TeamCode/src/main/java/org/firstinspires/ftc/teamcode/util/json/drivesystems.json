@@ -22,10 +22,10 @@
     "AutonomousMaxMotorSpeed": 4000,
     "TeleOpMaxMotorSpeed": 4000,
     "Motors": {
-      "fMotorL": "Neverest40",
-      "fMotorR": "Neverest40",
-      "rMotorL": "Neverest40",
-      "rMotorR": "Neverest40"
+      "fMotorL": "Neverest40_30",
+      "fMotorR": "Neverest40_30",
+      "rMotorL": "Neverest40_30",
+      "rMotorR": "Neverest40_30"
     },
     "WheelType": "rubber-treaded",
     "moveButton" : "gamepad1.left_stick_y",

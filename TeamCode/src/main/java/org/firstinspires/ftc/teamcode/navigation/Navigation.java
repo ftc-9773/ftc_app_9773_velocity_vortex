@@ -487,13 +487,12 @@ public class Navigation {
             SpinDirection cwccw = getSpinDirection(gyro.getYaw(), targetYaw);
             double leftPower=0.0, rightPower=0.0;
             if (cwccw == SpinDirection.CLOCKWISE) {
-                leftPower = motorSpeed;
-                rightPower = -motorSpeed;
+                leftPower = -motorSpeed;
             }
             if (cwccw == SpinDirection.COUNTERCLOCKWISE) {
-                leftPower = -motorSpeed;
-                rightPower = motorSpeed;
+                leftPower = motorSpeed;
             }
+            rightPower = -leftPower;
             DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
             robot.instrumentation.reset();
             while (!navigationChecks.stopNavigation()) {
@@ -501,6 +500,7 @@ public class Navigation {
                 robot.instrumentation.addInstrData();
             }
             this.robot.driveSystem.stop();
+            robot.instrumentation.addInstrData();
             robot.instrumentation.printToConsole();
 //            gyro.setRobotOrientation(targetYaw, motorSpeed, navigationChecks);
             if ((navigationChecks.stopNavCriterion != null) &&

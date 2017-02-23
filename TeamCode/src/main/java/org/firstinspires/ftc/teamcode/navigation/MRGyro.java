@@ -81,6 +81,7 @@ public class MRGyro implements GyroInterface {
             newYaw = gyro.getHeading();
             prevYaw = newYaw;
             getYawTimer.reset();
+            updateCount++;
         }
         else
             newYaw = prevYaw;
@@ -106,7 +107,7 @@ public class MRGyro implements GyroInterface {
     @Override
     public double getUpdateCount() {
         // update count is valid only for navx-micro
-        return (updateCount++);
+        return (updateCount);
     }
 
     @Override

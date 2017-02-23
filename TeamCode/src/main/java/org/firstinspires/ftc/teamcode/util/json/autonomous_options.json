@@ -1,7 +1,13 @@
 {
   "testing1" : [
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 0, "inches" : 12.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 270.0, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 270, "inches" : 12.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 180.0, "motorSpeed" : 0.3},
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 180, "inches" : 12.0, "motorSpeed" : 0.75},
     {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 90.0, "motorSpeed" : 0.3},
-    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 90.0, "inches" : 12.0, "motorSpeed" : 0.75}
+    {"type" : "Programmed", "value" : "GoStraightToDistance", "degrees" : 90, "inches" : 12.0, "motorSpeed" : 0.75},
+    {"type" : "Programmed", "value" : "SetRobotOrientation", "degrees" : 0.0, "motorSpeed" : 0.3}
   ],
   "Pleasantville_Red" : [
     {"type" : "Programmed", "value" : "startPartAcc"},

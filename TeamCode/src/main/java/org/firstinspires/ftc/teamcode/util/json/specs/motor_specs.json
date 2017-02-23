@@ -26,6 +26,15 @@
     "stallCurrent units" : "amps",
     "stallCurrent" : 11.5
   },
+  "Neverest40_30" : {
+    "maxSpeed units" : "rpm",
+    "maxSpeed": 129,
+    "CPR" : 770,
+    "stallTorque units" : "oz-in",
+    "stallTorque" : 350,
+    "stallCurrent units" : "amps",
+    "stallCurrent" : 11.5
+  },
   "Neverest60" : {
     "maxSpeed units" : "rpm",
     "maxSpeed": 105,

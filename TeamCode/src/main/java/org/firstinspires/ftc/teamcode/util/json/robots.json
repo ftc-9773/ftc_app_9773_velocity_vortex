@@ -1,7 +1,7 @@
 {
   "MRGyroTestRobot" : {
     "driveSystem": "4Motor6WDSteering",
-    "attachments": ["CapBallLift",  "ParticleRelease", "Harvester", "ParticleAccelerator"],
+    "attachments": ["CapBallLift"],
     "navigation": "MRGyroOnly",
     "distanceBetweenWheels" : 15.5,
     "distanceBetweenLeftAndODS":11,
