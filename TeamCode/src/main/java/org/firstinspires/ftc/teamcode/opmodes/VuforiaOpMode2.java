@@ -47,8 +47,6 @@ import java.util.List;
 @Autonomous(name = "VuforiaOpMode", group = "Autonomous")
 public class VuforiaOpMode2 extends LinearOpMode{
 
-//    private OpenGLMatrix lastKnownLocation;
-//    private OpenGLMatrix phoneLocation;
     public static final Scalar blueLow = new Scalar(108,0,220);
     public static final Scalar blueHigh = new Scalar(178,255,255);
 
