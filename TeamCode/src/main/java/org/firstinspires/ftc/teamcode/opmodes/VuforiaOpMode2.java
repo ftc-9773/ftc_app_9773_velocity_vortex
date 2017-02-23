@@ -10,6 +10,10 @@ import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -38,24 +42,24 @@ public class VuforiaOpMode2 extends LinearOpMode{
         parameters.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
         VuforiaLocalizer vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
 
-//        //Enable image detection
-//        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
-//        vuforiaLocalizer.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
-//
-//        /*To access the image: you need to iterate through the images of the frame object:*/
-//
-//        VuforiaLocalizer.CloseableFrame frame = vuforiaLocalizer.getFrameQueue().take(); //takes the frame at the head of the queue
-//        Image rgb = null;
-//
-//        long numImages = frame.getNumImages();
-//
-//
-//        for (int i = 0; i < numImages; i++) {
-//            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
-//                rgb = frame.getImage(i);
-//                break;
-//            }//if
-//        }//for
+        //Enable image detection
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
+        vuforiaLocalizer.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
+
+        /*To access the image: you need to iterate through the images of the frame object:*/
+
+        VuforiaLocalizer.CloseableFrame frame = vuforiaLocalizer.getFrameQueue().take(); //takes the frame at the head of the queue
+        Image rgb = null;
+
+        long numImages = frame.getNumImages();
+
+
+        for (int i = 0; i < numImages; i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+                rgb = frame.getImage(i);
+                break;
+            }//if
+        }//for
 
 
         // These are the vision targets that we want to use
@@ -88,5 +92,20 @@ public class VuforiaOpMode2 extends LinearOpMode{
             }
             telemetry.update();
         }
+    }
+
+    // Creates a matrix for determining the locations and orientations of objects
+    // Units are millimeters for x, y, and z, and degrees for u, v, and w (pitch, roll, yaw)
+    private OpenGLMatrix createMatrix(float x, float y, float z, float u, float v, float w)
+    {
+        return OpenGLMatrix.translation(x, y, z).
+                multiplied(Orientation.getRotationMatrix(
+                        AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, u, v, w));
+    }
+
+    // Formats a matrix into a readable string
+    private String formatMatrix(OpenGLMatrix matrix)
+    {
+        return matrix.formatAsTransform();
     }
 }
