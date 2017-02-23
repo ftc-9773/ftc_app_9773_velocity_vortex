@@ -28,6 +28,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.util.vision.BeaconState;
 import org.firstinspires.ftc.teamcode.util.vision.VuforiaLocalizerImplSubclass;
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Moments;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,8 +49,8 @@ public class VuforiaOpMode2 extends LinearOpMode{
 
 //    private OpenGLMatrix lastKnownLocation;
 //    private OpenGLMatrix phoneLocation;
-//    public static final Scalar blueLow = new Scalar(108,0,220);
-//    public static final Scalar blueHigh = new Scalar(178,255,255);
+    public static final Scalar blueLow = new Scalar(108,0,220);
+    public static final Scalar blueHigh = new Scalar(178,255,255);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -107,56 +115,56 @@ public class VuforiaOpMode2 extends LinearOpMode{
     }
 
     //Use OpenCV cropping to get the beacon configuration
-//    public BeaconState analyzeBeacon(Image image, VuforiaTrackableDefaultListener listener, CameraCalibration cameraCalibration){
-//        OpenGLMatrix pose = listener.getRawPose();
-//
-//        if(pose!=null && image!=null && image.getPixels()!=null){
-//            Matrix34F rawPose = new Matrix34F();
-//            float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
-//            rawPose.setData(poseData);
-//
-//            float[][] corners = new float[4][2];
-//            corners[0] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(-127, 276, 0)).getData();
-//            corners[1] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(127, -276, 0)).getData();
-//            corners[2] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(127, 276, 0)).getData();
-//            corners[3] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(-127, -276, 0)).getData();
-//
-//            Bitmap bm = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.RGB_565);//TODO: check if phone uses 565 or 888
-//            bm.copyPixelsFromBuffer(image.getPixels());
-//
-//            Mat crop = new Mat(bm.getHeight(), bm.getWidth(), CvType.CV_8UC3);
-//            Utils.bitmapToMat(bm,crop);
-//
-//            float x = Math.min(Math.min(corners[1][0], corners[3][0]), Math.min(corners[0][0], corners[2][0]));
-//            float y = Math.min(Math.min(corners[1][1], corners[3][1]), Math.min(corners[0][1], corners[2][1]));
-//            float width = Math.max(Math.abs(corners[0][0] - corners[2][0]), Math.abs(corners[1][0] - corners[3][0]));
-//            float height = Math.max(Math.abs(corners[0][1] - corners[2][1]), Math.abs(corners[1][1] - corners[3][1]));
-//
-//            x = Math.max(x,0);
-//            y = Math.max(y,0);
-//            width = (x+width > crop.cols()) ? crop.cols()-x : width;
-//            height = (y+height > crop.rows()) ? crop.rows()-y : height;
-//
-//            Mat cropped = new Mat(crop, new Rect((int)x, (int)y, (int)width, (int)height));
-//
-//            Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_RGB2HSV_FULL);
-//
-//            Mat mask = new Mat();
-//            Core.inRange(cropped, blueLow, blueHigh, mask);//certain type of blue
-//
-//            Moments moments = Imgproc.moments(mask, true);
-//
-//            if(moments.get_m00 > moments.total()*0.8) return BeaconState.BEACON_ALL_BLUE;
-//            else if(moments.get_m00 < moments.total()*0.1) return BeaconState.BEACON_ALL_RED;
-//
-//            if(moments.get_m00()/moments.total() > 0.8) return BeaconState.BEACON_ALL_BLUE;
-//            else if(moments.get_m00()/moments.total() > 0.8) return BeaconState.BEACON_ALL_RED;
-//
-//            if((moments.get_m01()/moments.get_m00()) < (cropped.rows()/2)) return BeaconState.BEACON_RED_BLUE;
-//            else return BeaconState.BEACON_BLUE_RED;
-//        }
-//        return BeaconState.BEACON_NOTHING;
-//    }
+    public BeaconState analyzeBeacon(Image image, VuforiaTrackableDefaultListener listener, CameraCalibration cameraCalibration){
+        OpenGLMatrix pose = listener.getRawPose();
+
+        if(pose!=null && image!=null && image.getPixels()!=null){
+            Matrix34F rawPose = new Matrix34F();
+            float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
+            rawPose.setData(poseData);
+
+            float[][] corners = new float[4][2];
+            corners[0] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(-127, 276, 0)).getData();
+            corners[1] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(127, -276, 0)).getData();
+            corners[2] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(127, 276, 0)).getData();
+            corners[3] = Tool.projectPoint(cameraCalibration, rawPose, new Vec3F(-127, -276, 0)).getData();
+
+            Bitmap bm = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.RGB_565);//TODO: check if phone uses 565 or 888
+            bm.copyPixelsFromBuffer(image.getPixels());
+
+            Mat crop = new Mat(bm.getHeight(), bm.getWidth(), CvType.CV_8UC3);
+            Utils.bitmapToMat(bm,crop);
+
+            float x = Math.min(Math.min(corners[1][0], corners[3][0]), Math.min(corners[0][0], corners[2][0]));
+            float y = Math.min(Math.min(corners[1][1], corners[3][1]), Math.min(corners[0][1], corners[2][1]));
+            float width = Math.max(Math.abs(corners[0][0] - corners[2][0]), Math.abs(corners[1][0] - corners[3][0]));
+            float height = Math.max(Math.abs(corners[0][1] - corners[2][1]), Math.abs(corners[1][1] - corners[3][1]));
+
+            x = Math.max(x,0);
+            y = Math.max(y,0);
+            width = (x+width > crop.cols()) ? crop.cols()-x : width;
+            height = (y+height > crop.rows()) ? crop.rows()-y : height;
+
+            Mat cropped = new Mat(crop, new Rect((int)x, (int)y, (int)width, (int)height));
+
+            Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_RGB2HSV_FULL);
+
+            Mat mask = new Mat();
+            Core.inRange(cropped, blueLow, blueHigh, mask);//certain type of blue
+
+            Moments moments = Imgproc.moments(mask, true);
+
+            if(moments.get_m00() > moments.total()*0.8) return BeaconState.BEACON_ALL_BLUE;//total() deprecated
+            else if(moments.get_m00() < moments.total()*0.1) return BeaconState.BEACON_ALL_RED;
+
+            if(moments.get_m00()/moments.total() > 0.8) return BeaconState.BEACON_ALL_BLUE;
+            else if(moments.get_m00()/moments.total() > 0.8) return BeaconState.BEACON_ALL_RED;
+
+            if((moments.get_m01()/moments.get_m00()) < (cropped.rows()/2)) return BeaconState.BEACON_RED_BLUE;
+            else return BeaconState.BEACON_BLUE_RED;
+        }
+        return BeaconState.BEACON_NOTHING;
+    }
 
     public float getDistanceFromRawPose(OpenGLMatrix rawPose){
         float x = rawPose.getTranslation().getData()[0];
