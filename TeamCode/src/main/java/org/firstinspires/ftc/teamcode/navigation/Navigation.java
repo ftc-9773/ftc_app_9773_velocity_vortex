@@ -98,8 +98,10 @@ public class Navigation {
         this.encoderNav = new EncoderNavigation(robot, robot.driveSystem, curOpMode, this);
 
         // Instantiate the common instrumentation objects (declared as inner classes in Instrumentation class
-        gyroDegreesInstr = robot.instrumentation.new GyroDegrees(this.gyro, true);
-        rangeInstr = robot.instrumentation.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, true);
+        if (gyro!= null)
+            gyroDegreesInstr = robot.instrumentation.new GyroDegrees(this.gyro, true);
+        if (rangeSensor != null)
+            rangeInstr = robot.instrumentation.new RangeSensorDistance(this.rangeSensor, rangeSensorRunningAvg, true);
         driveToDistInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TO_DISTANCE);
         driveTillWhitelineInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_UNTIL_WHITELINE);
         driveTillBeaconInstr = robot.instrumentation.new LoopRuntime(Instrumentation.LoopType.DRIVE_TILL_BEACON);

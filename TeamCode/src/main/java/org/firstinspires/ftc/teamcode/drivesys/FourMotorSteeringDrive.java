@@ -312,7 +312,7 @@ public class FourMotorSteeringDrive extends DriveSystem {
 
     @Override
     public String getDriveSysInstrData() {
-        String instrData = String.format("%f,%f,%f,%f,%f,%f,%f,%f", prevPowerL1, prevPowerL2,
+        String instrData = String.format("%f,%f,%f,%f,%d,%d,%d,%d", prevPowerL1, prevPowerL2,
                 prevPowerR1, prevPowerR2, motorL1.getCurrentPosition(), motorL2.getCurrentPosition(),
                 motorR1.getCurrentPosition(), motorR2.getCurrentPosition());
 

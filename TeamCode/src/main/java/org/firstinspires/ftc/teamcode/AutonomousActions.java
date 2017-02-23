@@ -163,6 +163,7 @@ public class AutonomousActions {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                DbgLog.msg("ftc9773: SetRobotOrientation: angle=%f, speed=%f", orientation, speed);
                 robot.navigation.setRobotOrientation(orientation, speed);
                 break;
             }

@@ -386,7 +386,8 @@ public class Instrumentation {
     }
 
     public void addAction(InstrBaseClass action) {
-        this.instrObjects.add(action);
+        if (action!= null)
+            this.instrObjects.add(action);
     }
 
     public void removeAction(InstrBaseClass action) {

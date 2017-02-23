@@ -48,12 +48,16 @@ public class MRGyro implements GyroInterface {
             curOpMode.sleep(50);
             curOpMode.idle();
         }
+        curOpMode.telemetry.addData("MRGyro: ", "Done with calibrating");
         gyro.resetZAxisIntegrator();
         DbgLog.msg("ftc9773: Done with initializing MR Gyro");
-        DbgLog.msg("ftc9773: Current Yaw=%f, pitch=%f", (double)gyro.getIntegratedZValue(), (double)gyro.rawX());
+        DbgLog.msg("ftc9773: Current Yaw=%f, pitch=%f", (double)gyro.getHeading(), (double)gyro.rawX());
+        curOpMode.telemetry.addData("MRGyro: ", "curYaw=%f, curPitch=%f", (double)gyro.getHeading(),
+                (double) gyro.rawX());
+        curOpMode.telemetry.update();
 
         getYawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        prevYaw = gyro.getIntegratedZValue();
+        prevYaw = gyro.getHeading();
         getYawTimer.reset();
     }
 
@@ -74,7 +78,7 @@ public class MRGyro implements GyroInterface {
     public double getYaw() {
         double newYaw;
         if (getYawTimer.milliseconds() >= GYRO_LATENCY) {
-            newYaw = gyro.getIntegratedZValue();
+            newYaw = gyro.getHeading();
             prevYaw = newYaw;
             getYawTimer.reset();
         }
@@ -88,7 +92,10 @@ public class MRGyro implements GyroInterface {
     public double getPitch() {
         // Normally pitch is obtained by rawY(), but due to the way the mr-gyro is mounted on
         // Robot V3, the rawX() value gives the pitch, not rawY().
-        return ((double)gyro.rawX());
+//        return ((double)gyro.rawX());
+        // ToDo: We need to figure out the way to get pitch value from MRGyro
+        // Until then just return 0 pitch
+        return (0);
     }
 
     @Override
@@ -186,7 +193,7 @@ public class MRGyro implements GyroInterface {
         }
         DbgLog.msg("ftc9773: power left = %f, right = %f",leftPower, rightPower);
         DbgLog.msg("ftc9773: raw Yaw = %f, Starting yaw = %f, targetYaw = %f",
-                gyro.getIntegratedZValue(), startingYaw, targetYaw);
+                gyro.rawZ(), startingYaw, targetYaw);
 
 //        robot.repActions.startActions();
         while (curOpMode.opModeIsActive() && !navigationChecks.stopNavigation()) {
