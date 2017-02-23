@@ -95,11 +95,11 @@ public class FTCRobot {
         }
 
         // Create the objects for attachments
-        createAttachments(robotConfig.getAttachments());
+        createAttachments(robotConfig.getAttachments(autoOrTeleop));
 
         // Initialize navigation subsystem
-        if (robotConfig.getNavigationOption() != null) {
-            navigation = new Navigation(this, curOpMode, robotConfig.getNavigationOption());
+        if (robotConfig.getNavigationOption(autoOrTeleop) != null) {
+            navigation = new Navigation(this, curOpMode, robotConfig.getNavigationOption(autoOrTeleop));
         } else{
             navigation = null;
         }

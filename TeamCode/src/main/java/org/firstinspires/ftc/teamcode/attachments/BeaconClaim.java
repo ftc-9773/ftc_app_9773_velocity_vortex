@@ -121,6 +121,11 @@ public class BeaconClaim implements Attachment {
         }
         if (coloSensor1Obj != null) {
             colorSensor1 = curOpMode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor1");
+            // "blink" the color sensor so that we can visually see that it is working
+            colorSensor1.enableLed(false);
+            curOpMode.sleep(100);
+            colorSensor1.enableLed(true);
+            curOpMode.sleep(100);
             colorSensor1.enableLed(false);
         }
 

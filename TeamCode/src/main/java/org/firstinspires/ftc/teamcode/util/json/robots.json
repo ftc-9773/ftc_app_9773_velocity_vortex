@@ -60,5 +60,18 @@
     "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime",
     "rangeSensorLog" : "/sdcard/FIRST/team9773/logs/rangeSensor",
     "navxLog" : "/sdcard/FIRST/team9773/logs/navxmicro"
+  },
+  "2017Feb_test_Robot" : {
+    "driveSystem": "4Motor6WDSteering",
+    "autonomous_attachments": ["BeaconClaim", "ParticleRelease", "Harvester", "ParticleAccelerator"],
+    "teleop_attachments": ["CapBallLift", "ParticleRelease", "Harvester", "ParticleAccelerator"],
+    "autonomous_navigation": "LineFollow_IMU_DriveSysEncoders",
+    "teleop_navigation": "none",
+    "distanceBetweenLeftAndODS":11,
+    "distanceBetweenRightAndODS":4,
+    "distanceBetweenWheels" : 15.5,
+    "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime",
+    "rangeSensorLog" : "/sdcard/FIRST/team9773/logs/rangeSensor",
+    "navxLog" : "/sdcard/FIRST/team9773/logs/navxmicro"
   }
 }
