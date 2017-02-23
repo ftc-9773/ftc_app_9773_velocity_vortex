@@ -3,8 +3,8 @@
   "__comment2" : "direction to be set to REVERSE, depending on how the servo is mounted",
   "BeaconClaim" : {
     "motors" : {
-      "buttonServo" : {
-        "motorType" : "servo",
+      "__buttonServo_standard" : {
+        "motorType" : "StandardServo",
         "motor" : "Tetrix-HS755-HB",
         "__comment" : "The following 2 values have to be changed",
         "scaleRangeMin" : 0.15,
@@ -18,7 +18,7 @@
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
       },
-      "__buttonServo_v2continuous" : {
+      "buttonServo" : {
         "motorType" : "CRservo",
         "motor" : "Tetrix-HS755-HB",
         "__comment" : "The following 2 values have to be changed",
@@ -27,9 +27,9 @@
         "needReverse" : true,
         "__fixedPositions" : true,
         "__comment_speed" : "speed is in the units of centimeters per second",
-        "speed" : 6,
+        "speed" : 14.5,
         "__comment_strokeLength" : "strokeLength is in the units of cm",
-        "strokeLength" : 15.0,
+        "strokeLength" : 13.9,
         "minButton" : "gamepad1.a",
         "maxButton" : "gamepad1.y"
       },
