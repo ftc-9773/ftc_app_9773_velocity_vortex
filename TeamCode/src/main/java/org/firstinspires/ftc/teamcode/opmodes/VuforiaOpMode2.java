@@ -106,6 +106,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
         return null;
     }
 
+    //Use OpenCV cropping to get the beacon configuration
 //    public BeaconState analyzeBeacon(Image image, VuforiaTrackableDefaultListener listener, CameraCalibration cameraCalibration){
 //        OpenGLMatrix pose = listener.getRawPose();
 //
