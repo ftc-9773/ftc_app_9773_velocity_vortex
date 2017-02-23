@@ -88,10 +88,10 @@ public class FourMotorSteeringDrive extends DriveSystem {
         this.motorL2 = motorL2;
         this.motorR1 = motorR1;
         this.motorR2 = motorR2;
-        this.motorL1.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.motorL2.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.motorR1.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.motorR2.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motorR1.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motorR2.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.motorL1.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motorL2.setDirection(DcMotorSimple.Direction.FORWARD);
         this.setDriveSysMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.setZeroPowerMode(DcMotor.ZeroPowerBehavior.BRAKE);
         this.frictionCoefficient = frictionCoefficient;

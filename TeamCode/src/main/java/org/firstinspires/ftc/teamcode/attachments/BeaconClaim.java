@@ -23,6 +23,7 @@ public class BeaconClaim implements Attachment {
     private LinearOpMode curOpMode;
     private CRServo buttonServoCR =null;
     private Servo buttonServoLinear=null;
+    private Servo buttonServoStandard=null;
     private ModernRoboticsI2cColorSensor colorSensor1=null;
     public enum BeaconColor {RED, BLUE, NONE}
     public BeaconColor beaconColor;
@@ -58,6 +59,8 @@ public class BeaconClaim implements Attachment {
             key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServoCR");
             if (key == null)
                 key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServoLinear");
+            if (key == null)
+                key = JsonReader.getRealKeyIgnoreCase(motorsObj, "buttonServoStandard");
             buttonServoObj = motorsObj.getJSONObject(key);
             key = JsonReader.getRealKeyIgnoreCase(sensorsObj, "colorSensor1");
             coloSensor1Obj = sensorsObj.getJSONObject(key);
@@ -95,6 +98,18 @@ public class BeaconClaim implements Attachment {
                     double scaleMax = buttonServoObj.getDouble(key);
                     buttonServoLinear.scaleRange(scaleMin, scaleMax);
                     buttonServoLinear.setPosition(0.0);
+                } else if (servoType.equalsIgnoreCase("StandardServo")){
+                    buttonServoStandard = curOpMode.hardwareMap.servo.get("buttonServo");
+                    if (buttonServoObj.getBoolean("needReverse")){
+                        DbgLog.msg("ftc9773: Rervsing the button servo");
+                        buttonServoStandard.setDirection(Servo.Direction.REVERSE);
+                    }
+                    key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "scaleRangeMin");
+                    double scaleMin = buttonServoObj.getDouble(key);
+                    key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "scaleRangeMax");
+                    double scaleMax = buttonServoObj.getDouble(key);
+                    buttonServoStandard.scaleRange(scaleMin, scaleMax);
+                    buttonServoStandard.setPosition(0.0);
                 }
                 // speed and strokeLength parameters are common to both types of servos
                 key = JsonReader.getRealKeyIgnoreCase(buttonServoObj, "speed");
@@ -166,11 +181,16 @@ public class BeaconClaim implements Attachment {
     public void pushBeacon(){
         if (buttonServoCR != null) {
             updateBeaconServoLength(BeaconClaimOperation.EXTEND);
+
             buttonServoCR.setPower(-1.0);
         } else if (buttonServoLinear != null) {
             lastOp = BeaconClaimOperation.EXTEND;
             curLength = Range.clip(curLength+1.0, 0, strokeLength);
             buttonServoLinear.setPosition(curLength / strokeLength);
+        } else if (buttonServoStandard != null){
+            lastOp = BeaconClaimOperation.EXTEND;
+            curLength =  Range.clip(curLength+1.0, 0, strokeLength);
+            buttonServoStandard.setPosition(1.0);
         }
     }
     public void retractBeacon(){
@@ -181,6 +201,10 @@ public class BeaconClaim implements Attachment {
             lastOp = BeaconClaimOperation.RETRACT;
             curLength = Range.clip(curLength-1.0, 0, strokeLength);
             buttonServoLinear.setPosition(curLength / strokeLength);
+        } else if (buttonServoStandard != null){
+            lastOp = BeaconClaimOperation.RETRACT;
+            curLength = Range.clip(curLength-1.0, 0, strokeLength);
+            buttonServoStandard.setPosition(0.0);
         }
     }
     public void idleBeacon(){
@@ -188,6 +212,8 @@ public class BeaconClaim implements Attachment {
             updateBeaconServoLength(BeaconClaimOperation.NONE);
             buttonServoCR.setPower(0.0);
         } else if (buttonServoLinear != null) {
+            lastOp = BeaconClaimOperation.NONE;
+        } else if (buttonServoStandard != null){
             lastOp = BeaconClaimOperation.NONE;
         }
     }

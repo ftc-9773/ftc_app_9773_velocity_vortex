@@ -135,11 +135,8 @@ public class CapBallLift implements  Attachment {
 
         if (liftServoCR != null) {
             if (liftServoCR!= null && curOpMode.gamepad2.a) {
-                DbgLog.msg("ftc9773: reached here 1");
                 autoPlacement();
-                DbgLog.msg("ftc9773: reached here 2");
             } else if (liftServoCR !=null && curOpMode.gamepad2.y) {
-                DbgLog.msg("ftc9773: reached here 3");
                 foldFork();
             } else {
                 idleFork();
