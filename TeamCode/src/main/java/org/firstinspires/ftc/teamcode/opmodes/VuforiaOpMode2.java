@@ -158,7 +158,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
             else if(moments.get_m00() < mask.total()*0.1) return BeaconState.BEACON_ALL_RED;
 
             if(moments.get_m00()/mask.total() > 0.8) return BeaconState.BEACON_ALL_BLUE;
-            else if(moments.get_m00()/mask.total() > 0.8) return BeaconState.BEACON_ALL_RED;
+            else if(moments.get_m00()/mask.total() < 0.1) return BeaconState.BEACON_ALL_RED;
 
             if((moments.get_m01()/moments.get_m00()) < (cropped.rows()/2)) return BeaconState.BEACON_RED_BLUE;
             else return BeaconState.BEACON_BLUE_RED;
