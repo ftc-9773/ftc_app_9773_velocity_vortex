@@ -1,9 +1,11 @@
 {
   "MRGyroTestRobot" : {
     "driveSystem": "4Motor6WDSteering",
-    "attachments": [],
+    "attachments": ["CapBallLift",  "ParticleRelease", "Harvester", "ParticleAccelerator"],
     "navigation": "MRGyroOnly",
     "distanceBetweenWheels" : 15.5,
+    "distanceBetweenLeftAndODS":11,
+    "distanceBetweenRightAndODS":4,
     "loopRuntimeLog" : "/sdcard/FIRST/team9773/logs/loopRuntime",
     "rangeSensorLog" : "/sdcard/FIRST/team9773/logs/rangeSensor",
     "gyroLog" : "/sdcard/FIRST/team9773/logs/gyro"
