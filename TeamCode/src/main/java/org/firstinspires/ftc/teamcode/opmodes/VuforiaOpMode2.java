@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.CameraCalibration;
+import com.vuforia.Frame;
 import com.vuforia.HINT;
 import com.vuforia.Image;
 import com.vuforia.Matrix34F;
@@ -59,18 +60,6 @@ public class VuforiaOpMode2 extends LinearOpMode{
 
         /*To access the image: you need to iterate through the images of the frame object:*/
 
-        VuforiaLocalizer.CloseableFrame frame = vuforiaLocalizer.getFrameQueue().take(); //takes the frame at the head of the queue
-        Image rgb = null;
-
-        long numImages = frame.getNumImages();
-
-        for (int i = 0; i < numImages; i++) {
-            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
-                rgb = frame.getImage(i);
-                break;
-            }
-        }
-
 
         // These are the vision targets that we want to use
         // The string needs to be the name of the appropriate .xml file in the assets folder
@@ -91,6 +80,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
             // Setup listener and inform it of phone information
             for(VuforiaTrackable target : visionTargets){
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) target.getListener()).getRawPose();
+                BeaconState beaconState = analyzeBeacon(getImageFromFrame(vuforiaLocalizer.getFrameQueue().take(), PIXEL_FORMAT.RGB565), (VuforiaTrackableDefaultListener)target.getListener(), vuforiaLocalizer.getCameraCalibration());
 
                 if(pose!=null){
                     VectorF translation = pose.getTranslation();
@@ -99,9 +89,20 @@ public class VuforiaOpMode2 extends LinearOpMode{
                     telemetry.addData(target.getName() + "-Translation", translation);
                     telemetry.addData(target.getName() + "-Degrees", degreesToTurn);
                 }
+                telemetry.addData(target.getName() + "-BeaconState", beaconState);
             }
             telemetry.update();
         }
+    }
+
+    public Image getImageFromFrame(VuforiaLocalizer.CloseableFrame frame, int pixelFormat){
+        long numImages = frame.getNumImages();
+        for (int i = 0; i < numImages; i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+                return frame.getImage(i);
+            }
+        }
+        return null;
     }
 
     public BeaconState analyzeBeacon(Image image, VuforiaTrackableDefaultListener listener, CameraCalibration cameraCalibration){
@@ -141,7 +142,16 @@ public class VuforiaOpMode2 extends LinearOpMode{
             Mat mask = new Mat();
             Core.inRange(cropped, blueLow, blueHigh, mask);//certain type of blue
 
+            Moments moments = Imgproc.moments(mask, true);
 
+            if(moments.get_m00 > moments.total()*0.8) return BeaconState.BEACON_ALL_BLUE;
+            else if(moments.get_m00 < moments.total()*0.1) return BeaconState.BEACON_ALL_RED;
+
+            if(moments.get_m00()/moments.total() > 0.8) return BeaconState.BEACON_ALL_BLUE;
+            else if(moments.get_m00()/moments.total() > 0.8) return BeaconState.BEACON_ALL_RED;
+
+            if((moments.get_m01()/moments.get_m00()) < (cropped.rows()/2)) return BeaconState.BEACON_RED_BLUE;
+            else return BeaconState.BEACON_BLUE_RED;
         }
         return BeaconState.BEACON_NOTHING;
     }
