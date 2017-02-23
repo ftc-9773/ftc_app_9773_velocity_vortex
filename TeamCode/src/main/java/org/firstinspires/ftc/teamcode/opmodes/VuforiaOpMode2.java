@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.HINT;
 import com.vuforia.Image;
@@ -21,51 +22,21 @@ import java.util.List;
  * Created by michaelzhou on 2/22/17.
  */
 
+@Autonomous(name = "VuforiaOpMode2", group = "Autonomous")
 public class VuforiaOpMode2 extends LinearOpMode{
-    // Variables to be used for later
-    private VuforiaLocalizer vuforiaLocalizer;
-    private VuforiaLocalizer.Parameters parameters;
-    private VuforiaTrackables visionTargets;
-    //    private VuforiaTrackable target;
-//    private VuforiaTrackableDefaultListener listener;
-    private List<VuforiaTrackableDefaultListener> listeners;
+
     private OpenGLMatrix lastKnownLocation;
     private OpenGLMatrix phoneLocation;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setupVuforia();
-
-        waitForStart();
-
-        visionTargets.activate();
-
-        while(opModeIsActive()){
-            // Setup listener and inform it of phone information
-            for(VuforiaTrackable target : visionTargets){
-                VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener) target.getListener();
-                OpenGLMatrix pose = listener.getPose();
-
-                if(pose!=null){
-                    VectorF translation = pose.getTranslation();
-                    double degreesToTurn = Math.toDegrees(Math.atan2(translation.get(1), translation.get(2)));
-
-                    telemetry.addData(target.getName(), "-Translation", translation);
-                    telemetry.addData(target.getName(), "-Degrees", degreesToTurn);
-                }
-            }
-            telemetry.update();
-        }
-    }
-
-    private void setupVuforia() throws InterruptedException {
         // Setup parameters to create localizer
-        parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId); // To remove the camera view from the screen, remove the R.id.cameraMonitorViewId
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId); // To remove the camera view from the screen, remove the R.id.cameraMonitorViewId
         parameters.vuforiaLicenseKey = "AbrtgIH/////AAAAAYXGG7tsoUbMqheoGcZNVXo2WXfiEHIwNSxiKDKqV4I8Z5iKsnnWyc9bu2wKiq2g2DICfNm/QLgt9SMJHGROCQgoA3bP38DUtYcOC4h5JwwoR6j0dTytoDJqNl4pR7EwO0BOBOmQPdqOejubaZWZpvNxUQnJBwtLKGGyMms+NPDgYZNCeSozTYuHYcWli+cl93GgfTwwm3j4yoxWMkUiQTa3yVQv7GewOn3KCnhaKsnZ84nkIlNkg1ees2K7u19zaiySu8Ielvi84AFAWS7rWXmDvcF95CbDKgeCJOd8V1tNQm5bwv+qcT8G1nA3gvmjeHVZMH5XXUR+A3YAD/5klU2OSmRBomj9FGYun5VjsAU+"; // Insert your own key here
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
         parameters.useExtendedTracking = false;
         parameters.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
-        vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
+        VuforiaLocalizer vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
 
 //        //Enable image detection
 //        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
@@ -89,7 +60,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
 
         // These are the vision targets that we want to use
         // The string needs to be the name of the appropriate .xml file in the assets folder
-        visionTargets = vuforiaLocalizer.loadTrackablesFromAsset("FTC_2016-17");
+        VuforiaTrackables visionTargets = vuforiaLocalizer.loadTrackablesFromAsset("FTC_2016-17");
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
 
         visionTargets.get(0).setName("Wheels");
@@ -98,5 +69,24 @@ public class VuforiaOpMode2 extends LinearOpMode{
         visionTargets.get(3).setName("Gears");
 
 
+        waitForStart();
+
+        visionTargets.activate();
+
+        while(opModeIsActive()){
+            // Setup listener and inform it of phone information
+            for(VuforiaTrackable target : visionTargets){
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) target.getListener()).getPose();
+
+                if(pose!=null){
+                    VectorF translation = pose.getTranslation();
+                    double degreesToTurn = Math.toDegrees(Math.atan2(translation.get(1), translation.get(2)));
+
+                    telemetry.addData(target.getName() + "-Translation", translation);
+                    telemetry.addData(target.getName() + "-Degrees", degreesToTurn);
+                }
+            }
+            telemetry.update();
+        }
     }
 }
