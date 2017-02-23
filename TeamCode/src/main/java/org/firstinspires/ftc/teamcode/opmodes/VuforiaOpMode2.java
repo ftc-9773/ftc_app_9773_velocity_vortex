@@ -88,7 +88,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
             // Setup listener and inform it of phone information
             for(VuforiaTrackable target : visionTargets){
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) target.getListener()).getRawPose();
-//                BeaconState beaconState = analyzeBeacon(getImageFromFrame(vuforiaLocalizer.getFrameQueue().take(), PIXEL_FORMAT.RGB565), (VuforiaTrackableDefaultListener)target.getListener(), vuforiaLocalizer.getCameraCalibration());
+                BeaconState beaconState = analyzeBeacon(getImageFromFrame(vuforiaLocalizer.getFrameQueue().take(), PIXEL_FORMAT.RGB565), (VuforiaTrackableDefaultListener)target.getListener(), vuforiaLocalizer.getCameraCalibration());
 
                 if(pose!=null){
                     VectorF translation = pose.getTranslation();
@@ -98,7 +98,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
                     telemetry.addData(target.getName() + "-Degrees", degreesToTurn);
                     telemetry.addData(target.getName() + "-Distance", getDistanceFromRawPose(pose));
                 }
-//                telemetry.addData(target.getName() + "-BeaconState", beaconState);
+                telemetry.addData(target.getName() + "-BeaconState", beaconState);
             }
             telemetry.update();
         }
@@ -168,7 +168,6 @@ public class VuforiaOpMode2 extends LinearOpMode{
 
     public float getDistanceFromRawPose(OpenGLMatrix rawPose){
         float x = rawPose.getTranslation().getData()[0];
-//        float y = rawPose.getTranslation().getData()[1];
         float z = rawPose.getTranslation().getData()[2];
         return (float)Math.sqrt(x*x + z*z);
     }
