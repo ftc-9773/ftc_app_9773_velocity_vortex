@@ -9,7 +9,9 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.HINT;
+import com.vuforia.Image;
 import com.vuforia.ImageTarget;
+import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -92,14 +94,33 @@ public class VuforiaOpMode extends LinearOpMode
         }
     }
 
-    private void setupVuforia()
-    {
+    private void setupVuforia() throws InterruptedException {
         // Setup parameters to create localizer
         parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId); // To remove the camera view from the screen, remove the R.id.cameraMonitorViewId
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
         parameters.useExtendedTracking = false;
         vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
+
+        //Enable image detection
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
+        vuforiaLocalizer.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
+
+        /*To access the image: you need to iterate through the images of the frame object:*/
+
+        VuforiaLocalizer.CloseableFrame frame = vuforiaLocalizer.getFrameQueue().take(); //takes the frame at the head of the queue
+        Image rgb = null;
+
+        long numImages = frame.getNumImages();
+
+
+        for (int i = 0; i < numImages; i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+                rgb = frame.getImage(i);
+                break;
+            }//if
+        }//for
+
 
         // These are the vision targets that we want to use
         // The string needs to be the name of the appropriate .xml file in the assets folder
@@ -120,6 +141,12 @@ public class VuforiaOpMode extends LinearOpMode
             VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener) target.getListener();
             listener.setPhoneInformation(phoneLocation, parameters.cameraDirection);
         }
+
+    }
+
+    private void accessCameraImage(VuforiaLocalizer locale, VuforiaLocalizer.Parameters params) throws InterruptedException {
+
+
     }
 
     public float getDistance(OpenGLMatrix obj, OpenGLMatrix target){
