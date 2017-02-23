@@ -19,8 +19,8 @@ Thumbs.db
 .DS_Store
 
 # Android Studio
-FtcRobotConctroller/FtcRobotController.iml
-TeamCode/TeamCode.iml
+TeamCode.iml
+FtcRobotController.iml
 ftc_app_9773_velocity_vortex.iml
 .idea
 .gradle
