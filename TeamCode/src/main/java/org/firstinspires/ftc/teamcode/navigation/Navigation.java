@@ -534,6 +534,8 @@ public class Navigation {
             encoderNav.updateCurrentYaw(elapsedEncoderCounts.getDegreesTurned());
             DbgLog.msg("ftc9773: currYaw: %f", encoderNav.getCurrentYaw());
         }
+        // Add the instrumentation data one last time before removing the instrumentation actions.
+        robot.instrumentation.addInstrData();
         robot.instrumentation.removeAction(gyroDegreesInstr);
         robot.instrumentation.removeAction(turnRobotInstr);
     }

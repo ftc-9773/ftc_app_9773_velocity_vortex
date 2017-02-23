@@ -77,8 +77,8 @@ public class MRGyro implements GyroInterface {
     @Override
     public double getYaw() {
         double newYaw;
-        if (getYawTimer.milliseconds() >= GYRO_LATENCY) {
-            newYaw = gyro.getHeading();
+        newYaw = gyro.getHeading();
+        if ((newYaw != prevYaw) || (getYawTimer.milliseconds() >= GYRO_LATENCY)) {
             prevYaw = newYaw;
             getYawTimer.reset();
             updateCount++;
