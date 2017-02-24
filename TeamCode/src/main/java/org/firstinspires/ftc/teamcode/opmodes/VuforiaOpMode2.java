@@ -58,14 +58,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;//TODO: MAKE THIS FRONT FOR ROBOT TESTING/COMPETITION
         parameters.useExtendedTracking = false;
         parameters.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
-        VuforiaLocalizerImplSubclass vuforiaLocalizer = new VuforiaLocalizerImplSubclass(parameters);
-
-        //Enable image detection
-        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
-        vuforiaLocalizer.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
-
-        /*To access the image: you need to iterate through the images of the frame object:*/
-
+        VuforiaLocalizer vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
 
         // These are the vision targets that we want to use
         // The string needs to be the name of the appropriate .xml file in the assets folder
@@ -77,8 +70,13 @@ public class VuforiaOpMode2 extends LinearOpMode{
         visionTargets.get(2).setName("Lego");
         visionTargets.get(3).setName("Gears");
 
+        //Enable image detection
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //enables RGB565 format for the image
+        vuforiaLocalizer.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
         waitForStart();
+
+
 
         visionTargets.activate();
 
@@ -102,6 +100,7 @@ public class VuforiaOpMode2 extends LinearOpMode{
         }
     }
 
+    /*To access the image: you need to iterate through the images of the frame object:*/
     public Image getImageFromFrame(VuforiaLocalizer.CloseableFrame frame, int pixelFormat){
         long numImages = frame.getNumImages();
         for (int i = 0; i < numImages; i++) {

@@ -19,6 +19,7 @@ public class VuforiaLocalizerImplSubclass extends VuforiaLocalizerImpl {
 
     public Image rgb;
 
+
     class CloseableFrame extends Frame {
         public CloseableFrame(Frame other) { // clone the frame so we can be useful beyond callback
             super(other);
@@ -39,18 +40,8 @@ public class VuforiaLocalizerImplSubclass extends VuforiaLocalizerImpl {
             // has been observed to interact poorly with the image data which is allocated on a
             // non-garbage-collected heap). Note that both of this concerns are independent of
             // how the Frame is obtained in the first place.
-
             CloseableFrame frame = new CloseableFrame(state.getFrame());
             RobotLog.vv(TAG, "received Vuforia frame#=%d", frame.getIndex());
-
-            long num = frame.getNumImages();
-
-            for(int i=0;i<num;i++){
-                if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565){
-                    rgb = frame.getImage(i);
-                }
-            }
-
             frame.close();
         }
     }
